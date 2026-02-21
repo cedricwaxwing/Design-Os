@@ -162,11 +162,43 @@ Pour chaque agent, verifier les signaux ci-dessous. Chaque signal a un poids (%)
 │    → Lance /discovery pour arbitrer        │
 ```
 
-#### Quand afficher le readiness
+#### Persistance du readiness
 
-1. **A chaque invocation de `/o`** — Avant le plan, afficher le readiness pour informer la recommandation
-2. **Sur `/status`** — Integrer le readiness apres le flow en cours
-3. **Apres un changement significatif** — Si un agent modifie des fichiers qui impactent le readiness, l'orchestrateur le recalcule a la prochaine invocation
+Apres avoir calcule le Product Readiness, **ecrire les resultats** dans `.claude/readiness.json`. Ce fichier est lu par l'extension VSCode Design OS Navigator pour afficher les jauges.
+
+**Format** :
+```json
+{
+  "module": "{module_slug}",
+  "updatedAt": "{ISO 8601}",
+  "updatedBy": "/o",
+  "globalScore": 12,
+  "nodes": {
+    "strategy":      { "score": 30, "verdict": "possible",  "action": "Completer le brief via /onboarding" },
+    "discovery":     { "score": 0,  "verdict": "not-ready", "action": "Lancer /discovery" },
+    "ux":            { "score": 0,  "verdict": "not-ready", "action": "Discovery requise d'abord" },
+    "design-system": { "score": 5,  "verdict": "not-ready", "action": "Configurer les tokens via /onboarding" },
+    "spec":          { "score": 0,  "verdict": "not-ready", "action": "UX requise d'abord" },
+    "ui":            { "score": 0,  "verdict": "not-ready", "action": "Specs requises d'abord" },
+    "build":         { "score": 0,  "verdict": "not-ready", "action": "Specs validees requises" },
+    "review":        { "score": 0,  "verdict": "not-ready", "action": "Code requis d'abord" },
+    "lab":           { "score": 0,  "verdict": "not-ready", "action": null }
+  }
+}
+```
+
+**Regles** :
+- Si le fichier n'existe pas, le creer
+- Si le fichier existe, le remplacer entierement (pas de merge)
+- Les verdicts utilisent les cles : `"ready"` (80-100%), `"push"` (50-79%), `"possible"` (25-49%), `"premature"` (10-24%), `"not-ready"` (0-9%)
+- `globalScore` = moyenne des scores de tous les nodes
+- Chaque `action` est une phrase courte recommandant la prochaine etape
+
+#### Quand afficher et persister le readiness
+
+1. **A chaque invocation de `/o`** — Avant le plan, afficher le readiness pour informer la recommandation, puis ecrire dans `.claude/readiness.json`
+2. **Sur `/status`** — Integrer le readiness apres le flow en cours, puis ecrire dans `.claude/readiness.json`
+3. **Apres un changement significatif** — Si un agent modifie des fichiers qui impactent le readiness, l'orchestrateur le recalcule et persiste a la prochaine invocation
 
 ### Recettes par phase de projet
 

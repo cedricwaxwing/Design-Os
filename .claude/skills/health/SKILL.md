@@ -339,7 +339,39 @@ Hypotheses : {N} contenu(s) [HYPOTHESE] → valider avec des donnees terrain
 3. [SUGGESTION] {amelioration optionnelle}
 ```
 
-### Etape 5 — Recommandation de prochaine action
+### Etape 5 — Persistance du readiness
+
+Apres le rapport, **ecrire les scores** dans `.claude/readiness.json` pour que l'extension VSCode Design OS Navigator affiche les jauges.
+
+**Format** :
+```json
+{
+  "module": "{module_slug}",
+  "updatedAt": "{ISO 8601}",
+  "updatedBy": "/health",
+  "globalScore": 45,
+  "nodes": {
+    "strategy":      { "score": 80, "verdict": "ready",     "action": null },
+    "discovery":     { "score": 60, "verdict": "push",      "action": "Valider les hypotheses" },
+    "ux":            { "score": 40, "verdict": "possible",   "action": "Completer le Screen Map" },
+    "design-system": { "score": 50, "verdict": "push",      "action": "Remplir les tokens manquants" },
+    "spec":          { "score": 0,  "verdict": "not-ready", "action": "UX requise d'abord" },
+    "ui":            { "score": 0,  "verdict": "not-ready", "action": "Specs requises d'abord" },
+    "build":         { "score": 0,  "verdict": "not-ready", "action": "Specs validees requises" },
+    "review":        { "score": 0,  "verdict": "not-ready", "action": "Code requis d'abord" },
+    "lab":           { "score": 0,  "verdict": "not-ready", "action": null }
+  }
+}
+```
+
+**Regles** :
+- Si le fichier n'existe pas, le creer
+- Si le fichier existe, le remplacer entierement
+- Verdicts : `"ready"` (80-100%), `"push"` (50-79%), `"possible"` (25-49%), `"premature"` (10-24%), `"not-ready"` (0-9%)
+- Les scores derivent des checks de l'etape 2 : mapper les categories de checks (Onboarding, Discovery, Specs, DS, Build, Reviews) aux node IDs correspondants
+- `globalScore` = score global calcule a l'etape 3
+
+### Etape 6 — Recommandation de prochaine action
 
 Apres le rapport, proposer la prochaine action la plus utile :
 

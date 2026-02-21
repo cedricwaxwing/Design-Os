@@ -23,7 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(statusItem);
 
   // Watch for file changes and refresh the panel
-  const watcher = vscode.workspace.createFileSystemWatcher('**/*.md');
+  const watcher = vscode.workspace.createFileSystemWatcher('{**/*.md,.claude/readiness.json}');
   const refresh = () => {
     if (currentPanel) {
       refreshPanel();

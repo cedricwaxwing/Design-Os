@@ -39,6 +39,8 @@ export function getWebviewContent(data: GraphData): string {
       color: var(--text);
       overflow: hidden;
       height: 100vh;
+      padding: 0 !important;
+      margin: 0 !important;
     }
 
     /* ── Layout ── */
@@ -51,11 +53,13 @@ export function getWebviewContent(data: GraphData): string {
       flex: 1;
       position: relative;
       overflow: auto;
-      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .drag-handle {
-      width: 5px;
+      width: 4px;
       cursor: col-resize;
       background: transparent;
       transition: background var(--transition);
@@ -91,9 +95,23 @@ export function getWebviewContent(data: GraphData): string {
       display: none;
     }
 
+    /* ── Layout helpers ── */
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     /* ── Header ── */
     .header {
-      padding: 16px 24px;
+      padding: 12px 16px;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
@@ -110,7 +128,7 @@ export function getWebviewContent(data: GraphData): string {
     .header .module-badge {
       background: color-mix(in srgb, var(--accent) 15%, transparent);
       color: var(--accent);
-      padding: 3px 10px;
+      padding: 4px 12px;
       border-radius: 20px;
       font-size: 11px;
       font-weight: 500;
@@ -124,8 +142,7 @@ export function getWebviewContent(data: GraphData): string {
     /* ── Graph ── */
     .graph-container {
       position: relative;
-      min-height: 700px;
-      min-width: 600px;
+      flex-shrink: 0;
     }
 
     /* ── SVG Edges ── */
@@ -161,7 +178,7 @@ export function getWebviewContent(data: GraphData): string {
       background: var(--surface);
       border: 1.5px solid var(--border);
       border-radius: var(--node-radius);
-      padding: 14px 16px;
+      padding: 16px;
       cursor: pointer;
       z-index: 1;
       transition: border-color var(--transition), box-shadow var(--transition), transform 0.15s ease;
@@ -198,7 +215,7 @@ export function getWebviewContent(data: GraphData): string {
       margin-bottom: 8px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
 
     .node-icon { font-size: 14px; opacity: 0.7; }
@@ -258,7 +275,7 @@ export function getWebviewContent(data: GraphData): string {
 
     /* ── Detail Panel Header ── */
     .detail-header {
-      padding: 16px 20px;
+      padding: 16px;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: flex-start;
@@ -272,7 +289,7 @@ export function getWebviewContent(data: GraphData): string {
     }
 
     .detail-header h2 {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 700;
       margin-bottom: 2px;
     }
@@ -295,7 +312,7 @@ export function getWebviewContent(data: GraphData): string {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: 14px;
       flex-shrink: 0;
       transition: background var(--transition), color var(--transition);
     }
@@ -306,16 +323,16 @@ export function getWebviewContent(data: GraphData): string {
 
     /* ── Detail Readiness ── */
     .detail-readiness {
-      padding: 12px 20px;
+      padding: 12px 16px;
       border-bottom: 1px solid var(--border);
     }
 
     .detail-readiness-bar {
       height: 6px;
       background: color-mix(in srgb, var(--text) 10%, transparent);
-      border-radius: 3px;
+      border-radius: 4px;
       overflow: hidden;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     .detail-readiness-fill {
@@ -336,7 +353,7 @@ export function getWebviewContent(data: GraphData): string {
       color: var(--text-dim);
     }
 
-    .delta { font-weight: 600; margin-left: 6px; }
+    .delta { font-weight: 600; margin-left: 8px; }
     .delta.up { color: var(--success); }
     .delta.down { color: var(--error); }
 
@@ -346,7 +363,7 @@ export function getWebviewContent(data: GraphData): string {
     }
 
     .collapsible-header {
-      padding: 10px 20px;
+      padding: 12px 16px;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -383,7 +400,7 @@ export function getWebviewContent(data: GraphData): string {
       font-size: 10px;
       color: var(--text-dim);
       background: color-mix(in srgb, var(--text) 8%, transparent);
-      padding: 1px 6px;
+      padding: 2px 8px;
       border-radius: 8px;
       font-weight: 500;
     }
@@ -392,16 +409,16 @@ export function getWebviewContent(data: GraphData): string {
       max-height: 0;
       overflow: hidden;
       transition: max-height 0.25s ease, padding 0.25s ease;
-      padding: 0 20px;
+      padding: 0 16px;
     }
     .collapsible.open .collapsible-body {
       max-height: 2000px;
-      padding: 0 20px 14px;
+      padding: 4px 16px 16px;
     }
 
     /* ── Non-collapsible section (recommended action) ── */
     .detail-section-fixed {
-      padding: 14px 20px;
+      padding: 12px 16px;
       border-bottom: 1px solid var(--border);
     }
 
@@ -431,7 +448,7 @@ export function getWebviewContent(data: GraphData): string {
       padding: 2px 8px;
       border-radius: 4px;
       display: inline-block;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     .action-reason {
@@ -450,7 +467,7 @@ export function getWebviewContent(data: GraphData): string {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 4px 0;
+      padding: 8px 0;
       font-size: 12px;
     }
 
@@ -487,7 +504,7 @@ export function getWebviewContent(data: GraphData): string {
 
     .confidence-badge {
       font-size: 9px;
-      padding: 1px 5px;
+      padding: 2px 8px;
       border-radius: 8px;
       font-weight: 600;
       white-space: nowrap;
@@ -508,7 +525,7 @@ export function getWebviewContent(data: GraphData): string {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 3px 0;
+      padding: 4px 0;
       font-size: 12px;
     }
 
@@ -529,7 +546,7 @@ export function getWebviewContent(data: GraphData): string {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 6px 0;
+      padding: 8px 0;
       font-size: 12px;
       color: var(--text);
       cursor: pointer;
@@ -571,7 +588,7 @@ export function getWebviewContent(data: GraphData): string {
 
     .file-badge {
       font-size: 9px;
-      padding: 1px 5px;
+      padding: 2px 8px;
       border-radius: 8px;
       font-weight: 600;
       flex-shrink: 0;
@@ -607,7 +624,7 @@ export function getWebviewContent(data: GraphData): string {
     /* ── History ── */
     .history-row {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       padding: 4px 0;
       font-size: 11px;
     }
@@ -636,16 +653,16 @@ export function getWebviewContent(data: GraphData): string {
     .command-btn {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       width: 100%;
-      padding: 10px 12px;
+      padding: 12px;
       background: color-mix(in srgb, var(--accent) 8%, transparent);
       border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
       border-radius: 8px;
       color: var(--text);
       cursor: pointer;
       text-align: left;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       transition: background var(--transition), border-color var(--transition);
     }
     .command-btn:hover {
@@ -653,6 +670,13 @@ export function getWebviewContent(data: GraphData): string {
       border-color: var(--accent);
     }
     .command-btn:active { transform: scale(0.98); }
+
+    .command-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
 
     .command-label { font-weight: 600; font-size: 12px; }
 
@@ -668,11 +692,18 @@ export function getWebviewContent(data: GraphData): string {
     .command-desc { font-size: 11px; color: var(--text-dim); }
 
     /* ── Dependencies ── */
+    .dep-group { margin-bottom: 8px; }
+    .dep-group:last-child { margin-bottom: 0; }
+    .dep-label {
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
     .dep-list { display: flex; flex-wrap: wrap; gap: 4px; }
 
     .dep-chip {
       font-size: 11px;
-      padding: 2px 8px;
+      padding: 4px 8px;
       border-radius: 12px;
       background: color-mix(in srgb, var(--text) 10%, transparent);
       color: var(--text-dim);
@@ -683,7 +714,7 @@ export function getWebviewContent(data: GraphData): string {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 6px 0;
+      padding: 8px 0;
       font-size: 12px;
     }
     .child-name { font-weight: 500; }
@@ -700,9 +731,9 @@ export function getWebviewContent(data: GraphData): string {
 </head>
 <body>
   <div class="app">
-    <div style="display:flex; flex-direction:column; flex:1; min-width:0;">
+    <div class="main-content">
       <div class="header">
-        <div style="display:flex; align-items:center; gap:12px;">
+        <div class="header-left">
           <h1>Design OS Navigator</h1>
           <span class="module-badge" id="module-badge"></span>
         </div>
@@ -865,6 +896,20 @@ export function getWebviewContent(data: GraphData): string {
         'Readiness global : ' + data.globalReadiness + '%';
 
       container.querySelectorAll('.node').forEach(n => n.remove());
+
+      // ── Calculate bounding box and size the container ──
+      const nodeWidth = 160;
+      const nodeHeight = 60;
+      let maxX = 0, maxY = 0;
+      for (const node of data.nodes) {
+        const pos = positions[node.id];
+        if (pos) {
+          maxX = Math.max(maxX, pos.x + nodeWidth);
+          maxY = Math.max(maxY, pos.y + nodeHeight);
+        }
+      }
+      container.style.width = (maxX + 32) + 'px';
+      container.style.height = (maxY + 32) + 'px';
 
       // Draw edges
       let edgesHtml = '';
@@ -1088,7 +1133,7 @@ export function getWebviewContent(data: GraphData): string {
         for (const cmd of node.commands) {
           commandsHtml += '<button class="command-btn" data-command="' + cmd.command + '">' +
             '<div>' +
-              '<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">' +
+              '<div class="command-header">' +
                 '<span class="command-name">' + cmd.command + '</span>' +
                 '<span class="command-label">' + cmd.label + '</span>' +
               '</div>' +
@@ -1103,7 +1148,7 @@ export function getWebviewContent(data: GraphData): string {
       let depsContent = '';
       if (node.dependsOn.length > 0 || node.unlocks.length > 0) {
         if (node.dependsOn.length > 0) {
-          depsContent += '<div style="margin-bottom:8px;"><div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;">Depend de</div><div class="dep-list">';
+          depsContent += '<div class="dep-group"><div class="dep-label">Depend de</div><div class="dep-list">';
           for (const dep of node.dependsOn) {
             const depNode = data.nodes.find(n => n.id === dep);
             depsContent += '<span class="dep-chip">' + (depNode ? depNode.label : dep) + '</span>';
@@ -1111,7 +1156,7 @@ export function getWebviewContent(data: GraphData): string {
           depsContent += '</div></div>';
         }
         if (node.unlocks.length > 0) {
-          depsContent += '<div><div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;">Debloque</div><div class="dep-list">';
+          depsContent += '<div class="dep-group"><div class="dep-label">Debloque</div><div class="dep-list">';
           for (const u of node.unlocks) {
             const uNode = data.nodes.find(n => n.id === u);
             depsContent += '<span class="dep-chip">' + (uNode ? uNode.label : u) + '</span>';
@@ -1164,6 +1209,57 @@ export function getWebviewContent(data: GraphData): string {
         if (selectedNodeId) selectNode(selectedNodeId);
       }
     });
+
+    // ── Pan navigation (space+click or right-click drag, like Figma) ──
+    (function initPan() {
+      let isPanning = false;
+      let panStartX = 0, panStartY = 0;
+      let scrollStartX = 0, scrollStartY = 0;
+      let spaceHeld = false;
+      const graphPanel = document.getElementById('graph-panel');
+
+      document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && !e.repeat) {
+          spaceHeld = true;
+          graphPanel.style.cursor = 'grab';
+          e.preventDefault();
+        }
+      });
+
+      document.addEventListener('keyup', (e) => {
+        if (e.code === 'Space') {
+          spaceHeld = false;
+          if (!isPanning) graphPanel.style.cursor = '';
+        }
+      });
+
+      graphPanel.addEventListener('mousedown', (e) => {
+        if (spaceHeld || e.button === 2) {
+          isPanning = true;
+          panStartX = e.clientX;
+          panStartY = e.clientY;
+          scrollStartX = graphPanel.scrollLeft;
+          scrollStartY = graphPanel.scrollTop;
+          graphPanel.style.cursor = 'grabbing';
+          e.preventDefault();
+        }
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (!isPanning) return;
+        graphPanel.scrollLeft = scrollStartX - (e.clientX - panStartX);
+        graphPanel.scrollTop = scrollStartY - (e.clientY - panStartY);
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (isPanning) {
+          isPanning = false;
+          graphPanel.style.cursor = spaceHeld ? 'grab' : '';
+        }
+      });
+
+      graphPanel.addEventListener('contextmenu', (e) => e.preventDefault());
+    })();
 
     // ── Init ──
     renderGraph();

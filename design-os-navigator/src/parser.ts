@@ -5,7 +5,7 @@ import {
   GraphEdge, GraphData, ContentSignals, SectionDetail, HistoryEntry,
   RecommendedAction, emptySignals, aggregateSignals, DocStatus,
 } from './types';
-import { calculateReadiness } from './readiness';
+import { loadReadiness, getNodeScore, getGlobalScore, ReadinessData } from './readiness';
 
 // ═══════════════════════════════════════════════════════
 // PUBLIC API
@@ -13,12 +13,11 @@ import { calculateReadiness } from './readiness';
 
 export function parseProject(workspaceRoot: string): GraphData {
   const context = parseContext(workspaceRoot);
-  const nodes = buildNodes(workspaceRoot, context);
+  const readinessData = loadReadiness(workspaceRoot);
+  const nodes = buildNodes(workspaceRoot, context, readinessData);
   const edges = buildEdges(nodes);
   const history = parseHistory(workspaceRoot);
-  const globalReadiness = Math.round(
-    nodes.reduce((sum, n) => sum + n.readiness, 0) / nodes.length
-  );
+  const globalReadiness = getGlobalScore(readinessData);
 
   return { context, nodes, edges, globalReadiness, history };
 }
@@ -572,7 +571,7 @@ function extractFmList(fm: string, field: string): string[] {
 // NODE BUILDING
 // ═══════════════════════════════════════════════════════
 
-function buildNodes(root: string, context: ProjectContext): DesignOsNode[] {
+function buildNodes(root: string, context: ProjectContext, readinessData: ReadinessData | null): DesignOsNode[] {
   const mod = context.module;
   const nodes: DesignOsNode[] = [];
 
@@ -793,9 +792,9 @@ function buildNodes(root: string, context: ProjectContext): DesignOsNode[] {
     status: labFiles.length > 0 ? 'active' : 'empty',
   });
 
-  // ── Calculate readiness & recommended actions ──
+  // ── Load readiness from persisted .claude/readiness.json ──
   for (const node of nodes) {
-    node.readiness = calculateReadiness(node, nodes, { claudeSignals, screenMapSignals });
+    node.readiness = getNodeScore(readinessData, node.id);
   }
 
   // Assign recommended actions based on lowest-scoring upstream
