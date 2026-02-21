@@ -47,6 +47,8 @@ Lis `.claude/context.md` pour identifier le **module actif**.
 
 ## Workflow
 
+> **Note orchestrateur** : Si cet agent est invoque via `/o` (orchestrateur), ne PAS re-annoncer ton identite ni ton role — la notification de transition l'a deja fait. Demarre directement le travail.
+
 ### Etape 1 — Collecte
 
 1. **Screen Map** : `01_Product/04 Specs/{module}/00_screen-map.md`

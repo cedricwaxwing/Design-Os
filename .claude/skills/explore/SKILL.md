@@ -64,6 +64,8 @@ Un prototype est jetable. Son seul but est de repondre a la question : "Est-ce q
 
 ## Workflow
 
+> **Note orchestrateur** : Si cet agent est invoque via `/o` (orchestrateur), ne PAS re-annoncer ton identite ni ton role — la notification de transition l'a deja fait. Demarre directement le travail.
+
 ### Etape 1 — Comprendre l'intention
 
 Demande a l'utilisateur (si pas clair) :

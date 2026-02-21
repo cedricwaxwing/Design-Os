@@ -7,7 +7,7 @@ description: >
   propositions de reorganisation visuelle. Applique les regles de spacing (grille 4/8px), hierarchie visuelle,
   lois cognitives (30 Laws of UX) et semantique pour des interfaces scientifiquement optimisees.
   Use when asked to design screens, critique layouts, propose visual alternatives, generate mockups or HTML pages.
-allowed-tools: Read,Glob,Grep,Write,Edit,Bash
+allowed-tools: Read,Glob,Grep,Write,Edit,Bash,mcp__figma-remote-mcp__get_design_context,mcp__figma-remote-mcp__get_screenshot,mcp__figma-remote-mcp__get_metadata
 category: Product Design
 tags:
   - UI
@@ -94,6 +94,8 @@ Consulter `01_Product/05 Design System/tokens.md` pour la palette semantique (su
 ---
 
 ## Workflow
+
+> **Note orchestrateur** : Si cet agent est invoque via `/o` (orchestrateur), ne PAS re-annoncer ton identite ni ton role — la notification de transition l'a deja fait. Demarre directement le travail.
 
 ### Etape 1 — Comprendre le besoin et lire le contexte
 

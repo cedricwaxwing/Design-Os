@@ -9,9 +9,9 @@ Design OS is an AI-native product development framework. It structures how you t
 **Core philosophy**: Spec before code. Explore before converging. Review before shipping.
 
 ```
-Strategy → Discovery → Design (/ux) → Spec (/spec) → Build (/build) → Review (/review)
-                                ↑                                            │
-                                └────────── NO-GO triage ──────────────────┘
+Strategy → Discovery (/discovery) → Design (/ux) → Spec (/spec) → Build (/build) → Review (/review)
+                                          ↑                                              │
+                                          └────────────── NO-GO triage ────────────────┘
 ```
 
 ## Quick Start
@@ -22,12 +22,19 @@ Strategy → Discovery → Design (/ux) → Spec (/spec) → Build (/build) → 
 
 That's it. The onboarding agent asks about your project, personas, tech stack, and design tokens — then writes all configuration files automatically.
 
+> In a hurry? Run `/onboarding express` for a 30-second setup with smart defaults.
+
+**New here?** Read the [Getting Started walkthrough](./GETTING-STARTED.md) — a complete step-by-step story from first launch to shipped screen.
+
+**Lost on a term?** Check the [Glossary](./GLOSSARY.md) — every technical term explained in plain language.
+
 ## Available Agents
 
 | Agent | Command | What it does | Mode |
 |-------|---------|-------------|------|
 | Onboarding | `/onboarding` | Configure your project interactively | Guided |
 | Orchestrator | `/o` | Coordinate multi-agent workflows, propose plans | Coordination |
+| Discovery | `/discovery` | Build user/domain understanding, structure hypotheses | Guided exploration |
 | UX Design | `/ux` | Explore UX directions, challenge hypotheses | Exploration (2+ options) |
 | Spec | `/spec` | Generate complete specs from user stories | Execution |
 | Build | `/build` | Code in TDD from validated specs | Execution |
@@ -35,13 +42,14 @@ That's it. The onboarding agent asks about your project, personas, tech stack, a
 | Explore | `/explore` | Quick prototype (happy path only) | Execution |
 | UI Designer | `/ui` | Generate mockups (SVG, HTML, React) | Exploration |
 | Screen Map | `/screen-map` | Diagnose screen-spec-story mapping integrity | Diagnostic |
+| Health | `/health` | Run a full project health check (score + actions) | Diagnostic |
 
 ## Methodology
 
 ### Spec-Driven Development
 No code is written without a validated spec. The cycle:
 1. **Strategy** — Define vision, brief, roadmap
-2. **Discovery** — User research, personas, domain context
+2. **Discovery** (`/discovery`) — User research, personas, domain context, hypothesis mapping
 3. **Design** (`/ux`) — Explore UX solutions, challenge hypotheses, define key screens
 4. **Spec** (`/spec`) — Generate complete specs (9 mandatory sections, zero ambiguity)
 5. **Build** (`/build`) — TDD from spec (tests first, then code)
@@ -62,6 +70,8 @@ Multiple stories often converge on the same screen. The Screen Map (`00_screen-m
 ```
 Design-OS/
 ├── CLAUDE.md                  ← Project instructions for Claude Code
+├── GETTING-STARTED.md         ← Narrative walkthrough (start here!)
+├── GLOSSARY.md                ← Technical terms explained simply
 ├── modules-registry.md        ← Registry of product modules
 ├── .claude/
 │   ├── context.md             ← Active module context

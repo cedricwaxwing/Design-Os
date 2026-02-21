@@ -1,7 +1,8 @@
 # Design System — Tokens
 
-> Remplis ce fichier lors de l'onboarding (`/onboarding`) ou manuellement.
+> Ce fichier est auto-genere par `/onboarding` avec des couleurs hex reelles.
 > Source de verite pour les couleurs, typographie, spacing, bordures et ombres.
+> Modifiable manuellement a tout moment.
 
 ---
 
@@ -14,12 +15,17 @@
 | `primary` | `#______` | Couleur primaire, CTA, liens |
 | `primary-light` | `#______` | Hover, accents legers |
 | `primary-dark` | `#______` | Active/pressed |
+| `primary-50` | `#______` | Fond tres leger (badges, highlights) |
 
-<!-- Ajoute ta palette complete ici -->
+<!-- INSTRUCTIONS POUR /onboarding :
+     A partir de la couleur primaire fournie par l'utilisateur, generer :
+     - primary : la couleur donnee
+     - primary-light : +15% luminosite (HSL L+15)
+     - primary-dark : -15% luminosite (HSL L-15)
+     - primary-50 : meme teinte, saturation 20%, luminosite 95%
+     Toutes les valeurs DOIVENT etre des hex reels (#RRGGBB), jamais #______ -->
 
 ### Palette de fond
-
-<!-- Adapte selon dark mode ou light mode -->
 
 | Token | Valeur | Usage |
 |-------|--------|-------|
@@ -28,14 +34,20 @@
 | `bg-elevated` | `#______` | Fond des modales, drawers |
 | `bg-input` | `#______` | Fond des champs de saisie |
 
+<!-- INSTRUCTIONS POUR /onboarding :
+     Light mode : bg-base=#FFFFFF, bg-surface=#F9FAFB, bg-elevated=#FFFFFF, bg-input=#F3F4F6
+     Dark mode  : bg-base=#0F172A, bg-surface=#1E293B, bg-elevated=#334155, bg-input=#1E293B -->
+
 ### Couleurs semantiques
 
 | Token | Valeur | Usage |
 |-------|--------|-------|
-| `success` | `#22c55e` | Succes, validation, done |
-| `warning` | `#f59e0b` | Attention, pending, draft |
-| `error` | `#ef4444` | Erreur, danger, rejected |
-| `info` | `#3b82f6` | Information, liens secondaires |
+| `success` | `#22C55E` | Succes, validation, done |
+| `warning` | `#F59E0B` | Attention, pending, draft |
+| `error` | `#EF4444` | Erreur, danger, rejected |
+| `info` | `#3B82F6` | Information, liens secondaires |
+
+<!-- Ces valeurs sont universelles — l'onboarding les conserve telles quelles -->
 
 ### Couleurs de texte
 
@@ -45,6 +57,10 @@
 | `text-secondary` | `#______` | Texte secondaire, metadata |
 | `text-tertiary` | `#______` | Texte desactive, placeholder |
 | `text-on-primary` | `#______` | Texte sur fond primaire (CTAs) |
+
+<!-- INSTRUCTIONS POUR /onboarding :
+     Light mode : text-primary=#111827, text-secondary=#6B7280, text-tertiary=#9CA3AF, text-on-primary=#FFFFFF
+     Dark mode  : text-primary=#F9FAFB, text-secondary=#9CA3AF, text-tertiary=#6B7280, text-on-primary=#FFFFFF -->
 
 ### Couleurs de bordure
 

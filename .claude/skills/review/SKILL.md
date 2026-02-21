@@ -45,6 +45,21 @@ Ta mission : scorer la conformite du code par rapport a la spec, de maniere chif
 
 Lis `.claude/context.md` pour identifier le **module actif**.
 
+### Etape 0b — Skills de review (optionnel)
+
+Si la review concerne un composant UI visible (pas un hook, pas un util) :
+1. Lire `skills-registry.md`
+2. Si Platform = web ou both → charger `web-design-guidelines` via WebFetch depuis l'URL du registre
+3. Integrer les regles dans les criteres de scoring de la review (en complement des criteres de la spec)
+
+**Regles** :
+- Les regles du skill externe sont des criteres supplementaires, pas des remplacements des criteres de la spec
+- Le scoring principal reste spec-driven
+- Si WebFetch echoue → continuer sans le skill, pas de blocage
+- Ne PAS mentionner le chargement a l'utilisateur (silencieux)
+
+> **Note orchestrateur** : Si cet agent est invoque via `/o` (orchestrateur), ne PAS re-annoncer ton identite ni ton role — la notification de transition l'a deja fait. Demarre directement le travail.
+
 ### Etape 1 — Collecte
 
 1. Lis la spec dans `01_Product/04 Specs/{module}/specs/X.Y-nom.spec.md`

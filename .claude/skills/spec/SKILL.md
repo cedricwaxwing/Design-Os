@@ -41,7 +41,45 @@ Ta mission : generer des specs completes et valider qu'elles sont pretes pour le
 - Ecrire du code (utiliser /build)
 - Scorer la conformite (utiliser /review)
 
-## Regles absolues
+## Modes de spec
+
+### Mode VALIDEE (par defaut)
+
+Le mode standard pour les specs qui vont en `/build`. Regles strictes, zero ambiguite.
+
+### Mode DRAFT (exploratoire)
+
+Pour les iterations rapides et l'exploration. Active quand l'utilisateur demande un "draft", une "spec rapide", ou quand le projet est en phase `ideation` ou `design`.
+
+**Differences avec le mode VALIDEE** :
+
+| Aspect | VALIDEE | DRAFT |
+|--------|---------|-------|
+| Sections obligatoires | 9 sections completes | 3 sections minimum (Story + Acceptance Criteria + Layout) |
+| TBD/TODO autorises | NON — zero tolerance | OUI — marques avec `[DRAFT]` |
+| Types TypeScript | Complets, pas de `any` | Peuvent etre simplifies |
+| Matrice de permissions | Obligatoire | Optionnelle |
+| Etats (vide/loading/error) | Tous obligatoires | Seul happy path requis |
+| Out of Scope | Obligatoire | Optionnel |
+| Statut | `VALIDEE` | `DRAFT` |
+
+**Regle** : `/build` refuse une spec en mode DRAFT. Pour passer en VALIDEE, completer les 9 sections et eliminer tous les TBD.
+
+**Marquage en en-tete** :
+```markdown
+<!-- STATUS: DRAFT -->
+<!-- Ce document est un draft exploratoire. Completer les sections manquantes avant /build. -->
+```
+
+**Transition DRAFT → VALIDEE** :
+1. Completer les 6 sections manquantes
+2. Eliminer tous les `[DRAFT]` et TBD
+3. Changer le statut en `VALIDEE`
+4. Le `/build` accepte alors la spec
+
+---
+
+## Regles absolues (mode VALIDEE)
 
 1. **Zero ambiguite** — Tu REFUSES de valider si une section contient "a definir", "TBD", "TODO" ou "?"
 2. **9 sections obligatoires** — Chaque spec DOIT avoir toutes les sections du template (incluant Layout)
@@ -86,6 +124,8 @@ NE PAS rechallenger les choix de design — les prendre comme input acquis.
 ### Etape 0b — Consulter les ecrans SVG de reference
 
 Verifier si des ecrans SVG existent dans `screens/`. Les lire pour enrichir la spec (layout, labels, tokens).
+
+> **Note orchestrateur** : Si cet agent est invoque via `/o` (orchestrateur), ne PAS re-annoncer ton identite ni ton role — la notification de transition l'a deja fait. Demarre directement le travail.
 
 ### Etape 1 — Identifier la source
 
