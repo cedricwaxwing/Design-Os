@@ -91,6 +91,38 @@ Les lois les plus critiques pour la conception d'interfaces :
 
 Consulter `01_Product/05 Design System/tokens.md` pour la palette semantique (success, warning, error, info) et les couleurs de roles.
 
+## Adaptation par intent
+
+> L'intent du projet est lu depuis `.claude/context.md` (champ `intent`). Si aucun intent n'est defini, le comportement par defaut est **Epic** (standard).
+
+| Dimension | MVP | Epic (defaut) | Revamp | Design System |
+|-----------|-----|---------------|--------|---------------|
+| **Mode** | FAST | STANDARD | COMPARISON | REFERENCE |
+| **Format par defaut recommande** | HTML (rapide a iterer et tester) | SVG (precision layout) | SVG avec before/after | React/TSX (composant reel avec variantes) |
+| **Scope** | Flow E2E — plusieurs ecrans | Un ecran a la fois | Un ecran avec comparaison existant | Un composant avec toutes ses variantes |
+| **Precision** | 80% — bon enough pour valider la direction | 100% — pixel-perfect | 100% + annotations des changements | 100% — c'est la reference du DS |
+| **Checklist qualite** | Allege — spacing + hierarchie + CTAs | Complet (11 criteres) | Complet + coherence avec l'existant | Complet + check variantes + check theming |
+| **Responsive** | Desktop seulement (sauf si mobile-first) | 3 breakpoints dans la spec | 3 breakpoints | Tous les breakpoints — c'est la doc de reference |
+
+### Regles par intent
+
+**MVP** :
+- Defaut recommande : HTML (permet le clic, le responsive, les hover states — plus utile qu'un SVG statique pour valider un flow)
+- Si plusieurs ecrans sont demandes pour un flow, les generer dans un seul HTML multi-pages avec navigation
+- Precision 80% : les proportions et la hierarchie sont correctes, mais pas de micro-ajustements
+- Pas de SVG individuel par ecran sauf demande explicite
+
+**Revamp** :
+- Generer systematiquement une vue before/after si l'existant est disponible
+- SVG : annoter les zones modifiees (encadre en pointilles + label "MODIFIE" / "NOUVEAU" / "SUPPRIME")
+- Les annotations de changement sont essentielles pour la communication avec les stakeholders
+
+**Design System** :
+- Le format par defaut est React/TSX — c'est le composant reel avec les vrais tokens
+- Generer un "catalogue" de variantes : `[ComponentName]Showcase.tsx`
+- Chaque variante est labellee (size, state, theme)
+- Le livrable EST la documentation visuelle du composant
+
 ---
 
 ## Workflow
@@ -100,17 +132,47 @@ Consulter `01_Product/05 Design System/tokens.md` pour la palette semantique (su
 ### Etape 1 — Comprendre le besoin et lire le contexte
 
 1. Quel objectif ? (generer, critiquer, proposer, reorganiser)
-2. Quel format ? (SVG, HTML, React/TSX, critique textuelle)
-3. Quel contexte ? Lire `.claude/context.md` + Design System + specs
+2. Quel contexte ? Lire `.claude/context.md` (module actif + champ `intent` → determiner le mode UI, voir "Adaptation par intent") + Design System + specs
 
-### Etape 2 — Choix du format de sortie
+### Etape 2 — Proposer le format de sortie
 
-| Format | Quand l'utiliser | Output |
-|--------|-----------------|--------|
-| **SVG** | Verifier un ecran clef pendant la phase Plan | `screens/[num]-[nom].svg` |
-| **HTML** | Explorer un layout interactif, tester responsive | `ui-previews/[nom]-preview.html` |
-| **React/TSX** | Valider avec le design system reel | `ui-previews/[Nom]Preview.tsx` |
-| **Critique** | Analyser un layout existant | Rapport markdown en conversation |
+**Regle** : TOUJOURS proposer le choix du format a l'utilisateur, meme si le contexte semble evident. Ne JAMAIS choisir un format par defaut sans demander.
+
+**Message obligatoire** (adapter le texte au contexte, mais toujours presenter les options) :
+
+```
+Quel format tu preferes pour cet ecran ?
+
+  A) SVG — Mockup statique haute fidelite
+     Ideal pour valider un layout pendant la phase Spec/Plan.
+     Fichier leger, versionnable, visible directement dans le repo.
+     → screens/[num]-[nom].svg
+
+  B) HTML — Page interactive auto-contenue
+     Ideal pour tester le responsive, les hover states, les transitions.
+     Ouvrable directement dans le navigateur, avec Tailwind + tokens DS.
+     → ui-previews/[nom]-preview.html
+
+  C) React/TSX — Composant avec le vrai design system
+     Ideal pour valider l'integration avec la stack reelle du projet.
+     Utilise les composants et tokens du DS, sans logique metier.
+     → ui-previews/[Nom]Preview.tsx
+
+  D) Critique textuelle — Analyse sans livrable visuel
+     Ideal pour auditer un ecran existant.
+     Rapport structure : problemes, lois UX violees, recommandations.
+```
+
+**Defaut recommande selon le contexte** (indiquer avec ★ dans le message) :
+| Contexte d'invocation | Recommandation |
+|-----------------------|---------------|
+| Appele depuis `/spec` ou `/ux` (phase Plan) | SVG ★ |
+| Appele depuis `/explore` (prototypage) | HTML ★ |
+| Appele depuis `/build` (integration) | React/TSX ★ |
+| Demande de critique / audit | Critique ★ |
+| Appele standalone (`/ui`) | Pas de defaut — demander |
+
+**Exception** : Si l'utilisateur a explicitement precise le format dans sa demande (ex: "genere un HTML de la page login"), ne pas reposer la question — confirmer et executer.
 
 ### Etape 3 — Structurer la grille
 
@@ -159,6 +221,8 @@ Problemes numerotes + lois UX violees + recommandations + avant/apres.
 | Max 7 options visibles (Miller) | [ ] |
 | Groupes visuels distincts (Gestalt) | [ ] |
 | Coherence avec ecrans existants | [ ] |
+| Zero emoji — icones de la librairie DS uniquement | [ ] |
+| Style d'icones homogene (filled OU outline) | [ ] |
 
 ---
 
@@ -182,6 +246,8 @@ Consulter ces fichiers pour les specs, dimensions et tokens exacts.
 6. **Accessibilite** — Contraste 4.5:1 texte normal, 3:1 texte large
 7. **Performance visuelle** — Max 3 couleurs d'accent par ecran
 8. **Tokens, pas de hardcode** — Utiliser les tokens du design system
+9. **JAMAIS d'emoji comme icone** — Les emojis (😀, 📊, ✅, 🔔, etc.) sont strictement interdits dans tout livrable visuel (SVG, HTML, React, critique). Utiliser UNIQUEMENT la librairie d'icones definie dans `01_Product/05 Design System/tokens.md` (section Icones). Si aucune librairie n'est configuree, demander a l'utilisateur sa preference avant de produire le livrable.
+10. **Icones coherentes** — Respecter le style d'icones choisi dans le design system (filled OU outline, jamais un mix). Taille minimale 16px, taille standard 20-24px. Toujours utiliser les imports de la librairie configuree (ex: `import { Search } from 'lucide-react'`), jamais de SVG inline ad hoc sauf si aucune icone appropriee n'existe dans la librairie.
 
 ---
 
@@ -195,6 +261,8 @@ Consulter ces fichiers pour les specs, dimensions et tokens exacts.
 - [ ] Patterns conformes au design system
 - [ ] Annotation presente
 - [ ] Lois cognitives respectees
+- [ ] Zero emoji — toutes les icones viennent de la librairie du DS
+- [ ] Style d'icones homogene (filled OU outline, pas de mix)
 
 ### Message de sortie
 

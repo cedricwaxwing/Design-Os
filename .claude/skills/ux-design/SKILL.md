@@ -18,6 +18,8 @@ tags:
 pairs-with:
   - skill: spec
     reason: UX Design valide les hypotheses UX AVANT que Spec genere la spec
+  - skill: wireframe
+    reason: UX Design produit le Screen Map et les decisions de navigation que Wireframe materialise en layout
   - skill: explore
     reason: Explore prototype les ecrans valides par UX Design
   - skill: ui-designer
@@ -96,11 +98,53 @@ Opportunity (besoin utilisateur)
 
 ---
 
+## Adaptation par intent
+
+> L'intent du projet est lu depuis `.claude/context.md` (champ `intent`). Si aucun intent n'est defini, le comportement par defaut est **Epic** (standard).
+
+| Dimension | MVP | Epic (defaut) | Revamp | Design System |
+|-----------|-----|---------------|--------|---------------|
+| **Mode** | FAST | STANDARD | CHALLENGE | PATTERNS |
+| **Solution Trees** | 1 max — focus happy path E2E | 2+ minimum avant convergence | 2+ obligatoire avec comparaison existant | Focus sur l'API des composants, pas les user flows |
+| **Screen Map** | = User Journey (parcours E2E lineaire) | Consolidation N stories → M ecrans | Avant/apres par ecran | Remplace par Component Map (hierarchy composants) |
+| **Ecrans clefs** | Happy path seulement, navigation lineaire | Complet (tous les ecrans du Screen Map) | Chaque ecran a une version "avant" et "apres" | Chaque composant a des variantes (size, state, theme) |
+| **Validation lean** | Allege — seuls criteres : objectif unique + CTA clairs | Complet (6 criteres) | Complet + critere supplementaire : "Justification du changement vs existant" | Adapte : focus sur la reutilisabilite et l'API publique |
+| **Question Battery** | 3 questions max, focus flow E2E | 3-5 questions, toutes categories | 5+ questions, ajout "Pourquoi changer X ?" | Questions adaptees : "Ce composant est-il reutilisable ?" |
+| **Etape 3.6** | Simplifie — 1 recommandation + 1 alternative | Standard — 2-3 options avec decision matrix | Documenter navigation existante puis alternatives | Skip — pas de navigation d'app, focus composants |
+| **Etape 3.7** | Optionnel — Mermaid flowchart du happy path suffit | Optionnel (SVG ou Mermaid) | Recommande — visualiser les deltas avant/apres | Skip — pas de user journeys, focus component tree |
+
+### Regles par intent
+
+**MVP** :
+- Le Screen Map EST le user journey : un parcours lineaire d'ecrans (entree → happy path → succes)
+- 1 seul solution tree MAX — si la premiere solution est raisonnable, ne pas forcer l'exploration
+- Ne PAS poser toute la Question Battery — choisir les 3 plus pertinentes pour un MVP
+- Priorite : "Est-ce que le flow E2E est coherent ?" plutot que "Est-ce que chaque ecran est optimal ?"
+- Etape 4 (ecrans clefs) : Seulement les ecrans du happy path principal
+- Critere de sortie simplifie : Screen Map + objectif principal par ecran + CTAs listes
+
+**Revamp** :
+- OBLIGATOIRE : Pour chaque ecran, documenter l'existant AVANT de proposer des alternatives
+- Chaque solution tree a une branche "garder l'existant" comme baseline
+- Le Screen Map reference les ecrans actuels et indique les changements proposes
+- Ajouter un critere lean : "Le changement est-il justifie par un pain point valide ?"
+- Utiliser `screens/before/` et `screens/after/` si ces dossiers existent
+
+**Design System** :
+- Remplacer "Screen Map" par "Component Map" — hierarchie des composants (atoms → molecules → organisms)
+- Les "ecrans clefs" deviennent des "composants clefs" avec leurs variantes
+- Le solution tree explore les APIs de composants : props, slots, composition patterns
+- La validation lean verifie : reutilisabilite, coherence API, nommage, theming
+- Questions adaptees : "Ce composant accepte-t-il les memes props que les equivalents du DS ?"
+- Si `01_Product/04 Specs/{module}/00_component-map.md` existe, l'utiliser au lieu de `00_screen-map.md`
+
+---
+
 ## Workflow
 
 ### Etape 0 — Lire le contexte module
 
-Lis `.claude/context.md` pour identifier le **module actif** (slug, label, pilier).
+Lis `.claude/context.md` pour identifier le **module actif** (slug, label, pilier) et le champ `intent` → determiner le mode UX (voir "Adaptation par intent").
 Tous les chemins ci-dessous utilisent `{module}` — remplace par le slug du module actif.
 
 Si le fichier `context.md` n'existe pas, demande a l'utilisateur : "Sur quel module travaille-t-on ?"
@@ -258,9 +302,100 @@ Pour chaque hypothese FAIBLE ou MOYEN, explorer des alternatives :
 | Une story decrit une validation/approbation | Peut etre un etat dans un ecran existant |
 | Une story decrit un filtre ou un tri | C'est une fonctionnalite d'un ecran existant |
 
-**Demander validation du Screen Map a l'utilisateur AVANT de passer a l'etape 4.**
+**Demander validation du Screen Map a l'utilisateur AVANT de passer a l'etape 3.6.**
 
-**Persistance obligatoire** : Le Screen Map DOIT etre ecrit dans `01_Product/04 Specs/{module}/00_screen-map.md`. Ce fichier est la source de verite que `/spec` consulte.
+**Persistance obligatoire** : Le Screen Map DOIT etre ecrit dans `01_Product/04 Specs/{module}/00_screen-map.md`. Ce fichier est la source de verite que `/spec` et `/wireframe` consultent.
+
+### Etape 3.6 — Architecture de navigation
+
+**Objectif** : Definir la structure de navigation macro de l'application AVANT de dessiner les ecrans. Un vrai designer pense navigation globale et contenu d'ecran simultanement.
+
+**Declenchement** : Systematique apres le Screen Map (sauf intent Design System qui skip cette etape).
+
+**Process** :
+
+1. **Identifier le type d'application** a partir du contexte :
+   - SaaS B2B (dashboard, cockpit)
+   - SaaS B2C (marketplace, plateforme)
+   - App mobile
+   - Admin panel
+   - Outil interne
+   - Site public / landing
+
+2. **Lister les patterns de navigation candidats** :
+
+   | Pattern | Quand l'utiliser | Quand NE PAS l'utiliser |
+   |---------|-----------------|------------------------|
+   | **Sidebar fixe** | App complexe, > 5 sections, navigation frequente | App simple, mobile-first |
+   | **Sidebar collapsible** | App complexe + besoin de maximiser le contenu | App simple |
+   | **Topbar seule** | App simple, < 5 sections, site web | App complexe avec sous-navigation |
+   | **Topbar + sidebar** | App enterprise, hierarchie profonde | App simple, MVP |
+   | **Bottom tabs** | Mobile, 3-5 sections principales | Desktop, > 5 sections |
+   | **Wizard/Stepper** | Process lineaire, onboarding, formulaire multi-etapes | Navigation libre |
+   | **Breadcrumb** | Hierarchie profonde (> 2 niveaux), e-commerce | Navigation plate |
+   | **Tab bar horizontale** | Vues multiples du meme objet, switch rapide | > 5 tabs, contenu sequentiel |
+
+3. **Presenter la decision matrix** a l'utilisateur :
+
+   ```
+   ## Architecture de navigation proposee
+
+   Type d'app detecte : [type]
+   Nombre de sections (du Screen Map) : [N]
+   Personas principaux : [liste]
+
+   ### Option A (Recommandee) : [pattern]
+   - Structure : [description]
+   - Avantage : [raison]
+   - Inconvenient : [trade-off]
+   - Complexite dev : [Faible/Moyenne/Haute]
+
+   ### Option B : [pattern]
+   - Structure : [description]
+   - Avantage : [raison]
+   - Inconvenient : [trade-off]
+   - Complexite dev : [Faible/Moyenne/Haute]
+
+   ### Elements complementaires
+   - Breadcrumb : [oui/non — justification]
+   - Search globale : [oui/non — justification]
+   - User menu : [position — justification]
+   ```
+
+4. **Documenter les decisions** dans le Screen Map (`00_screen-map.md`) en ajoutant une section :
+
+   ```markdown
+   ## Navigation Architecture
+
+   **Type d'app** : [type identifie]
+
+   **Decisions** :
+   - Navigation principale : [sidebar fixe / topbar / etc.]
+   - Navigation secondaire : [breadcrumb / tabs / etc.]
+   - Largeur sidebar : [Xpx / collapsible from Xpx to Ypx]
+   - Hauteur topbar : [Xpx]
+   - User menu : [position]
+   - Search : [oui/non, position]
+   - Responsive : [comment la nav s'adapte en mobile]
+
+   **Confiance** : [FORT / MOYEN / FAIBLE]
+   **Justification** : [raison du choix]
+   ```
+
+**Regles de l'etape 3.6** :
+- Minimum 2 options presentees (sauf MVP : 1 reco + 1 alt suffit)
+- Toujours inclure la complexite dev de chaque option
+- Les decisions sont marquees `[HYPOTHESE]` si le contexte est leger (mode hypotheses explicites)
+- Ces decisions alimentent `/wireframe` qui les materialise en layout
+
+**Adaptation par intent** :
+
+| Intent | Comportement Step 3.6 |
+|--------|----------------------|
+| MVP | Simplifie : proposer 1 recommandation directe + 1 alternative. Quick decision. |
+| Epic | Standard : 2-3 options avec matrix complete |
+| Revamp | Documenter la navigation existante PUIS proposer des alternatives |
+| Design System | SKIP cette etape (pas de navigation d'app, focus composants) |
 
 ### Etape 3.7 — Visualisation des parcours (optionnel)
 
@@ -502,6 +637,7 @@ Avant de declarer les hypotheses validees, appliquer le filtre lean :
 
 ### Design PRODUIT :
 - **Screen Map** — N stories consolidees en M ecrans
+- **Architecture de navigation** — Decisions structurelles (sidebar, topbar, breadcrumb) avec justification
 - **Objectif principal** de chaque ecran
 - **CTAs et elements d'interaction** avec priorite (P0/P1/P2)
 - **Pattern UX choisi** avec justification
@@ -510,12 +646,14 @@ Avant de declarer les hypotheses validees, appliquer le filtre lean :
 - **Solution trees** pour les choix non-evidents
 
 ### Design NE PRODUIT PAS :
+- Wireframe layout detaille (boards, ecrans juxtaposes) → **/wireframe**
 - Wireframe ASCII detaille → **/spec**
 - Types TypeScript / interfaces → **/spec**
 - Acceptance criteria Gherkin → **/spec**
 - Endpoints API → **/spec**
 - Etats d'ecran detailles → **/spec**
 - Matrice de permissions complete → **/spec**
+- Mockups haute-fidelite → **/ui**
 - Code ou prototype fonctionnel → **/explore** ou **/build**
 
 ---
@@ -532,6 +670,7 @@ Les hypotheses de design sont **VALIDEES** quand :
 
 - [ ] Le **Screen Map** est produit et valide par l'utilisateur
 - [ ] Le **Screen Map est persiste** dans `01_Product/04 Specs/{module}/00_screen-map.md`
+- [ ] L'**architecture de navigation** est documentee dans le Screen Map (section "Navigation Architecture")
 - [ ] Chaque ecran clef a un objectif principal unique identifie
 - [ ] Les CTAs et elements d'interaction sont listes avec leur priorite
 - [ ] Les design patterns sont justifies

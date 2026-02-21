@@ -1,0 +1,46 @@
+{
+  "name": "design-os-navigator",
+  "displayName": "Design OS Navigator",
+  "description": "Visual node graph navigator for Design Operating System projects",
+  "version": "0.1.0",
+  "publisher": "design-os",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [
+    "workspaceContains:CLAUDE.md",
+    "workspaceContains:.claude/context.md",
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "designOs.openNavigator",
+        "title": "Design OS: Open Navigator",
+        "icon": "$(compass)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "design-os",
+          "title": "Design OS",
+          "icon": "$(compass)"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "build": "npm run compile",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0"
+  }
+}

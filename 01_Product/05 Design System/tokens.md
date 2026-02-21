@@ -145,6 +145,46 @@ Base : **4px** (compatible avec Tailwind par defaut).
 
 ---
 
+## Icones
+
+### Librairie
+
+- **Librairie** : <!-- ta librairie ici, ex: Lucide, Heroicons, Phosphor, Material Symbols, Tabler Icons -->
+- **Style** : <!-- outline | filled | les deux (avec regle de priorite) -->
+- **Import** : <!-- ex: import { IconName } from 'lucide-react' -->
+- **Taille par defaut** : 20px
+- **Taille compacte** : 16px
+- **Taille large** : 24px
+- **Couleur** : Herite de `currentColor` (suit la couleur du texte parent)
+
+<!-- INSTRUCTIONS POUR /onboarding :
+     Poser 2 questions en Phase 6 :
+     1. "Quelle librairie d'icones ?" (Lucide, Heroicons, Phosphor, Material Symbols, Tabler Icons, Font Awesome, autre)
+        → Defaut : Lucide (coherent avec shadcn/ui)
+     2. "Tu preferes des icones outline (contour fin) ou filled (remplies) ?"
+        → Outline : style epure, moderne, aerien — recommande pour la plupart des interfaces
+        → Filled : style affirme, dense, lisible en petit — ideal pour les apps data-heavy ou mobile
+        → Defaut : outline
+     Remplir les champs ci-dessus avec les reponses. -->
+
+### Regles d'usage
+
+| Contexte | Taille | Style | Exemple |
+|----------|--------|-------|---------|
+| Bouton avec texte | 16-20px | Meme que le DS | `<Button><Icon /> Label</Button>` |
+| Bouton icon-only | 20-24px | Meme que le DS | `<IconButton><Icon /></IconButton>` |
+| Navigation / sidebar | 20px | Meme que le DS | Items de menu |
+| Badge / tag | 14-16px | Meme que le DS | Indicateurs inline |
+| Illustration / empty state | 32-48px | Meme que le DS | Grandes icones decoratives |
+
+### Anti-patterns
+
+- **JAMAIS d'emoji** (😀, 📊, ✅, etc.) comme substitut d'icone — les emojis varient selon l'OS, ne respectent ni la couleur ni la taille du design system, et brisent la coherence visuelle
+- **JAMAIS de mix** outline + filled dans le meme ecran sauf cas explicitement prevu dans le DS
+- **JAMAIS de SVG inline ad hoc** si une icone equivalente existe dans la librairie
+
+---
+
 ## Breakpoints
 
 | Token | Valeur | Usage |

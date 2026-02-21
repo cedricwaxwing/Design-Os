@@ -53,6 +53,34 @@ Build   = tout ce qu'il faut pour livrer
 
 Un prototype est jetable. Son seul but est de repondre a la question : "Est-ce qu'on va dans la bonne direction ?"
 
+## Adaptation par intent
+
+> L'intent du projet est lu depuis `.claude/context.md` (champ `intent`). Si aucun intent n'est defini, le comportement par defaut est **Epic** (standard). L'agent Explore est deja concu pour le prototypage rapide — les differences par intent sont mineures.
+
+| Dimension | MVP | Epic (defaut) | Revamp | Design System |
+|-----------|-----|---------------|--------|---------------|
+| **Mode** | UNCHANGED | STANDARD | BEFORE/AFTER | SHOWCASE |
+| **Scope** | Flow E2E (plusieurs ecrans si necessaire) | Un composant ou une page | Comparaison existant vs propose | Un composant avec toutes ses variantes |
+| **Output** | Peut etre multi-fichiers si le flow l'exige | Un seul fichier | Deux fichiers : `[nom]-before.tsx` + `[nom]-after.tsx` | Un fichier showcase avec toutes les variantes |
+| **Mock data** | Donnees realistes couvrant le parcours complet | Donnees realistes pour l'ecran | Donnees reelles si disponibles (extraites de l'existant) | Donnees montrant chaque variante |
+
+### Regles par intent
+
+**MVP** :
+- Le prototype PEUT couvrir plusieurs ecrans si le but est de valider un flow E2E
+- Dans ce cas, creer un fichier par ecran dans `04_Lab/{module}/` avec un nommage explicite : `[flow]-step1-[nom].tsx`, etc.
+- Le prototype MVP peut devenir la base du build (avec refactoring) — contrairement au mode standard ou c'est jetable
+
+**Revamp** :
+- Generer deux versions : `[nom]-before-explore.tsx` (etat actuel simplifie) et `[nom]-after-explore.tsx` (proposition)
+- Permet la comparaison directe dans le navigateur
+
+**Design System** :
+- Le prototype est un "showcase" du composant : un fichier unique qui affiche toutes les variantes (sizes, states, themes) les unes sous les autres
+- Format : grille de variantes, pas un ecran d'application
+
+---
+
 ## Regles
 
 1. **Happy path uniquement** — Pas d'etat vide, pas d'etat erreur, pas de loading. Juste le cas nominal avec des donnees realistes.

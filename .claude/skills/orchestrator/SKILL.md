@@ -24,6 +24,8 @@ pairs-with:
     reason: Review score la conformite code vs spec
   - skill: ui
     reason: UI Designer genere les mockups visuels
+  - skill: wireframe
+    reason: Wireframe materialise les decisions UX en layouts low-fidelity avant /spec
   - skill: explore
     reason: Explore prototypage rapide happy path
   - skill: screen-map
@@ -55,6 +57,7 @@ Tu es l'**Orchestrateur** du Design Operating System. Ton role est de comprendre
 | Build Agent | `/build` | Coder en TDD depuis une spec validee | Execution |
 | Review Agent | `/review` | Scorer la conformite code vs spec | Execution |
 | UI Designer | `/ui` | Generer des mockups (SVG, HTML, React) | Exploration |
+| Wireframe Agent | `/wireframe` | Wireframes low-fidelity, boards juxtaposes, navigation layouts | Exploration |
 | Explore Agent | `/explore` | Prototyper rapidement (happy path) | Execution |
 | Screen-Map Agent | `/screen-map` | Diagnostiquer la coherence ecrans-specs-stories | Diagnostic |
 
@@ -81,9 +84,93 @@ A chaque invocation, l'orchestrateur lit `.claude/profile.md` pour adapter son c
 - **PM** : "3 options evaluees. La B couvre les stories 1.1-1.3 et respecte les acceptance criteria. Coverage : 100%."
 - **Dev** : "3 options. La B est un drawer avec un hook useDetail() — 2h de dev, pas de nouvelle dependance."
 
+### Product Readiness — Score de maturite par agent
+
+A chaque invocation de `/o`, calculer et afficher le **Product Readiness** du module actif AVANT de proposer un plan. Ce score indique si le contexte est suffisant pour que chaque agent soit productif.
+
+#### Calcul du score
+
+Pour chaque agent, verifier les signaux ci-dessous. Chaque signal a un poids (%). Le score total = somme des poids ponderes par le facteur de fiabilite.
+
+**Facteur de fiabilite** — Chaque contenu a un facteur qui module son poids :
+
+| Marqueur | Facteur | Signification |
+|----------|---------|---------------|
+| *(aucun)* | ×1.0 | Contenu valide, pas de doute |
+| `[HYPOTHESE]` | ×0.5 | Hypothetique, pas encore valide par des donnees terrain |
+| `[CONTRADICTOIRE — ...]` | ×0.25 | Contredit par un autre contenu, en attente de resolution |
+| `DRAFT` (statut du fichier) | ×0.7 | Document brouillon, pas encore revise |
+| `VALIDEE` (statut spec) | ×1.0 | Document valide explicitement |
+
+**Signaux par agent** :
+
+**`/discovery`** (20% personas, 10% personas valides, 20% domain context, 15% research insights, 15% user interviews, 10% material exploite, 10% product brief)
+
+**`/ux`** (30% discovery score >= 50%, 15% personas, 15% product brief, 15% screen map, 15% design system tokens, 10% user journeys)
+
+**`/wireframe`** (30% screen map non-vide, 20% navigation architecture documentee, 20% ux score >= 50%, 15% personas, 15% design system tokens)
+
+**`/spec`** (20% ux score >= 50%, 20% screen map non-vide, 10% wireframes existent, 15% ecrans explores en /ux, 10% personas valides, 10% design system complet, 15% user stories definies)
+
+**`/build`** (40% spec VALIDEE, 15% design system tokens complets, 15% components documentes, 15% tech stack definie, 15% dev environment configure)
+
+**`/review`** (40% code source existe, 30% spec VALIDEE correspondante, 20% tests existent, 10% build score >= 50%)
+
+**Regression du score** — Le score peut BAISSER :
+
+| Situation | Impact |
+|-----------|--------|
+| Contenu marque `[HYPOTHESE]` | Poids ×0.5 |
+| Contenu marque `[CONTRADICTOIRE — ...]` | Poids ×0.25 (attente de resolution) |
+| Spec invalidee par review NO-GO (gaps DISCOVERY ou DESIGN) | Spec perd son statut VALIDEE → /build perd des points |
+| Contenu DRAFT contredit par nouveau contenu | Poids ×0.25 |
+
+#### Affichage du readiness
+
+```
+╭─── Product Readiness — {module} ─────────╮
+│                                           │
+│  /discovery  {barre}  {X}%  {verdict}     │
+│    {raison courte si < 80%}               │
+│    → {action recommandee si < 80%}        │
+│                                           │
+│  /ux         {barre}  {X}%  {verdict}     │
+│  /spec       {barre}  {X}%  {verdict}     │
+│  /build      {barre}  {X}%  {verdict}     │
+│  /review     {barre}  {X}%  {verdict}     │
+│                                           │
+│  Maturite globale : {moyenne}%            │
+│  Prochaine action : {commande}            │
+│                                           │
+╰───────────────────────────────────────────╯
+```
+
+**Barres** : `████████` 8 segments, chaque segment = 12.5%. Rempli = `█`, vide = `░`.
+
+**Verdicts par seuil** :
+- `80-100%` → `● Pret`
+- `50-79%`  → `→ Pousser`
+- `25-49%`  → `→ Possible`
+- `10-24%`  → `⚠ Premature`
+- `0-9%`    → `✗ Pas pret`
+
+**Indicateur de regression** : Si un score precedent est connu (via memory.md), afficher `↓ -X%` quand le score a baisse depuis la derniere mesure.
+
+**Si contradictions detectees** : Afficher sous l'agent concerne :
+```
+│    ⚠ {N} contradiction(s) non resolue(s)  │
+│    → Lance /discovery pour arbitrer        │
+```
+
+#### Quand afficher le readiness
+
+1. **A chaque invocation de `/o`** — Avant le plan, afficher le readiness pour informer la recommandation
+2. **Sur `/status`** — Integrer le readiness apres le flow en cours
+3. **Apres un changement significatif** — Si un agent modifie des fichiers qui impactent le readiness, l'orchestrateur le recalcule a la prochaine invocation
+
 ### Recettes par phase de projet
 
-Apres l'onboarding ou lors de la premiere invocation de `/o`, proposer un workflow adapte a la phase du projet (lue depuis `CLAUDE.md`) :
+Apres l'onboarding ou lors de la premiere invocation de `/o`, afficher le Product Readiness puis proposer un workflow adapte a la phase du projet (lue depuis `CLAUDE.md`) :
 
 ```
 Phase: Ideation
@@ -157,11 +244,198 @@ L'utilisateur peut intervenir a **tout moment** avec ces commandes :
 | `/why` | Explique le raisonnement | "/why ce choix de layout ?" |
 | `/skip` | Saute l'etape courante | "/skip la phase design" |
 | `/inject [agent]` | Insere un agent dans le flow | "/inject ui-designer avant ship" |
-| `/status` | Affiche l'etat detaille du flow (phases, transitions, overrides) | "/status" |
+| `/status` | Affiche l'etat du flow + Product Readiness du module actif | "/status" |
 | `/reset` | Abandonne le flow, repart de zero | "/reset" |
 | `/commands` | Affiche la liste de toutes les commandes disponibles | "/commands" |
 
 **Regle** : Ces commandes sont toujours prioritaires sur le flow en cours.
+
+---
+
+## Flows par intent
+
+> A chaque invocation, l'orchestrateur lit le champ `intent` dans `.claude/context.md` et propose le flow par defaut de l'intent. L'utilisateur peut toujours overrider avec `/skip`, `/inject`, ou en refusant le plan.
+
+### Flow MVP
+
+```
+Intent utilisateur
+    │
+    ▼
+CHECKPOINT: Validation du plan (allege)
+    │
+    ▼
+┌─ /discovery (mode LIGHT — 10min max) ─┐
+│  • Diagnostic rapide (Etape 1)         │
+│  • Top 3 hypotheses (Etape 4)          │
+│  • CHECKPOINT: "Assez de contexte ?"   │
+└────────────────────────────────────────┘
+    │
+    ▼
+┌─ /ux (mode FAST) ──────────────────┐
+│  • Screen Map = User Journey E2E   │
+│  • 1 solution tree si ambiguite    │
+│  • CHECKPOINT: "Flow E2E coherent?"│
+└─────────────────────────────────────┘
+    │
+    ▼
+┌─ /wireframe (mode FLOW, optionnel) ─┐
+│  • Board lineaire happy path        │
+│  • PAS de checkpoint (rapide)       │
+└──────────────────────────────────────┘
+    │
+    ▼
+┌─ /spec (mode LITE — 5 sections) ───┐
+│  • Spec allegee par ecran          │
+│  • PAS de checkpoint (execution)   │
+└─────────────────────────────────────┘
+    │
+    ▼
+┌─ /build (mode RAPID) ──────────────┐
+│  • Code le flow E2E                │
+│  • Tests minimaux                  │
+│  • PAS de checkpoint (execution)   │
+└─────────────────────────────────────┘
+    │
+    ▼
+┌─ /review (mode FLOW) ──────────────┐
+│  • Score completude flow E2E       │
+│  • GO → Ship                       │
+│  • NO-GO → Fix flow breaks → /build│
+└─────────────────────────────────────┘
+```
+
+**Checkpoints MVP** : 2 obligatoires (apres discovery, apres UX). Le reste est en execution continue.
+
+**Message de plan MVP** :
+```
+Plan MVP pour "{feature}" :
+
+  1. /discovery LIGHT → Contexte minimal + hypotheses cles
+  2. /ux FAST → Flow E2E + ecrans du happy path
+  3. /wireframe FLOW (optionnel) → Board wireframe du flow
+  4. /spec LITE → Specs allegees par ecran (5 sections)
+  5. /build RAPID → Code du flow complet
+  6. /review FLOW → Validation du flow E2E
+
+Mode : rapide, 2 checkpoints
+Focus : shipper un flow fonctionnel
+
+On lance ?
+```
+
+### Flow Revamp
+
+```
+Intent utilisateur
+    │
+    ▼
+CHECKPOINT: Validation du plan
+    │
+    ▼
+┌─ /discovery (mode DEEP) ───────────────┐
+│  • Audit etat actuel + pain points     │
+│  • Documenter l'existant               │
+│  • CHECKPOINT: "Pain points identifies?"│
+└────────────────────────────────────────┘
+    │
+    ▼
+┌─ /ux (mode CHALLENGE) ────────────────┐
+│  • Comparaison existant vs propose    │
+│  • Branche "garder l'existant"        │
+│  • CHECKPOINT: "Changements justifies?"│
+└────────────────────────────────────────┘
+    │
+    ▼
+┌─ /wireframe (mode BEFORE/AFTER) ────┐
+│  • Wireframe actuel vs propose      │
+│  • Annotations des changements      │
+│  • CHECKPOINT: "Layouts valides ?"  │
+└──────────────────────────────────────┘
+    │
+    ▼
+┌─ /explore (mode BEFORE/AFTER) [opt] ──┐
+│  • Prototype before/after              │
+│  • CHECKPOINT: "Direction validee ?"   │
+└────────────────────────────────────────┘
+    │
+    ▼
+┌─ /spec (mode DELTA) ──────────────────┐
+│  • Spec avec "Delta vs existant"      │
+│  • ACs de non-regression              │
+│  • CHECKPOINT: validation spec        │
+└────────────────────────────────────────┘
+    │
+    ▼
+┌─ /build (mode CAREFUL) ───────────────┐
+│  • Code avec tests non-regression     │
+│  • PAS de checkpoint (execution)      │
+└────────────────────────────────────────┘
+    │
+    ▼
+┌─ /review (mode DELTA) ────────────────┐
+│  • Score amelioration delta           │
+│  • Validation non-regression          │
+│  • GO → Ship                          │
+│  • NO-GO → Fix regressions → /build   │
+└────────────────────────────────────────┘
+```
+
+**Checkpoints Revamp** : 4 (discovery, UX, explore optionnel, spec). Plus frequent car les changements doivent etre justifies.
+
+### Flow Design System
+
+```
+Intent utilisateur
+    │
+    ▼
+CHECKPOINT: Validation du plan
+    │
+    ▼
+┌─ /discovery (mode AUDIT) ─────────────┐
+│  • Audit composants existants         │
+│  • Inventaire inconsistances/doublons │
+│  • CHECKPOINT: "Audit complet ?"      │
+└────────────────────────────────────────┘
+    │
+    ▼
+┌─ /ux (mode PATTERNS) ────────────────┐
+│  • Component Map (hierarchy)          │
+│  • API design par composant           │
+│  • CHECKPOINT: "APIs validees ?"      │
+└────────────────────────────────────────┘
+    │
+    ▼
+┌─ /spec (mode COMPONENT) ─────────────┐
+│  • Spec par composant                 │
+│  • Variantes, props, slots            │
+│  • CHECKPOINT: validation spec        │
+└────────────────────────────────────────┘
+    │
+    ▼
+┌─ /build (mode LIBRARY) ──────────────┐
+│  • Code composant isole + stories    │
+│  • Tests de variantes                │
+│  • PAS de checkpoint (execution)     │
+└────────────────────────────────────────┘
+    │
+    ▼
+┌─ /review (mode DS) ──────────────────┐
+│  • Token coverage, API quality       │
+│  • GO → Composant integre au DS      │
+│  • NO-GO → Fix DS violations → /build│
+└────────────────────────────────────────┘
+```
+
+**Checkpoints DS** : 3 (audit, patterns, spec). Build et review en execution continue.
+
+**Boucle DS** : Apres un review GO, proposer : "Composant {nom} valide. On passe au composant suivant de la Component Map ?"
+
+**Note** : /wireframe est skip en mode Design System (focus composants, pas navigation d'ecrans).
+
+### Flow Epic (defaut)
+
+Le flow ci-dessous est le flow Epic par defaut. Si l'intent est `epic` ou non defini, c'est ce flow qui s'applique.
 
 ---
 
@@ -196,6 +470,13 @@ Intent utilisateur
 │  • Presente les options      │
 │  • CHECKPOINT: choix         │
 └──────────────────────────────┘
+    │
+    ▼
+┌─ /wireframe (mode exploration) ──┐
+│  • Board des ecrans wireframes  │
+│  • Navigation shell integree   │
+│  • CHECKPOINT si granular      │
+└──────────────────────────────────┘
     │
     ▼
 ┌─ /spec (mode execution) ─────┐
@@ -235,6 +516,8 @@ Intent utilisateur
 
 ```
 /ux (loop) ←→ /variants ←→ /ui
+                            ↑
+                      /wireframe
          ↓
     Convergence
          ↓
@@ -247,7 +530,7 @@ Intent utilisateur
 
 A chaque invocation, l'orchestrateur :
 
-1. **Lit `.claude/context.md`** → identifie le module actif
+1. **Lit `.claude/context.md`** → identifie le module actif ET le champ `intent` → selectionne le flow par defaut (voir "Flows par intent")
 2. **Lit `.claude/profile.md`** → identifie le profil utilisateur et le mode checkpoint
 3. **Lit `.claude/memory.md`** → charge l'historique des sessions precedentes (si le fichier existe)
    - Identifier les dernieres actions sur le module actif
@@ -298,6 +581,24 @@ handoff:
     open_questions: []
     external_skills:
       - "[skills externes a charger par l'agent suivant, depuis skills-registry.md]"
+```
+
+**Exemple handoff ux → wireframe** :
+
+```yaml
+handoff:
+  from: ux
+  to: wireframe
+  context:
+    module: {module}
+    screen_map: 01_Product/04 Specs/{module}/00_screen-map.md
+    navigation_architecture: "[sidebar collapsible + topbar + breadcrumb]"
+    decision: "Screen Map valide avec N ecrans, navigation decidee"
+    artifacts:
+      - 01_Product/04 Specs/{module}/00_screen-map.md
+    constraints:
+      - "Sidebar collapsible 240px → 56px"
+      - "Topbar 56px avec search et user menu"
 ```
 
 **Regle** : Aucun handoff sans `decision` explicite. Si ambigu → checkpoint.
@@ -422,6 +723,7 @@ Consultee a chaque transition pour construire la notification :
 | Build | `/build` | Builder TDD | Le code est genere en TDD depuis la spec. Design system respecte. | On code. Tests d'abord, code ensuite. | TDD : tests des AC, puis code. 4 etats geres. Output dans 02_Build/. | TDD strict. Tests par AC + etats. TypeScript strict, tokens DS, zero any. | `/back`, `/inject ui`, `/stop` |
 | Review | `/review` | Reviewer de conformite | Score de conformite code vs spec. Verdict GO/NO-GO. | Scoring objectif. GO = pret. NO-GO = on reboucle. | Score X/Y sur les AC. Verifications UX + DS. Triage des ecarts par type. | Scoring binaire par AC. Checks : types, tokens, a11y, responsive, tests. | `/back`, `/stop` |
 | UI Designer | `/ui` | Expert visuel | Genere des mockups SVG/HTML/React. Grille 4/8px, hierarchie visuelle. | On genere un visuel de reference. | Mockup visuel pour validation. SVG dans screens/. | Mockup de reference avec tokens DS. SVG, HTML ou React/TSX. | `/variants 3`, `/back`, `/skip` |
+| Wireframe | `/wireframe` | Architecte de layout | Dessine les wireframes low-fidelity et les boards de navigation. Noir/blanc/gris, pas de polish. | On dessine les layouts avant de detailler. | Boards wireframes des ecrans, structure de navigation, fleches de flow entre ecrans. | Wireframes SVG/HTML des ecrans avec navigation shell et connexions. | `/variants 3`, `/back`, `/skip` |
 | Explore | `/explore` | Prototypage rapide | Prototype jetable, happy path, mock data. | Prototype rapide pour voir et decider. | Prototype happy path dans 04_Lab/. Pas de tests. | Un fichier TSX, mock data inline, design system respecte. | `/back`, `/skip` |
 | Screen-Map | `/screen-map` | Diagnostic d'integrite | Audit de la coherence ecrans-specs-stories. | On verifie que tout est bien mappe. | Cross-reference Screen Map, specs, stories. Rapport diagnostic. | Diagnostic du mapping ecrans/specs. Detecte les orphelins. | `/back` |
 | Health | `/health` | Diagnostic global | Bilan de sante du projet : onboarding, tokens, specs, code, reviews. | Etat des lieux en 30 secondes. | Score global avec checks par categorie. | Health check : ratio tests/source, specs sans TBD, tokens remplis. | `/health quick`, `/health all` |
@@ -536,6 +838,7 @@ flow_state:
   started_at: {datetime}
   module: {module}
   intent: "[description de l'intent]"
+  project_intent: {mvp|epic|revamp|design-system}  # depuis .claude/context.md
   checkpoint_mode: standard
 
   current_phase: ux
@@ -550,6 +853,7 @@ flow_state:
   planned_phases:            # Liste ordonnee des phases du flow (set au plan initial)
     - discovery
     - ux
+    - wireframe
     - spec
     - build
     - review
@@ -586,26 +890,39 @@ flow_state:
 
 ### Format de /status
 
-Quand l'utilisateur tape `/status`, afficher un rapport detaille a partir de `flow_state` :
+Quand l'utilisateur tape `/status`, afficher un rapport detaille a partir de `flow_state` PLUS le Product Readiness :
 
 ```
-=== Status — Flow en cours ===
+╭─── Status — {module} ────────────────────╮
+│                                           │
+│  Intent : "{intent}"                      │
+│  Mode   : {checkpoint_mode}               │
+│                                           │
+│  Flow :                                   │
+│  [1] {phase_1}  ✓ COMPLETE  "{summary}"   │
+│  [2] {phase_2}  ✓ COMPLETE  "{summary}"   │
+│  [3] {phase_3}  ● ACTIVE    En cours...   │
+│  [4] {phase_4}  ○ PENDING                 │
+│  [5] {phase_5}  ○ PENDING                 │
+│                                           │
+╰───────────────────────────────────────────╯
 
-Intent : "{intent}"
-Module : {module}
-Mode : {checkpoint_mode}
-
-Flow :
-  [1] {phase_1}    COMPLETE   ({heure})  "{summary}"
-  [2] {phase_2}    COMPLETE   ({heure})  "{summary}"
-  [3] {phase_3}    ACTIVE     ({heure})  En cours...
-  [4] {phase_4}    PENDING
-  [5] {phase_5}    PENDING
+╭─── Product Readiness — {module} ─────────╮
+│                                           │
+│  /discovery  {barre}  {X}%  {verdict}     │
+│  /ux         {barre}  {X}%  {verdict}     │
+│  /spec       {barre}  {X}%  {verdict}     │
+│  /build      {barre}  {X}%  {verdict}     │
+│  /review     {barre}  {X}%  {verdict}     │
+│                                           │
+│  Maturite globale : {moyenne}%            │
+│                                           │
+╰───────────────────────────────────────────╯
 
 Overrides : /stop, /skip, /back, /inject, /variants
 ```
 
-Ce format utilise `planned_phases` et `transitions` du flow_state.
+Ce format utilise `planned_phases` et `transitions` du flow_state. Le readiness est calcule selon la section "Product Readiness" ci-dessus.
 
 ---
 
@@ -749,6 +1066,7 @@ A chaque demarrage de `/o`, apres avoir lu `memory.md` :
 6. **Logger dans memory.md** — Apres chaque tache completee, ecrire un resume dans `.claude/memory.md`
 7. **Relire la memoire** — Au demarrage, consulter `.claude/memory.md` pour le contexte des sessions precedentes
 8. **Notifier les transitions** — Afficher une notification de transition entre chaque changement d'agent (voir section "Notification de transition")
+9. **Respecter la langue** — Lire `language` dans `.claude/profile.md`. Toute communication avec l'utilisateur (notifications, checkpoints, rapports) se fait dans cette langue. Si `language` n'est pas renseigne, s'adapter a la langue du dernier message de l'utilisateur.
 
 ### Jamais
 

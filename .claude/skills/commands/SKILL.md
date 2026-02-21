@@ -36,6 +36,7 @@ Quand l'utilisateur invoque `/commands`, affiche **exactement** le bloc ci-desso
 | /build | Builder TDD | Code en TDD depuis une spec validee |
 | /review | Reviewer de conformite | Score de conformite code vs spec (GO/NO-GO) |
 | /ui | Expert visuel | Genere des mockups (SVG, HTML, React) |
+| /wireframe | Architecte de layout | Wireframes low-fi, boards juxtaposes, navigation |
 | /explore | Prototypage rapide | Prototype jetable, happy path, mock data |
 | /screen-map | Diagnostic d'integrite | Audit coherence ecrans-specs-stories |
 | /health | Diagnostic global | Bilan de sante du projet (score + actions) |

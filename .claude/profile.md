@@ -5,10 +5,16 @@
 ## Profil actif
 
 ```yaml
+language:             # fr | en | de | es | pt | ... (set by /onboarding Phase 0)
 profile:              # designer | founder | pm | dev | other
 checkpoint_mode:      # auto-set — granular (designer) | minimal (founder) | standard (pm/dev)
 communication_style:  # visual (designer) | strategic (founder) | structured (pm) | technical (dev)
 detail_level:         # high (designer/dev) | medium (pm) | low (founder)
+integration_mode:     # zero | material | advanced (set by /onboarding Phase 0b/0c)
+output_preference:    # visual (designer) | textual (founder/pm) | code (dev)
+review_focus:         # visual_conformity (designer) | spec_conformity (pm/dev) | business_value (founder)
+ds_engagement:        # creator (designer) | consumer (dev) | viewer (founder/pm)
+artifact_format:      # svg_html (designer) | markdown (pm/founder) | tsx (dev)
 ```
 
 ## Agents preferes (auto-set, modifiable)
@@ -30,6 +36,20 @@ preferred_agents: []
 | **pm** | `standard` — checkpoint entre phases | Specs structurees, suivi de conformite | Moyen | Couverture stories, Screen Map, acceptance criteria |
 | **dev** | `standard` — checkpoint sur spec, autonome sur build | Faisabilite technique, types, patterns de code | Haut | TypeScript, composants, edge cases, tests |
 | **other** | `standard` — calibration manuelle | Adaptatif | Moyen | Selon les preferences exprimees |
+
+## Valeurs auto-set par profil
+
+Les champs etendus sont auto-determines par le profil. L'utilisateur peut les overrider manuellement.
+
+| Profil | output_preference | review_focus | ds_engagement | artifact_format |
+|--------|------------------|--------------|--------------|----------------|
+| **designer** | `visual` | `visual_conformity` | `creator` | `svg_html` |
+| **founder** | `textual` | `business_value` | `viewer` | `markdown` |
+| **pm** | `textual` | `spec_conformity` | `viewer` | `markdown` |
+| **dev** | `code` | `spec_conformity` | `consumer` | `tsx` |
+| **other** | `textual` | `spec_conformity` | `consumer` | `markdown` |
+
+**Regle** : Le profil `designer` recoit TOUJOURS le rendu le plus riche (plus d'artefacts visuels, checks DS detailles, precision layout). Les autres profils sont des optimisations de cette experience complete.
 
 ## Comment modifier
 

@@ -90,8 +90,56 @@ Pour les iterations rapides et l'exploration. Active quand l'utilisateur demande
 
 ## Contexte module
 
-Avant toute operation, lis `.claude/context.md` pour identifier le **module actif** (slug, label, pilier).
+Avant toute operation, lis `.claude/context.md` pour identifier le **module actif** (slug, label, pilier) et le champ `intent` → determiner le mode Spec (voir "Adaptation par intent").
 Si le fichier `context.md` n'existe pas, demande a l'utilisateur : "Sur quel module travaille-t-on ?"
+
+## Adaptation par intent
+
+> L'intent du projet est lu depuis `.claude/context.md` (champ `intent`). Si aucun intent n'est defini, le comportement par defaut est **Epic** (standard).
+
+| Dimension | MVP | Epic (defaut) | Revamp | Design System |
+|-----------|-----|---------------|--------|---------------|
+| **Mode** | LITE | STANDARD | DELTA | COMPONENT |
+| **Sections obligatoires** | 5 : Story, AC, Layout, Data, DS tokens | 9 sections completes | 9 sections + section "Delta vs existant" | Template component-spec (different de page-spec) |
+| **Sections optionnelles** | Roles/permissions, Hors perimetre, Etats edge | Aucune — tout est obligatoire | Aucune — tout est obligatoire | Roles/permissions (si pertinent) |
+| **AC minimum** | 3 (happy path + 1 erreur + 1 edge case) | 5 minimum (happy + erreurs + edge cases) | 5 minimum + ACs de non-regression | 3 par variante de composant |
+| **Etats d'ecran** | Happy path + erreur generique | 4 obligatoires (vide, loading, erreur, succes) | 4 obligatoires + etat "avant" en reference | Par composant : default, hover, focus, disabled, error |
+| **Types TypeScript** | Peuvent etre simplifies (types inline OK) | Complets, pas de `any` | Complets + types de migration si applicable | Complets — c'est l'API publique du composant |
+| **Template** | Utiliser component-spec ou page-spec en mode allege | component-spec ou page-spec complet | page-spec avec section delta | component-spec exclusivement |
+| **Nommage** | `{X.Y}-{nom}.spec.md` | `{X.Y}-{nom}.spec.md` | `{X.Y}-{nom}.spec.md` (meme convention) | `{component-name}.spec.md` |
+| **Screen Map check** | Warning consultatif (pas bloquant) | Bloquant si 3+ stories | Bloquant | Remplace par Component Map check |
+
+### Regles par intent
+
+**MVP** :
+- Mode LITE : 5 sections suffisent (Story, Acceptance Criteria, Layout, Donnees, Design System)
+- Les sections Roles/permissions, Hors perimetre, Dependances sont optionnelles (mais recommandees)
+- AC : 3 minimum — happy path, cas d'erreur principal, un edge case critique
+- Etats : happy path + erreur generique. Pas de loading skeleton obligatoire (un spinner suffit)
+- Types : les types inline dans le code sont acceptables (pas besoin d'un fichier types/ dedie)
+- Screen Map : si absent, warning mais ne PAS bloquer. Le MVP avance vite.
+- Marquage : `<!-- STATUS: LITE -->` en en-tete (accepte par /build en mode MVP)
+
+**Revamp** :
+- OBLIGATOIRE : Ajouter une section `## Delta vs existant` en section 10 :
+  ```markdown
+  ## Delta vs existant
+  | Element | Avant | Apres | Justification |
+  |---------|-------|-------|---------------|
+  | {element} | {comportement actuel} | {nouveau comportement} | {pain point resolu} |
+  ```
+- Les ACs de non-regression sont obligatoires : "Given l'ecran existant, When la nouvelle version est deployee, Then {comportement preserve} reste inchange"
+- Le layout section montre les changements par rapport a l'existant (annoter "NOUVEAU", "MODIFIE", "SUPPRIME")
+
+**Design System** :
+- Utiliser exclusivement le template `component-spec.md`
+- Le nommage est par composant : `button.spec.md`, `card.spec.md`, pas par ecran
+- Remplacer le Screen Map check par un Component Map check (`00_component-map.md`)
+- Les ACs couvrent les variantes du composant (sizes, states, themes)
+- La section Layout montre les variantes visuelles du composant
+- Ajouter une section `## API publique` avec les props TypeScript et les slots/children
+
+---
 
 ## Workflow
 

@@ -5,6 +5,33 @@
 
 ---
 
+## Etape 0 — Installer le Navigator
+
+Le **Design OS Navigator** est une extension Cursor/VS Code qui affiche ton projet comme un graphe de nodes interactif. Chaque phase (Discovery, UX, Spec, Build, Review) est un node cliquable avec ses actions et son score de readiness.
+
+### Installation rapide
+
+```bash
+./setup.sh
+```
+
+Ce script detecte automatiquement Cursor ou VS Code et installe l'extension.
+
+### Installation manuelle
+
+1. Ouvre Cursor / VS Code
+2. `Cmd+Shift+P` → **"Extensions: Install from VSIX"**
+3. Selectionne `design-os-navigator/design-os-navigator-0.1.0.vsix`
+
+### Utilisation
+
+- Le Navigator **s'ouvre automatiquement** la premiere fois que tu ouvres le projet
+- Apres ca : clique sur **"Design OS"** dans la barre du bas, ou `Cmd+Shift+P` → **"Design OS: Open Navigator"**
+- Clique sur un node pour voir ses fichiers, son score de readiness, et les commandes disponibles
+- Les boutons d'action envoient directement les slash commands dans le terminal
+
+---
+
 ## Le scenario
 
 **Julie** est fondatrice d'une startup. Elle veut creer **BookRoom**, une app de reservation de salles de reunion pour les PME. Elle n'est pas developpeuse, elle n'est pas designer. Elle a une vision produit et elle veut avancer vite.

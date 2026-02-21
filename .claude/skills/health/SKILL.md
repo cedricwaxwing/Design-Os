@@ -55,6 +55,67 @@ Tu es l'agent **Health** du Design Operating System. Ton role est de scanner l'e
 
 ---
 
+## Adaptation par intent
+
+> L'intent du projet est lu depuis `.claude/context.md` (champ `intent`). Si aucun intent n'est defini, le comportement par defaut est **Epic** (standard). L'agent Health adapte ses **poids de scoring** et ses **seuils d'alerte** en fonction de l'intent.
+
+| Dimension | MVP | Epic (defaut) | Revamp | Design System |
+|-----------|-----|---------------|--------|---------------|
+| **Mode** | LEAN | STANDARD | DEEP | DS-FOCUSED |
+| **Poids Discovery** | x0.5 (legere = normal) | x1.0 | x1.5 (absence = CRITIQUE) | x0.5 |
+| **Poids Specs** | x0.8 (LITE acceptees) | x1.0 | x1.0 | x1.0 |
+| **Poids Build** | x1.5 (code fonctionnel = priorite) | x1.0 | x1.0 | x1.5 (composants = livrable) |
+| **Poids Reviews** | x0.5 (flow > conformite unitaire) | x1.0 | x1.5 (regressions = critique) | x1.0 |
+| **Poids DS** | x0.5 (tokens essentiels suffisent) | x1.0 | x1.0 | x2.0 (DS = le produit) |
+| **Specs LITE valides** | Oui — pas un defaut | Non — signale ATTENTION | Non — signale ATTENTION | Non — signale ATTENTION |
+| **Ratio tests/source seuil** | 0.2 (tests minimaux OK) | 0.5 | 0.5 | 0.8 (couverture variantes) |
+| **Screen Map obligatoire** | Non — warning consultatif | Oui si 3+ specs | Oui | Remplace par Component Map |
+
+### Regles par intent
+
+**MVP** :
+- Les specs en mode LITE (`<!-- STATUS: LITE -->`) sont **valides** — ne PAS les signaler comme incompletes
+- Discovery legere (1-2 personas, pas de domain context complet) = **normal**, pas ATTENTION
+- Ratio tests/source reduit a 0.2 (1 test happy path + 1 test erreur suffit)
+- Le check prioritaire est la **completude du flow E2E** : y a-t-il un chemin fonctionnel de bout en bout ?
+- Absence de `components.md` = ATTENTION (pas CRITIQUE)
+
+**Revamp** :
+- Discovery absente = **CRITIQUE** (on ne revamp pas sans comprendre l'existant)
+- Reviews avec NO-GO de type regression = **CRITIQUE** (pas juste ATTENTION)
+- Check supplementaire : existence de la section "Delta vs existant" dans les specs (`Grep "Delta vs existant"`)
+- Specs sans section Delta = ATTENTION → Action : completer via `/spec`
+
+**Design System** :
+- Poids DS double (x2.0) — les checks DS deviennent les plus importants du rapport
+- Checks supplementaires :
+  - `components.md` a des specs pour chaque composant → OK ou CRITIQUE
+  - `patterns.md` existe et n'est pas vide → OK ou ATTENTION
+  - `states.md` existe et couvre les 4 etats → OK ou ATTENTION
+  - Chaque composant dans `02_Build/` a un fichier `.stories.tsx` (si Storybook) → Info
+- Component Map (`00_component-map.md`) remplace le Screen Map check
+- Le ratio tests/source attendu est 0.8 (couverture de toutes les variantes)
+
+### Affichage intent dans le rapport
+
+L'en-tete du rapport inclut l'intent :
+
+```
+=== Health Check — {project_name} ===
+Module actif : {module}
+Profil : {profile}
+Intent : {intent} ({mode})
+
+Score global : {score}% — {HEALTHY | ATTENTION | CRITICAL}
+```
+
+Si l'intent n'est pas defini :
+```
+Intent : epic (defaut — non configure)
+```
+
+---
+
 ## Workflow
 
 > **Note orchestrateur** : Si cet agent est invoque via `/o` (orchestrateur), ne PAS re-annoncer ton identite ni ton role — la notification de transition l'a deja fait. Demarre directement le travail.
@@ -63,7 +124,7 @@ Tu es l'agent **Health** du Design Operating System. Ton role est de scanner l'e
 
 **Action** : Lire les fichiers de configuration.
 
-1. Lire `.claude/context.md` → identifier le module actif
+1. Lire `.claude/context.md` → identifier le module actif + **lire le champ `intent`** (si absent → defaut `epic`)
 2. Lire `.claude/profile.md` → identifier le profil utilisateur
 3. Lire `CLAUDE.md` → extraire la config du projet
 4. Lire `modules-registry.md` → lister tous les modules
@@ -141,6 +202,53 @@ Executer chaque check et collecter les resultats. Chaque check produit un verdic
 | Taille de memory.md | Compter les lignes | ATTENTION si > 500 lignes ("envisager un archivage") |
 | Questions ouvertes | Grep `Questions ouvertes` dans memory.md, verifier si non-vides | ATTENTION avec la liste |
 
+#### 2.8 — Product Readiness
+
+Calculer le score de maturite par agent en utilisant la meme logique que l'orchestrateur (voir `.claude/skills/orchestrator/SKILL.md`, section "Product Readiness").
+
+**Facteur de fiabilite** :
+| Marqueur | Facteur |
+|----------|---------|
+| *(aucun)* | ×1.0 |
+| `[HYPOTHESE]` | ×0.5 |
+| `[CONTRADICTOIRE — ...]` | ×0.25 |
+| `DRAFT` | ×0.7 |
+| `VALIDEE` | ×1.0 |
+
+**Checks** :
+
+| Check | Comment | Verdict |
+|-------|---------|---------|
+| /discovery readiness | Calculer selon signaux (personas, domain, interviews, insights, material, brief) | Info (afficher le score) |
+| /ux readiness | Calculer selon signaux (discovery >= 50%, personas, brief, screen map, tokens, journeys) | Info (afficher le score) |
+| /spec readiness | Calculer selon signaux (ux >= 50%, screen map, ecrans, personas valides, DS, stories) | Info (afficher le score) |
+| /build readiness | Calculer selon signaux (spec VALIDEE, tokens, components, stack, dev env) | Info (afficher le score) |
+| /review readiness | Calculer selon signaux (code, spec VALIDEE, tests, build >= 50%) | Info (afficher le score) |
+| Contradictions non resolues | Grep `[CONTRADICTOIRE` dans `01_Product/02 Discovery/` | ATTENTION avec la liste si > 0 |
+| Contenus hypothetiques | Grep `[HYPOTHESE]` dans `01_Product/02 Discovery/` | Info (afficher le compte — pas un probleme, mais un indicateur) |
+
+**Affichage dans le rapport** :
+
+```
+--- Product Readiness ---
+╭──────────────────────────────────────────╮
+│  /discovery  {barre}  {X}%  {verdict}    │
+│  /ux         {barre}  {X}%  {verdict}    │
+│  /spec       {barre}  {X}%  {verdict}    │
+│  /build      {barre}  {X}%  {verdict}    │
+│  /review     {barre}  {X}%  {verdict}    │
+│                                          │
+│  Maturite globale : {moyenne}%           │
+╰──────────────────────────────────────────╯
+
+Contradictions : {N} non resolue(s) → Action : /discovery pour arbitrer
+Hypotheses : {N} contenu(s) marque(s) [HYPOTHESE] → valider avec des donnees terrain
+```
+
+**Barres** : `████████` 8 segments, chaque segment = 12.5%. Rempli = `█`, vide = `░`.
+
+**Verdicts** : `80-100%` → `● Pret` | `50-79%` → `→ Pousser` | `25-49%` → `→ Possible` | `10-24%` → `⚠ Premature` | `0-9%` → `✗ Pas pret`
+
 ### Etape 3 — Score global
 
 **Calcul du score** :
@@ -164,6 +272,7 @@ Executer chaque check et collecter les resultats. Chaque check produit un verdic
 === Health Check — {project_name} ===
 Module actif : {module}
 Profil : {profile}
+Intent : {intent} ({mode})
 
 Score global : {score}% — {HEALTHY | ATTENTION | CRITICAL}
 
@@ -209,6 +318,20 @@ Domain Context : {renseigne/vide}
 Sessions enregistrees : {n}
 Taille memory.md : {n} lignes
 Questions ouvertes : {n} → {liste courte}
+
+--- Product Readiness ---
+╭──────────────────────────────────────────╮
+│  /discovery  {barre}  {X}%  {verdict}    │
+│  /ux         {barre}  {X}%  {verdict}    │
+│  /spec       {barre}  {X}%  {verdict}    │
+│  /build      {barre}  {X}%  {verdict}    │
+│  /review     {barre}  {X}%  {verdict}    │
+│                                          │
+│  Maturite globale : {moyenne}%           │
+╰──────────────────────────────────────────╯
+
+Contradictions : {N} non resolue(s) → /discovery pour arbitrer
+Hypotheses : {N} contenu(s) [HYPOTHESE] → valider avec des donnees terrain
 
 === Actions recommandees ===
 1. [CRITIQUE] {action la plus urgente}
