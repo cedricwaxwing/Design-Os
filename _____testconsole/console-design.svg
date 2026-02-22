@@ -1,0 +1,253 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="900" viewBox="0 0 420 900">
+  <defs>
+    <!-- Backgrounds -->
+    <linearGradient id="headerGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1e1e2e"/>
+      <stop offset="100%" stop-color="#252540"/>
+    </linearGradient>
+    <linearGradient id="inputGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#16162a"/>
+    </linearGradient>
+    <!-- Card glow -->
+    <filter id="editGlow">
+      <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#89b4fa" flood-opacity="0.15"/>
+    </filter>
+    <filter id="pulseGlow">
+      <feDropShadow dx="0" dy="1" stdDeviation="4" flood-color="#a6e3a1" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+
+  <!-- ==================== -->
+  <!-- PANEL BACKGROUND     -->
+  <!-- ==================== -->
+  <rect width="420" height="900" rx="12" fill="#11111b"/>
+  <!-- Subtle border -->
+  <rect x="0.5" y="0.5" width="419" height="899" rx="12" fill="none" stroke="#313244" stroke-width="1"/>
+
+  <!-- ==================== -->
+  <!-- STATUS BAR (top)     -->
+  <!-- ==================== -->
+  <rect x="0" y="0" width="420" height="64" rx="12" fill="url(#headerGrad)"/>
+  <rect x="0" y="52" width="420" height="12" fill="url(#headerGrad)"/>
+  <!-- Bottom border -->
+  <line x1="16" y1="64" x2="404" y2="64" stroke="#313244" stroke-width="1"/>
+
+  <!-- Title -->
+  <text x="20" y="28" font-family="Inter, SF Pro, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#cdd6f4" letter-spacing="0.5">DESIGN OS CONSOLE</text>
+
+  <!-- Session dot (green = active) -->
+  <circle cx="160" cy="24" r="4" fill="#a6e3a1"/>
+
+  <!-- Agent badge -->
+  <rect x="20" y="38" width="52" height="20" rx="10" fill="#89b4fa" fill-opacity="0.15"/>
+  <text x="46" y="52" font-family="JetBrains Mono, monospace" font-size="10" font-weight="600" fill="#89b4fa" text-anchor="middle">/spec</text>
+
+  <!-- Mode pill -->
+  <rect x="80" y="38" width="42" height="20" rx="10" fill="#a6e3a1" fill-opacity="0.12"/>
+  <text x="101" y="52" font-family="Inter, sans-serif" font-size="9" font-weight="600" fill="#a6e3a1" text-anchor="middle">Auto</text>
+
+  <!-- Phase indicator -->
+  <rect x="130" y="38" width="80" height="20" rx="10" fill="#313244"/>
+  <text x="140" y="51" font-family="Inter, sans-serif" font-size="9" fill="#6c7086">Phase:</text>
+  <text x="168" y="51" font-family="Inter, sans-serif" font-size="9" font-weight="600" fill="#cdd6f4">Spec</text>
+
+  <!-- ==================== -->
+  <!-- ACTIVITY STREAM      -->
+  <!-- ==================== -->
+
+  <!-- === Card 1: READ (subtle/muted) === -->
+  <g transform="translate(16, 80)">
+    <rect width="388" height="56" rx="8" fill="#1e1e2e"/>
+    <rect x="0.5" y="0.5" width="387" height="55" rx="8" fill="none" stroke="#313244" stroke-width="0.5"/>
+    <!-- Left accent bar -->
+    <rect x="0" y="8" width="3" height="40" rx="1.5" fill="#6c7086"/>
+    <!-- Icon -->
+    <circle cx="24" cy="28" r="12" fill="#6c7086" fill-opacity="0.1"/>
+    <text x="24" y="32" font-family="Inter, sans-serif" font-size="11" fill="#6c7086" text-anchor="middle">R</text>
+    <!-- Content -->
+    <text x="44" y="20" font-family="Inter, sans-serif" font-size="9" font-weight="600" fill="#6c7086" text-transform="uppercase" letter-spacing="0.8">READ</text>
+    <text x="44" y="35" font-family="JetBrains Mono, monospace" font-size="11" fill="#cdd6f4">screen-map.md</text>
+    <text x="44" y="48" font-family="Inter, sans-serif" font-size="9" fill="#585b70">84 lignes</text>
+    <!-- Timestamp -->
+    <text x="368" y="20" font-family="Inter, sans-serif" font-size="9" fill="#45475a" text-anchor="end">12s</text>
+  </g>
+
+  <!-- === Card 2: READ (subtle) === -->
+  <g transform="translate(16, 148)">
+    <rect width="388" height="56" rx="8" fill="#1e1e2e"/>
+    <rect x="0.5" y="0.5" width="387" height="55" rx="8" fill="none" stroke="#313244" stroke-width="0.5"/>
+    <rect x="0" y="8" width="3" height="40" rx="1.5" fill="#6c7086"/>
+    <circle cx="24" cy="28" r="12" fill="#6c7086" fill-opacity="0.1"/>
+    <text x="24" y="32" font-family="Inter, sans-serif" font-size="11" fill="#6c7086" text-anchor="middle">R</text>
+    <text x="44" y="20" font-family="Inter, sans-serif" font-size="9" font-weight="600" fill="#6c7086" letter-spacing="0.8">READ</text>
+    <text x="44" y="35" font-family="JetBrains Mono, monospace" font-size="11" fill="#cdd6f4">persona-medecin.md</text>
+    <text x="44" y="48" font-family="Inter, sans-serif" font-size="9" fill="#585b70">127 lignes</text>
+    <text x="368" y="20" font-family="Inter, sans-serif" font-size="9" fill="#45475a" text-anchor="end">10s</text>
+  </g>
+
+  <!-- === Card 3: EDIT (highlighted, accent) === -->
+  <g transform="translate(16, 216)" filter="url(#editGlow)">
+    <rect width="388" height="108" rx="8" fill="#1e1e2e"/>
+    <rect x="0.5" y="0.5" width="387" height="107" rx="8" fill="none" stroke="#89b4fa" stroke-width="0.5" stroke-opacity="0.4"/>
+    <!-- Left accent bar (blue) -->
+    <rect x="0" y="8" width="3" height="92" rx="1.5" fill="#89b4fa"/>
+    <!-- Icon -->
+    <circle cx="24" cy="24" r="12" fill="#89b4fa" fill-opacity="0.1"/>
+    <text x="24" y="28" font-family="Inter, sans-serif" font-size="11" fill="#89b4fa" text-anchor="middle">E</text>
+    <!-- Header -->
+    <text x="44" y="20" font-family="Inter, sans-serif" font-size="9" font-weight="600" fill="#89b4fa" letter-spacing="0.8">EDIT</text>
+    <text x="44" y="35" font-family="JetBrains Mono, monospace" font-size="11" fill="#cdd6f4">1.1-login-page.spec.md</text>
+    <!-- Mini diff -->
+    <rect x="16" y="48" width="356" height="48" rx="4" fill="#11111b"/>
+    <text x="24" y="63" font-family="JetBrains Mono, monospace" font-size="9.5" fill="#a6e3a1">+ ## Criteres d'acceptation</text>
+    <text x="24" y="76" font-family="JetBrains Mono, monospace" font-size="9.5" fill="#a6e3a1">+ - [ ] Formulaire email + mdp</text>
+    <text x="24" y="89" font-family="JetBrains Mono, monospace" font-size="9.5" fill="#f38ba8">- ## TODO: acceptance criteria</text>
+    <!-- Open button -->
+    <rect x="320" y="12" width="56" height="20" rx="6" fill="#89b4fa" fill-opacity="0.1"/>
+    <text x="348" y="25" font-family="Inter, sans-serif" font-size="9" font-weight="500" fill="#89b4fa" text-anchor="middle">Ouvrir</text>
+    <!-- Timestamp -->
+    <text x="368" y="106" font-family="Inter, sans-serif" font-size="9" fill="#45475a" text-anchor="end">8s</text>
+  </g>
+
+  <!-- === Card 4: BASH (terminal style) === -->
+  <g transform="translate(16, 340)">
+    <rect width="388" height="80" rx="8" fill="#1e1e2e"/>
+    <rect x="0.5" y="0.5" width="387" height="79" rx="8" fill="none" stroke="#313244" stroke-width="0.5"/>
+    <!-- Left accent bar (peach) -->
+    <rect x="0" y="8" width="3" height="64" rx="1.5" fill="#fab387"/>
+    <!-- Icon -->
+    <circle cx="24" cy="24" r="12" fill="#fab387" fill-opacity="0.1"/>
+    <text x="24" y="28" font-family="Inter, sans-serif" font-size="11" fill="#fab387" text-anchor="middle">$</text>
+    <!-- Header -->
+    <text x="44" y="20" font-family="Inter, sans-serif" font-size="9" font-weight="600" fill="#fab387" letter-spacing="0.8">BASH</text>
+    <text x="44" y="35" font-family="JetBrains Mono, monospace" font-size="11" fill="#cdd6f4">npm test -- --filter login</text>
+    <!-- Result -->
+    <rect x="16" y="46" width="356" height="24" rx="4" fill="#11111b"/>
+    <circle cx="30" cy="58" r="4" fill="#a6e3a1"/>
+    <text x="40" y="62" font-family="JetBrains Mono, monospace" font-size="10" fill="#a6e3a1">8 passed</text>
+    <text x="112" y="62" font-family="Inter, sans-serif" font-size="10" fill="#585b70">0 failed</text>
+    <text x="180" y="62" font-family="Inter, sans-serif" font-size="9" fill="#45475a">1.2s</text>
+    <!-- Timestamp -->
+    <text x="368" y="20" font-family="Inter, sans-serif" font-size="9" fill="#45475a" text-anchor="end">5s</text>
+  </g>
+
+  <!-- === Card 5: WRITE (new file created) === -->
+  <g transform="translate(16, 436)">
+    <rect width="388" height="56" rx="8" fill="#1e1e2e"/>
+    <rect x="0.5" y="0.5" width="387" height="55" rx="8" fill="none" stroke="#a6e3a1" stroke-width="0.5" stroke-opacity="0.3"/>
+    <!-- Left accent bar (green) -->
+    <rect x="0" y="8" width="3" height="40" rx="1.5" fill="#a6e3a1"/>
+    <!-- Icon -->
+    <circle cx="24" cy="28" r="12" fill="#a6e3a1" fill-opacity="0.1"/>
+    <text x="24" y="32" font-family="Inter, sans-serif" font-size="11" fill="#a6e3a1" text-anchor="middle">+</text>
+    <!-- Content -->
+    <text x="44" y="20" font-family="Inter, sans-serif" font-size="9" font-weight="600" fill="#a6e3a1" letter-spacing="0.8">WRITE</text>
+    <text x="44" y="35" font-family="JetBrains Mono, monospace" font-size="11" fill="#cdd6f4">board-login-flow.svg</text>
+    <text x="44" y="48" font-family="Inter, sans-serif" font-size="9" fill="#585b70">Wireframe board cree</text>
+    <!-- Badge NEW -->
+    <rect x="330" y="28" width="40" height="16" rx="8" fill="#a6e3a1" fill-opacity="0.12"/>
+    <text x="350" y="39" font-family="Inter, sans-serif" font-size="8" font-weight="700" fill="#a6e3a1" text-anchor="middle">NEW</text>
+    <text x="368" y="20" font-family="Inter, sans-serif" font-size="9" fill="#45475a" text-anchor="end">3s</text>
+  </g>
+
+  <!-- === Card 6: THINKING (animated feel) === -->
+  <g transform="translate(16, 508)" filter="url(#pulseGlow)">
+    <rect width="388" height="48" rx="8" fill="#1e1e2e"/>
+    <rect x="0.5" y="0.5" width="387" height="47" rx="8" fill="none" stroke="#cba6f7" stroke-width="0.5" stroke-opacity="0.3"/>
+    <!-- Left accent bar (purple) -->
+    <rect x="0" y="8" width="3" height="32" rx="1.5" fill="#cba6f7"/>
+    <!-- Icon -->
+    <circle cx="24" cy="24" r="12" fill="#cba6f7" fill-opacity="0.1"/>
+    <text x="24" y="28" font-family="Inter, sans-serif" font-size="11" fill="#cba6f7" text-anchor="middle">~</text>
+    <!-- Content -->
+    <text x="44" y="20" font-family="Inter, sans-serif" font-size="9" font-weight="600" fill="#cba6f7" letter-spacing="0.8">THINKING</text>
+    <text x="44" y="35" font-family="Inter, sans-serif" font-size="11" fill="#a6adc8">Analyse des criteres d'acceptation...</text>
+    <!-- Animated dots (static representation) -->
+    <circle cx="352" cy="24" r="3" fill="#cba6f7" fill-opacity="0.3"/>
+    <circle cx="362" cy="24" r="3" fill="#cba6f7" fill-opacity="0.6"/>
+    <circle cx="372" cy="24" r="3" fill="#cba6f7" fill-opacity="1"/>
+  </g>
+
+  <!-- === Card 7: NOTIFICATION (approval needed) === -->
+  <g transform="translate(16, 572)">
+    <rect width="388" height="72" rx="8" fill="#f9e2af" fill-opacity="0.04"/>
+    <rect x="0.5" y="0.5" width="387" height="71" rx="8" fill="none" stroke="#f9e2af" stroke-width="0.8" stroke-opacity="0.3"/>
+    <!-- Left accent bar (yellow) -->
+    <rect x="0" y="8" width="3" height="56" rx="1.5" fill="#f9e2af"/>
+    <!-- Icon -->
+    <circle cx="24" cy="24" r="12" fill="#f9e2af" fill-opacity="0.1"/>
+    <text x="24" y="29" font-family="Inter, sans-serif" font-size="13" fill="#f9e2af" text-anchor="middle">!</text>
+    <!-- Content -->
+    <text x="44" y="20" font-family="Inter, sans-serif" font-size="9" font-weight="600" fill="#f9e2af" letter-spacing="0.8">APPROBATION</text>
+    <text x="44" y="35" font-family="Inter, sans-serif" font-size="11" fill="#cdd6f4">Modifier 3 fichiers dans specs/</text>
+    <text x="44" y="48" font-family="Inter, sans-serif" font-size="9" fill="#585b70">Claude attend votre validation</text>
+    <!-- Action buttons -->
+    <rect x="250" y="48" width="60" height="20" rx="6" fill="#a6e3a1" fill-opacity="0.15"/>
+    <text x="280" y="61" font-family="Inter, sans-serif" font-size="9" font-weight="600" fill="#a6e3a1" text-anchor="middle">Oui</text>
+    <rect x="316" y="48" width="60" height="20" rx="6" fill="#f38ba8" fill-opacity="0.15"/>
+    <text x="346" y="61" font-family="Inter, sans-serif" font-size="9" font-weight="600" fill="#f38ba8" text-anchor="middle">Non</text>
+  </g>
+
+  <!-- ==================== -->
+  <!-- IMPACT FOOTER        -->
+  <!-- ==================== -->
+  <line x1="16" y1="668" x2="404" y2="668" stroke="#313244" stroke-width="1"/>
+  <g transform="translate(16, 680)">
+    <!-- File chips -->
+    <text x="0" y="12" font-family="Inter, sans-serif" font-size="9" fill="#585b70">Fichiers touches</text>
+    <rect x="0" y="20" width="92" height="20" rx="6" fill="#313244"/>
+    <text x="8" y="33" font-family="JetBrains Mono, monospace" font-size="9" fill="#89b4fa">screen-map.md</text>
+    <rect x="98" y="20" width="120" height="20" rx="6" fill="#313244"/>
+    <text x="106" y="33" font-family="JetBrains Mono, monospace" font-size="9" fill="#89b4fa">1.1-login-page.spec.md</text>
+    <rect x="224" y="20" width="106" height="20" rx="6" fill="#313244"/>
+    <text x="232" y="33" font-family="JetBrains Mono, monospace" font-size="9" fill="#a6e3a1">board-login-flow.svg</text>
+    <rect x="336" y="20" width="36" height="20" rx="6" fill="#313244"/>
+    <text x="354" y="33" font-family="Inter, sans-serif" font-size="9" fill="#6c7086" text-anchor="middle">+2</text>
+    <!-- Session stats -->
+    <text x="0" y="58" font-family="Inter, sans-serif" font-size="9" fill="#585b70">Session</text>
+    <text x="50" y="58" font-family="JetBrains Mono, monospace" font-size="9" fill="#6c7086">7 actions</text>
+    <text x="120" y="58" font-family="Inter, sans-serif" font-size="9" fill="#6c7086">3 edits</text>
+    <text x="170" y="58" font-family="Inter, sans-serif" font-size="9" fill="#6c7086">1 fichier cree</text>
+    <text x="260" y="58" font-family="Inter, sans-serif" font-size="9" fill="#45475a">2min 34s</text>
+  </g>
+
+  <!-- ==================== -->
+  <!-- SEPARATOR            -->
+  <!-- ==================== -->
+  <line x1="16" y1="756" x2="404" y2="756" stroke="#313244" stroke-width="1"/>
+
+  <!-- ==================== -->
+  <!-- INPUT BAR (bottom)   -->
+  <!-- ==================== -->
+  <g transform="translate(0, 770)">
+    <rect x="0" y="0" width="420" height="130" rx="0" fill="url(#inputGrad)"/>
+    <!-- Rounded bottom corners -->
+    <rect x="0" y="100" width="420" height="30" rx="12" fill="url(#inputGrad)"/>
+
+    <!-- Quick commands -->
+    <text x="20" y="20" font-family="Inter, sans-serif" font-size="9" fill="#585b70">Commandes rapides</text>
+    <rect x="20" y="28" width="48" height="22" rx="6" fill="#313244"/>
+    <text x="44" y="42" font-family="JetBrains Mono, monospace" font-size="9" fill="#89b4fa" text-anchor="middle">/spec</text>
+    <rect x="74" y="28" width="50" height="22" rx="6" fill="#313244"/>
+    <text x="99" y="42" font-family="JetBrains Mono, monospace" font-size="9" fill="#89b4fa" text-anchor="middle">/build</text>
+    <rect x="130" y="28" width="58" height="22" rx="6" fill="#313244"/>
+    <text x="159" y="42" font-family="JetBrains Mono, monospace" font-size="9" fill="#89b4fa" text-anchor="middle">/review</text>
+    <rect x="194" y="28" width="36" height="22" rx="6" fill="#313244"/>
+    <text x="212" y="42" font-family="JetBrains Mono, monospace" font-size="9" fill="#89b4fa" text-anchor="middle">/ux</text>
+    <rect x="236" y="28" width="38" height="22" rx="6" fill="#313244"/>
+    <text x="255" y="42" font-family="JetBrains Mono, monospace" font-size="9" fill="#89b4fa" text-anchor="middle">/ui</text>
+    <rect x="280" y="28" width="52" height="22" rx="6" fill="#313244"/>
+    <text x="306" y="42" font-family="JetBrains Mono, monospace" font-size="9" fill="#6c7086" text-anchor="middle">more...</text>
+
+    <!-- Input field -->
+    <rect x="16" y="62" width="340" height="40" rx="10" fill="#11111b" stroke="#313244" stroke-width="1"/>
+    <text x="32" y="86" font-family="JetBrains Mono, monospace" font-size="12" fill="#45475a">Ecris une commande ou parle a Claude...</text>
+    <!-- Cursor blink indicator -->
+    <rect x="28" y="74" width="1.5" height="16" rx="1" fill="#89b4fa" opacity="0.7"/>
+
+    <!-- Send button -->
+    <rect x="364" y="62" width="40" height="40" rx="10" fill="#89b4fa"/>
+    <text x="384" y="87" font-family="Inter, sans-serif" font-size="16" fill="#1e1e2e" text-anchor="middle">&#x2191;</text>
+  </g>
+</svg>

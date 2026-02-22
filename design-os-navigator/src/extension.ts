@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
 import { parseProject } from './parser';
 import { getWebviewContent } from './webview';
 
@@ -81,6 +83,9 @@ function openNavigator(context: vscode.ExtensionContext) {
         case 'openFile':
           openFile(message.path);
           break;
+        case 'previewFile':
+          previewFile(message.path);
+          break;
       }
     },
     undefined,
@@ -128,6 +133,41 @@ function runSlashCommand(command: string) {
 function openFile(filePath: string) {
   const uri = vscode.Uri.file(filePath);
   vscode.window.showTextDocument(uri, { preview: true });
+}
+
+function previewFile(filePath: string) {
+  if (!currentPanel) { return; }
+
+  const ext = path.extname(filePath).toLowerCase();
+  const fileName = path.basename(filePath);
+  const previewable = ext === '.svg' || ext === '.html' || ext === '.htm';
+
+  let content: string | null = null;
+  if (previewable) {
+    try {
+      const stats = fs.statSync(filePath);
+      if (stats.size > 512 * 1024) {
+        // Too large, skip preview
+        currentPanel.webview.postMessage({
+          type: 'filePreview', path: filePath, fileName,
+          fileType: ext.replace('.', ''), content: null, previewable: false,
+        });
+        return;
+      }
+      content = fs.readFileSync(filePath, 'utf-8');
+    } catch {
+      content = null;
+    }
+  }
+
+  currentPanel.webview.postMessage({
+    type: 'filePreview',
+    path: filePath,
+    fileName,
+    fileType: ext.replace('.', ''),
+    content,
+    previewable: previewable && content !== null,
+  });
 }
 
 function getErrorHtml(message: string): string {

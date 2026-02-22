@@ -5,7 +5,7 @@ import {
   GraphEdge, GraphData, ContentSignals, SectionDetail, HistoryEntry,
   RecommendedAction, emptySignals, aggregateSignals, DocStatus,
 } from './types';
-import { loadReadiness, getNodeScore, getGlobalScore, ReadinessData } from './readiness';
+import { loadReadiness, getNodeScore, getNodeChildren, getGlobalScore, ReadinessData } from './readiness';
 
 // ═══════════════════════════════════════════════════════
 // PUBLIC API
@@ -270,7 +270,7 @@ function parseContext(root: string): ProjectContext {
 }
 
 function extractYamlField(content: string, field: string): string {
-  const regex = new RegExp(`^${field}:\\s*(.+)$`, 'm');
+  const regex = new RegExp(`^${field}:[ \\t]*(.+)$`, 'm');
   const match = content.match(regex);
   if (!match) { return ''; }
   return match[1].trim().replace(/^['"]|['"]$/g, '');
@@ -470,8 +470,14 @@ function discoverSkills(root: string): DiscoveredSkill[] {
 
     // Extract description (may be multi-line with > indicator)
     const description = extractFmMultiline(frontmatter, 'description');
-    // Label = first sentence
-    const label = description.split(/\.\s/)[0].replace(/^Agent \w+ — /, '').trim();
+    // Split into sentences — phrase 1 = identité technique, phrase 2 = action, phrase 3+ = détails
+    const sentences = description.split(/\.\s/);
+    const label = sentences.length > 1
+      ? sentences[1].trim()
+      : sentences[0].replace(/^Agent .+? — /, '').trim();
+    const desc = sentences.length > 2
+      ? sentences.slice(2).join('. ').replace(/\s*Use when .+$/i, '').trim()
+      : '';
 
     // Extract tags
     const tags = extractFmList(frontmatter, 'tags');
@@ -480,7 +486,7 @@ function discoverSkills(root: string): DiscoveredSkill[] {
       command: '/' + name,
       name,
       label: label || name,
-      description: description.slice(0, 120),
+      description: desc.slice(0, 140),
       tags,
     });
   }
@@ -541,7 +547,7 @@ function extractFrontmatter(content: string): string | null {
 }
 
 function extractFmField(fm: string, field: string): string {
-  const regex = new RegExp(`^${field}:\\s*(.+)$`, 'm');
+  const regex = new RegExp(`^${field}:[ \\t]*(.+)$`, 'm');
   const match = fm.match(regex);
   return match ? match[1].trim() : '';
 }
@@ -614,7 +620,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
   const personaFiles = listFilesRecursive(path.join(discoveryBase, '04 Personas'));
   const allDiscoveryFiles = [...domainFiles, ...interviewFiles, ...insightFiles, ...personaFiles];
   const discoverySig = aggregateSignals(allDiscoveryFiles);
-  const discoverySections = collectSectionsFromFiles([...personaFiles, ...domainFiles]);
+  const discoverySections: SectionDetail[] = [];
 
   nodes.push({
     id: 'discovery',
@@ -628,12 +634,15 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     commands: skillMap['discovery'] || [],
     dependsOn: ['strategy'],
     unlocks: ['ux'],
-    children: [
-      makeChildNode('discovery-domain', 'Domain Context', 'discovery', domainFiles),
-      makeChildNode('discovery-personas', 'Personas', 'discovery', personaFiles),
-      makeChildNode('discovery-interviews', 'Interviews', 'discovery', interviewFiles),
-      makeChildNode('discovery-insights', 'Research Insights', 'discovery', insightFiles),
-    ],
+    children: (() => {
+      const dc = getNodeChildren(readinessData, 'discovery');
+      return [
+        makeChildNode('discovery-domain', 'Domain Context', 'discovery', domainFiles, dc['discovery-domain']?.score ?? 0),
+        makeChildNode('discovery-personas', 'Personas', 'discovery', personaFiles, dc['discovery-personas']?.score ?? 0),
+        makeChildNode('discovery-interviews', 'Interviews', 'discovery', interviewFiles, dc['discovery-interviews']?.score ?? 0),
+        makeChildNode('discovery-insights', 'Research Insights', 'discovery', insightFiles, dc['discovery-insights']?.score ?? 0),
+      ];
+    })(),
     status: allDiscoveryFiles.length > 0 ? 'active' : 'empty',
   });
 
@@ -726,7 +735,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     fileCount: dsFiles.length,
     files: dsFiles,
     signals: aggregateSignals(dsFiles),
-    sections: collectSectionsFromFiles(dsFiles.filter(f => f.type === 'token')),
+    sections: [],
     commands: skillMap['design-system'] || [],
     dependsOn: [],
     unlocks: ['ui', 'build'],
@@ -807,14 +816,14 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
 // HELPERS
 // ═══════════════════════════════════════════════════════
 
-function makeChildNode(id: string, label: string, phase: Phase, files: FileInfo[]): DesignOsNode {
+function makeChildNode(id: string, label: string, phase: Phase, files: FileInfo[], readinessScore: number): DesignOsNode {
   return {
     id, label, phase,
-    readiness: 0,
+    readiness: readinessScore,
     fileCount: files.length,
     files,
-    signals: aggregateSignals(files),
-    sections: collectSectionsFromFiles(files),
+    signals: emptySignals(),
+    sections: [],
     commands: [],
     dependsOn: [],
     unlocks: [],

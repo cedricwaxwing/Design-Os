@@ -1,0 +1,223 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="880" viewBox="0 0 420 880">
+  <defs>
+    <linearGradient id="headerGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1e1e2e"/>
+      <stop offset="100%" stop-color="#252540"/>
+    </linearGradient>
+    <linearGradient id="inputGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#16162a"/>
+    </linearGradient>
+    <filter id="editGlow">
+      <feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="#89b4fa" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <!-- ==================== -->
+  <!-- PANEL BACKGROUND     -->
+  <!-- ==================== -->
+  <rect width="420" height="880" rx="12" fill="#11111b"/>
+  <rect x="0.5" y="0.5" width="419" height="879" rx="12" fill="none" stroke="#313244" stroke-width="1"/>
+
+  <!-- ===================================== -->
+  <!-- STATUS BAR — Agent + Modes + Context  -->
+  <!-- ===================================== -->
+  <rect x="0" y="0" width="420" height="92" rx="12" fill="url(#headerGrad)"/>
+  <rect x="0" y="80" width="420" height="12" fill="url(#headerGrad)"/>
+  <line x1="0" y1="92" x2="420" y2="92" stroke="#313244" stroke-width="1"/>
+
+  <!-- Row 1: Title + session -->
+  <text x="20" y="24" font-family="Inter, SF Pro, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#cdd6f4" letter-spacing="0.5">DESIGN OS CONSOLE</text>
+  <circle cx="156" cy="20" r="3.5" fill="#a6e3a1"/>
+
+  <!-- Row 2: Agent badge + Mode toggles -->
+  <!-- Agent -->
+  <rect x="20" y="36" width="52" height="20" rx="10" fill="#89b4fa" fill-opacity="0.15"/>
+  <text x="46" y="49" font-family="JetBrains Mono, monospace" font-size="10" font-weight="600" fill="#89b4fa" text-anchor="middle">/spec</text>
+
+  <!-- Mode: Plan (inactive) -->
+  <rect x="84" y="36" width="42" height="20" rx="10" fill="#313244"/>
+  <text x="105" y="49" font-family="Inter, sans-serif" font-size="9" font-weight="500" fill="#585b70" text-anchor="middle">Plan</text>
+
+  <!-- Mode: Ask (active = yellow) -->
+  <rect x="132" y="36" width="36" height="20" rx="10" fill="#f9e2af" fill-opacity="0.15"/>
+  <text x="150" y="49" font-family="Inter, sans-serif" font-size="9" font-weight="600" fill="#f9e2af" text-anchor="middle">Ask</text>
+
+  <!-- Mode: Auto (inactive) -->
+  <rect x="174" y="36" width="42" height="20" rx="10" fill="#313244"/>
+  <text x="195" y="49" font-family="Inter, sans-serif" font-size="9" font-weight="500" fill="#585b70" text-anchor="middle">Auto</text>
+
+  <!-- Row 3: Context usage bar -->
+  <text x="20" y="76" font-family="Inter, sans-serif" font-size="9" fill="#585b70">Contexte</text>
+  <!-- Bar background -->
+  <rect x="72" y="68" width="260" height="6" rx="3" fill="#313244"/>
+  <!-- Bar fill (37% used) -->
+  <rect x="72" y="68" width="96" height="6" rx="3" fill="#89b4fa" fill-opacity="0.6"/>
+  <!-- Percentage -->
+  <text x="340" y="76" font-family="JetBrains Mono, monospace" font-size="9" fill="#6c7086">37%</text>
+  <!-- Cost -->
+  <text x="374" y="76" font-family="JetBrains Mono, monospace" font-size="9" fill="#45475a">$0.12</text>
+
+  <!-- ===================================== -->
+  <!-- ACTIVITY STREAM                       -->
+  <!-- ===================================== -->
+
+  <!-- Card 1: READ (muted) -->
+  <g transform="translate(16, 108)">
+    <rect width="388" height="44" rx="8" fill="#1e1e2e"/>
+    <rect x="0" y="6" width="2.5" height="32" rx="1.5" fill="#585b70"/>
+    <text x="16" y="18" font-family="Inter, sans-serif" font-size="8" font-weight="600" fill="#585b70" letter-spacing="0.6">READ</text>
+    <text x="16" y="33" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#a6adc8">screen-map.md</text>
+    <text x="368" y="18" font-family="Inter, sans-serif" font-size="8" fill="#45475a" text-anchor="end">12s</text>
+  </g>
+
+  <!-- Card 2: READ (muted) -->
+  <g transform="translate(16, 160)">
+    <rect width="388" height="44" rx="8" fill="#1e1e2e"/>
+    <rect x="0" y="6" width="2.5" height="32" rx="1.5" fill="#585b70"/>
+    <text x="16" y="18" font-family="Inter, sans-serif" font-size="8" font-weight="600" fill="#585b70" letter-spacing="0.6">READ</text>
+    <text x="16" y="33" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#a6adc8">persona-medecin.md</text>
+    <text x="368" y="18" font-family="Inter, sans-serif" font-size="8" fill="#45475a" text-anchor="end">10s</text>
+  </g>
+
+  <!-- Card 3: EDIT (highlighted) -->
+  <g transform="translate(16, 212)" filter="url(#editGlow)">
+    <rect width="388" height="96" rx="8" fill="#1e1e2e"/>
+    <rect x="0.5" y="0.5" width="387" height="95" rx="8" fill="none" stroke="#89b4fa" stroke-width="0.5" stroke-opacity="0.3"/>
+    <rect x="0" y="6" width="2.5" height="84" rx="1.5" fill="#89b4fa"/>
+    <text x="16" y="18" font-family="Inter, sans-serif" font-size="8" font-weight="600" fill="#89b4fa" letter-spacing="0.6">EDIT</text>
+    <text x="16" y="33" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#cdd6f4">1.1-login-page.spec.md</text>
+    <!-- Mini diff -->
+    <rect x="12" y="42" width="364" height="44" rx="4" fill="#11111b"/>
+    <text x="20" y="57" font-family="JetBrains Mono, monospace" font-size="9" fill="#a6e3a1">+ ## Criteres d'acceptation</text>
+    <text x="20" y="70" font-family="JetBrains Mono, monospace" font-size="9" fill="#a6e3a1">+ - [ ] Formulaire email + mdp</text>
+    <text x="20" y="83" font-family="JetBrains Mono, monospace" font-size="9" fill="#f38ba8">- ## TODO: acceptance criteria</text>
+    <text x="368" y="18" font-family="Inter, sans-serif" font-size="8" fill="#45475a" text-anchor="end">8s</text>
+  </g>
+
+  <!-- Card 4: BASH -->
+  <g transform="translate(16, 320)">
+    <rect width="388" height="68" rx="8" fill="#1e1e2e"/>
+    <rect x="0" y="6" width="2.5" height="56" rx="1.5" fill="#fab387"/>
+    <text x="16" y="18" font-family="Inter, sans-serif" font-size="8" font-weight="600" fill="#fab387" letter-spacing="0.6">BASH</text>
+    <text x="16" y="33" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#cdd6f4">npm test -- --filter login</text>
+    <rect x="12" y="42" width="364" height="20" rx="4" fill="#11111b"/>
+    <circle cx="26" cy="52" r="3.5" fill="#a6e3a1"/>
+    <text x="36" y="56" font-family="JetBrains Mono, monospace" font-size="9" fill="#a6e3a1">8 passed</text>
+    <text x="100" y="56" font-family="Inter, sans-serif" font-size="9" fill="#585b70">0 failed</text>
+    <text x="156" y="56" font-family="Inter, sans-serif" font-size="8" fill="#45475a">1.2s</text>
+    <text x="368" y="18" font-family="Inter, sans-serif" font-size="8" fill="#45475a" text-anchor="end">5s</text>
+  </g>
+
+  <!-- Card 5: WRITE -->
+  <g transform="translate(16, 400)">
+    <rect width="388" height="44" rx="8" fill="#1e1e2e"/>
+    <rect x="0.5" y="0.5" width="387" height="43" rx="8" fill="none" stroke="#a6e3a1" stroke-width="0.5" stroke-opacity="0.2"/>
+    <rect x="0" y="6" width="2.5" height="32" rx="1.5" fill="#a6e3a1"/>
+    <text x="16" y="18" font-family="Inter, sans-serif" font-size="8" font-weight="600" fill="#a6e3a1" letter-spacing="0.6">WRITE</text>
+    <text x="16" y="33" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#cdd6f4">board-login-flow.svg</text>
+    <rect x="340" y="22" width="36" height="14" rx="7" fill="#a6e3a1" fill-opacity="0.1"/>
+    <text x="358" y="32" font-family="Inter, sans-serif" font-size="7.5" font-weight="700" fill="#a6e3a1" text-anchor="middle">NEW</text>
+    <text x="368" y="18" font-family="Inter, sans-serif" font-size="8" fill="#45475a" text-anchor="end">3s</text>
+  </g>
+
+  <!-- Card 6: THINKING -->
+  <g transform="translate(16, 456)">
+    <rect width="388" height="40" rx="8" fill="#1e1e2e"/>
+    <rect x="0" y="6" width="2.5" height="28" rx="1.5" fill="#cba6f7"/>
+    <text x="16" y="17" font-family="Inter, sans-serif" font-size="8" font-weight="600" fill="#cba6f7" letter-spacing="0.6">THINKING</text>
+    <text x="16" y="31" font-family="Inter, sans-serif" font-size="10.5" fill="#7f849c">Analyse des criteres d'acceptation...</text>
+    <circle cx="356" cy="22" r="2.5" fill="#cba6f7" fill-opacity="0.3"/>
+    <circle cx="364" cy="22" r="2.5" fill="#cba6f7" fill-opacity="0.6"/>
+    <circle cx="372" cy="22" r="2.5" fill="#cba6f7"/>
+  </g>
+
+  <!-- Card 7: APPROVAL -->
+  <g transform="translate(16, 508)">
+    <rect width="388" height="60" rx="8" fill="#f9e2af" fill-opacity="0.03"/>
+    <rect x="0.5" y="0.5" width="387" height="59" rx="8" fill="none" stroke="#f9e2af" stroke-width="0.6" stroke-opacity="0.25"/>
+    <rect x="0" y="6" width="2.5" height="48" rx="1.5" fill="#f9e2af"/>
+    <text x="16" y="18" font-family="Inter, sans-serif" font-size="8" font-weight="600" fill="#f9e2af" letter-spacing="0.6">APPROBATION</text>
+    <text x="16" y="33" font-family="Inter, sans-serif" font-size="10.5" fill="#cdd6f4">Modifier 3 fichiers dans specs/</text>
+    <!-- Buttons -->
+    <rect x="260" y="38" width="56" height="18" rx="6" fill="#a6e3a1" fill-opacity="0.12"/>
+    <text x="288" y="50" font-family="Inter, sans-serif" font-size="8.5" font-weight="600" fill="#a6e3a1" text-anchor="middle">Accepter</text>
+    <rect x="322" y="38" width="56" height="18" rx="6" fill="#f38ba8" fill-opacity="0.12"/>
+    <text x="350" y="50" font-family="Inter, sans-serif" font-size="8.5" font-weight="600" fill="#f38ba8" text-anchor="middle">Refuser</text>
+  </g>
+
+  <!-- ===================================== -->
+  <!-- CLAUDE RESPONSE (text output)         -->
+  <!-- ===================================== -->
+  <g transform="translate(16, 584)">
+    <rect width="388" height="110" rx="8" fill="#181825"/>
+    <rect x="0.5" y="0.5" width="387" height="109" rx="8" fill="none" stroke="#313244" stroke-width="0.5"/>
+    <!-- Claude avatar -->
+    <circle cx="22" cy="18" r="8" fill="#cba6f7" fill-opacity="0.12"/>
+    <text x="22" y="22" font-family="Inter, sans-serif" font-size="8" font-weight="700" fill="#cba6f7" text-anchor="middle">C</text>
+    <text x="36" y="22" font-family="Inter, sans-serif" font-size="9" font-weight="600" fill="#cdd6f4">Claude</text>
+    <!-- Text content -->
+    <text x="12" y="42" font-family="Inter, sans-serif" font-size="10.5" fill="#a6adc8">La spec login-page est maintenant complete</text>
+    <text x="12" y="56" font-family="Inter, sans-serif" font-size="10.5" fill="#a6adc8">avec 9/9 sections remplies. Les criteres</text>
+    <text x="12" y="70" font-family="Inter, sans-serif" font-size="10.5" fill="#a6adc8">d'acceptation couvrent :</text>
+    <text x="12" y="86" font-family="Inter, sans-serif" font-size="10.5" fill="#7f849c">- Formulaire email + mot de passe</text>
+    <text x="12" y="100" font-family="Inter, sans-serif" font-size="10.5" fill="#7f849c">- Validation cote client et serveur</text>
+  </g>
+
+  <!-- ===================================== -->
+  <!-- INPUT BAR                             -->
+  <!-- ===================================== -->
+  <rect x="0" y="714" width="420" height="166" rx="0" fill="url(#inputGrad)"/>
+  <rect x="0" y="854" width="420" height="26" rx="12" fill="url(#inputGrad)"/>
+  <line x1="0" y1="714" x2="420" y2="714" stroke="#313244" stroke-width="1"/>
+
+  <!-- Input field -->
+  <rect x="16" y="730" width="344" height="42" rx="10" fill="#11111b" stroke="#313244" stroke-width="1"/>
+  <rect x="28" y="744" width="1.5" height="14" rx="1" fill="#89b4fa" opacity="0.6"/>
+  <text x="36" y="755" font-family="JetBrains Mono, monospace" font-size="11" fill="#45475a">Message ou /commande...</text>
+
+  <!-- Send button -->
+  <rect x="368" y="730" width="36" height="42" rx="10" fill="#89b4fa"/>
+  <text x="386" y="756" font-family="Inter, sans-serif" font-size="15" fill="#1e1e2e" text-anchor="middle">&#x2191;</text>
+
+  <!-- Bottom toolbar -->
+  <g transform="translate(16, 786)">
+    <!-- Attach file button -->
+    <rect x="0" y="0" width="32" height="28" rx="6" fill="#313244"/>
+    <text x="16" y="19" font-family="Inter, sans-serif" font-size="14" fill="#6c7086" text-anchor="middle">&#x1F4CE;</text>
+
+    <!-- "/" Claude menu button -->
+    <rect x="40" y="0" width="28" height="28" rx="6" fill="#313244"/>
+    <text x="54" y="18" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700" fill="#89b4fa" text-anchor="middle">/</text>
+
+    <!-- Claude commands menu (expanded state preview) -->
+    <rect x="40" y="-164" width="180" height="156" rx="8" fill="#1e1e2e" stroke="#313244" stroke-width="1"/>
+    <!-- Menu items -->
+    <text x="56" y="-142" font-family="Inter, sans-serif" font-size="8" font-weight="600" fill="#585b70" letter-spacing="0.5">CLAUDE</text>
+    <text x="56" y="-124" font-family="JetBrains Mono, monospace" font-size="10" fill="#cdd6f4">/config</text>
+    <text x="140" y="-124" font-family="Inter, sans-serif" font-size="8" fill="#585b70">Parametres</text>
+    <text x="56" y="-106" font-family="JetBrains Mono, monospace" font-size="10" fill="#cdd6f4">/model</text>
+    <text x="140" y="-106" font-family="Inter, sans-serif" font-size="8" fill="#585b70">Changer modele</text>
+    <text x="56" y="-88" font-family="JetBrains Mono, monospace" font-size="10" fill="#cdd6f4">/cost</text>
+    <text x="140" y="-88" font-family="Inter, sans-serif" font-size="8" fill="#585b70">Usage session</text>
+    <text x="56" y="-70" font-family="JetBrains Mono, monospace" font-size="10" fill="#cdd6f4">/compact</text>
+    <text x="140" y="-70" font-family="Inter, sans-serif" font-size="8" fill="#585b70">Compresser</text>
+    <text x="56" y="-52" font-family="JetBrains Mono, monospace" font-size="10" fill="#cdd6f4">/clear</text>
+    <text x="140" y="-52" font-family="Inter, sans-serif" font-size="8" fill="#585b70">Nouvelle session</text>
+    <line x1="52" y1="-40" x2="208" y2="-40" stroke="#313244" stroke-width="0.5"/>
+    <text x="56" y="-26" font-family="JetBrains Mono, monospace" font-size="10" fill="#f38ba8">/logout</text>
+    <text x="140" y="-26" font-family="Inter, sans-serif" font-size="8" fill="#585b70">Deconnexion</text>
+    <text x="56" y="-10" font-family="JetBrains Mono, monospace" font-size="10" fill="#6c7086">/help</text>
+    <text x="140" y="-10" font-family="Inter, sans-serif" font-size="8" fill="#585b70">Documentation</text>
+
+    <!-- Model selector button -->
+    <rect x="78" y="0" width="100" height="28" rx="6" fill="#313244"/>
+    <text x="90" y="18" font-family="Inter, sans-serif" font-size="9" fill="#6c7086">Modele:</text>
+    <text x="128" y="18" font-family="JetBrains Mono, monospace" font-size="9" font-weight="600" fill="#cdd6f4">Opus 4</text>
+
+    <!-- Account usage -->
+    <rect x="268" y="0" width="120" height="28" rx="6" fill="none"/>
+    <text x="268" y="12" font-family="Inter, sans-serif" font-size="8" fill="#45475a">Usage session</text>
+    <text x="268" y="24" font-family="JetBrains Mono, monospace" font-size="9" fill="#585b70">$0.12 / 47 req</text>
+  </g>
+</svg>

@@ -175,7 +175,15 @@ Apres avoir calcule le Product Readiness, **ecrire les resultats** dans `.claude
   "globalScore": 12,
   "nodes": {
     "strategy":      { "score": 30, "verdict": "possible",  "action": "Completer le brief via /onboarding" },
-    "discovery":     { "score": 0,  "verdict": "not-ready", "action": "Lancer /discovery" },
+    "discovery":     {
+      "score": 0, "verdict": "not-ready", "action": "Lancer /discovery",
+      "children": {
+        "discovery-domain":     { "score": 0, "label": "Domain Context" },
+        "discovery-personas":   { "score": 0, "label": "Personas" },
+        "discovery-interviews": { "score": 0, "label": "Interviews" },
+        "discovery-insights":   { "score": 0, "label": "Research Insights" }
+      }
+    },
     "ux":            { "score": 0,  "verdict": "not-ready", "action": "Discovery requise d'abord" },
     "design-system": { "score": 5,  "verdict": "not-ready", "action": "Configurer les tokens via /onboarding" },
     "spec":          { "score": 0,  "verdict": "not-ready", "action": "UX requise d'abord" },
@@ -193,6 +201,7 @@ Apres avoir calcule le Product Readiness, **ecrire les resultats** dans `.claude
 - Les verdicts utilisent les cles : `"ready"` (80-100%), `"push"` (50-79%), `"possible"` (25-49%), `"premature"` (10-24%), `"not-ready"` (0-9%)
 - `globalScore` = moyenne des scores de tous les nodes
 - Chaque `action` est une phrase courte recommandant la prochaine etape
+- Pour les nodes avec des sub-signaux (ex: Discovery), inclure un champ `children` avec le detail par sous-composante. Chaque child a un `score` (0-100) et un `label`
 
 #### Quand afficher et persister le readiness
 

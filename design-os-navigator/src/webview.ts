@@ -413,7 +413,7 @@ export function getWebviewContent(data: GraphData): string {
     }
     .collapsible.open .collapsible-body {
       max-height: 2000px;
-      padding: 4px 16px 16px;
+      padding: 8px 16px 16px;
     }
 
     /* ── Non-collapsible section (recommended action) ── */
@@ -541,6 +541,92 @@ export function getWebviewContent(data: GraphData): string {
       font-style: italic;
     }
 
+    /* ── File Preview ── */
+    .file-preview {
+      border-bottom: 1px solid var(--border);
+      padding: 16px;
+    }
+
+    .file-preview-body {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      min-height: 120px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .file-preview-body.has-content {
+      background: #ffffff;
+      cursor: pointer;
+    }
+
+    .file-preview-body.placeholder {
+      background: color-mix(in srgb, var(--text) 6%, var(--surface));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .file-preview-placeholder-text {
+      font-size: 12px;
+      color: var(--text-dim);
+      opacity: 0.6;
+    }
+
+    .file-preview-body.has-content:hover::after {
+      content: 'Ouvrir dans VS Code';
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.75);
+      color: #fff;
+      font-size: 11px;
+      padding: 4px 12px;
+      border-radius: 4px;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    .file-preview-body svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .file-preview-body iframe {
+      width: 100%;
+      height: 260px;
+      border: none;
+      display: block;
+    }
+
+    .file-preview-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+    }
+
+    .file-preview-name {
+      font-size: 11px;
+      color: var(--text-dim);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .file-preview-open {
+      font-size: 10px;
+      color: var(--accent);
+      flex-shrink: 0;
+      margin-left: 8px;
+    }
+
     /* ── File items (recent activity) ── */
     .file-item {
       display: flex;
@@ -652,12 +738,12 @@ export function getWebviewContent(data: GraphData): string {
     /* ── Commands ── */
     .command-btn {
       display: flex;
-      align-items: center;
-      gap: 8px;
+      flex-direction: column;
+      gap: 4px;
       width: 100%;
-      padding: 12px;
-      background: color-mix(in srgb, var(--accent) 8%, transparent);
-      border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+      padding: 16px;
+      background: color-mix(in srgb, var(--accent) 6%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent) 15%, transparent);
       border-radius: 8px;
       color: var(--text);
       cursor: pointer;
@@ -671,25 +757,23 @@ export function getWebviewContent(data: GraphData): string {
     }
     .command-btn:active { transform: scale(0.98); }
 
-    .command-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 4px;
-    }
-
-    .command-label { font-weight: 600; font-size: 12px; }
-
     .command-name {
       font-family: var(--vscode-editor-font-family, monospace);
-      font-size: 11px;
+      font-size: 12px;
       color: var(--accent);
       background: color-mix(in srgb, var(--accent) 10%, transparent);
-      padding: 1px 6px;
+      padding: 2px 8px;
       border-radius: 4px;
+      display: inline-block;
+      align-self: flex-start;
     }
 
-    .command-desc { font-size: 11px; color: var(--text-dim); }
+    .command-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.5;
+      margin-top: 4px;
+    }
 
     /* ── Dependencies ── */
     .dep-group { margin-bottom: 8px; }
@@ -868,6 +952,81 @@ export function getWebviewContent(data: GraphData): string {
       return '<div class="confidence-bar"><div class="confidence-fill ' + cssClass + '" style="width:' + pct + '%"></div></div>';
     }
 
+    // ── File Preview helpers ──
+    let currentPreviewPath = null;
+
+    function sanitizeSvg(raw) {
+      let s = raw.replace(/<script[\\s\\S]*?<\\/script>/gi, '');
+      s = s.replace(/\\s+on\\w+\\s*=\\s*["'][^"']*["']/gi, '');
+      s = s.replace(/<foreignObject[\\s\\S]*?<\\/foreignObject>/gi, '');
+      s = s.replace(/href\\s*=\\s*["']javascript:[^"']*["']/gi, '');
+      return s;
+    }
+
+    function escapeAttr(str) {
+      return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function requestPreview(filePath) {
+      const ext = filePath.split('.').pop().toLowerCase();
+      if (ext === 'svg' || ext === 'html' || ext === 'htm') {
+        vscode.postMessage({ type: 'previewFile', path: filePath });
+      } else {
+        vscode.postMessage({ type: 'openFile', path: filePath });
+      }
+    }
+
+    function renderPreviewContent(msg) {
+      const container = document.getElementById('preview-content');
+      const footer = document.getElementById('preview-footer');
+      const nameEl = document.getElementById('preview-name');
+      if (!container) return;
+
+      if (!msg || !msg.previewable) {
+        // Reset to placeholder
+        container.className = 'file-preview-body placeholder';
+        container.innerHTML = '<span class="file-preview-placeholder-text">Aucun aper\\u00E7u</span>';
+        container.onclick = null;
+        if (footer) footer.style.display = 'none';
+        currentPreviewPath = null;
+        return;
+      }
+
+      currentPreviewPath = msg.path;
+      container.className = 'file-preview-body has-content';
+
+      if (msg.fileType === 'svg') {
+        container.innerHTML = sanitizeSvg(msg.content);
+      } else {
+        container.innerHTML = '<iframe sandbox="allow-same-origin" srcdoc="' + escapeAttr(msg.content) + '"></iframe>';
+      }
+
+      container.onclick = function() {
+        vscode.postMessage({ type: 'openFile', path: msg.path });
+      };
+
+      if (footer) {
+        footer.style.display = 'flex';
+        footer.style.cursor = 'pointer';
+        footer.onclick = function() {
+          vscode.postMessage({ type: 'openFile', path: msg.path });
+        };
+      }
+      if (nameEl) nameEl.textContent = msg.fileName;
+    }
+
+    function triggerAutoPreview(node) {
+      if (!node.files || node.files.length === 0) return;
+      const sorted = node.files.slice().sort(function(a, b) { return (b.modifiedAt || 0) - (a.modifiedAt || 0); });
+      for (var i = 0; i < sorted.length; i++) {
+        var ext = sorted[i].name.split('.').pop().toLowerCase();
+        if (ext === 'svg' || ext === 'html' || ext === 'htm') {
+          vscode.postMessage({ type: 'previewFile', path: sorted[i].path });
+          return;
+        }
+      }
+    }
+
     // ── Collapsible section builder ──
     function collapsible(id, title, count, content, openByDefault) {
       if (!content) return '';
@@ -890,8 +1049,14 @@ export function getWebviewContent(data: GraphData): string {
       const container = document.getElementById('graph-container');
       const svg = document.getElementById('edges-svg');
 
-      document.getElementById('module-badge').textContent =
-        data.context.module || 'aucun module actif';
+      const badge = document.getElementById('module-badge');
+      const moduleName = data.context.moduleLabel || data.context.module;
+      if (moduleName) {
+        badge.textContent = moduleName;
+        badge.style.display = '';
+      } else {
+        badge.style.display = 'none';
+      }
       document.getElementById('global-readiness').textContent =
         'Readiness global : ' + data.globalReadiness + '%';
 
@@ -1034,6 +1199,31 @@ export function getWebviewContent(data: GraphData): string {
         '</div>';
       }
 
+      // ─── 3.5. Commands (open if onboarding done) ───
+      if (node.commands.length > 0) {
+        let commandsHtml = '';
+        for (const cmd of node.commands) {
+          commandsHtml += '<button class="command-btn" data-command="' + cmd.command + '">' +
+            '<span class="command-name">' + cmd.command + '</span>' +
+            '<span class="command-desc">' + cmd.description + '</span>' +
+          '</button>';
+        }
+        const strategyNode = data.nodes.find(n => n.id === 'strategy');
+        const onboardingDone = strategyNode && strategyNode.readiness > 0;
+        html += collapsible('commands', 'Commandes', node.commands.length, commandsHtml, !!onboardingDone);
+      }
+
+      // ─── 3.6. File Preview ───
+      html += '<div class="file-preview">' +
+        '<div id="preview-content" class="file-preview-body placeholder">' +
+          '<span class="file-preview-placeholder-text">Aucun aper\\u00E7u</span>' +
+        '</div>' +
+        '<div id="preview-footer" class="file-preview-footer" style="display:none;">' +
+          '<span id="preview-name" class="file-preview-name"></span>' +
+          '<span class="file-preview-open">\\u2197</span>' +
+        '</div>' +
+      '</div>';
+
       // ─── 4. Activite recente (open by default) ───
       if (node.files.length > 0) {
         const sorted = node.files.slice().sort((a, b) => (b.modifiedAt || 0) - (a.modifiedAt || 0));
@@ -1073,13 +1263,11 @@ export function getWebviewContent(data: GraphData): string {
       if (node.children && node.children.length > 0) {
         let confidenceHtml = '';
         for (const child of node.children) {
-          const pct = Math.round(child.signals ? child.signals.completeness * 100 : 0);
+          const pct = child.readiness || 0;
           const c2 = cls(pct);
           let badge = '';
-          if (child.fileCount === 0) {
+          if (child.fileCount === 0 && pct === 0) {
             badge = '<span class="confidence-badge empty">vide</span>';
-          } else if (child.signals && child.signals.hypothesisCount > 0) {
-            badge = '<span class="confidence-badge warn">' + child.signals.hypothesisCount + ' hyp.</span>';
           }
 
           confidenceHtml += '<div class="confidence-row">' +
@@ -1127,24 +1315,7 @@ export function getWebviewContent(data: GraphData): string {
         html += collapsible('history', 'Historique', data.history.length, historyHtml, false);
       }
 
-      // ─── 8. Commands (collapsed by default) ───
-      if (node.commands.length > 0) {
-        let commandsHtml = '';
-        for (const cmd of node.commands) {
-          commandsHtml += '<button class="command-btn" data-command="' + cmd.command + '">' +
-            '<div>' +
-              '<div class="command-header">' +
-                '<span class="command-name">' + cmd.command + '</span>' +
-                '<span class="command-label">' + cmd.label + '</span>' +
-              '</div>' +
-              '<div class="command-desc">' + cmd.description + '</div>' +
-            '</div>' +
-          '</button>';
-        }
-        html += collapsible('commands', 'Actions', node.commands.length, commandsHtml, false);
-      }
-
-      // ─── 9. Dependencies (collapsed by default) ───
+      // ─── 8. Dependencies (collapsed by default) ───
       let depsContent = '';
       if (node.dependsOn.length > 0 || node.unlocks.length > 0) {
         if (node.dependsOn.length > 0) {
@@ -1191,13 +1362,17 @@ export function getWebviewContent(data: GraphData): string {
         });
       });
 
-      // File items
+      // File items — click triggers preview for SVG/HTML, direct open for others
       panel.querySelectorAll('.file-item').forEach(item => {
         item.addEventListener('click', () => {
           const filePath = item.getAttribute('data-path');
-          if (filePath) vscode.postMessage({ type: 'openFile', path: filePath });
+          if (filePath) requestPreview(filePath);
         });
       });
+
+      // Auto-preview: show the latest SVG/HTML file for this node
+      const currentNode = data.nodes.find(n => n.id === nodeId);
+      if (currentNode) triggerAutoPreview(currentNode);
     }
 
     // ── Message handler ──
@@ -1207,6 +1382,8 @@ export function getWebviewContent(data: GraphData): string {
         Object.assign(data, msg.data);
         renderGraph();
         if (selectedNodeId) selectNode(selectedNodeId);
+      } else if (msg.type === 'filePreview') {
+        renderPreviewContent(msg);
       }
     });
 

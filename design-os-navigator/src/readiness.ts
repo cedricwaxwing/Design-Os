@@ -6,10 +6,16 @@ import * as path from 'path';
  * The extension reads this file — it never calculates readiness itself.
  */
 
+export interface ChildReadiness {
+  score: number;
+  label: string;
+}
+
 export interface NodeReadiness {
   score: number;
   verdict: string;
   action: string | null;
+  children?: Record<string, ChildReadiness>;
 }
 
 export interface ReadinessData {
@@ -48,6 +54,12 @@ export function getNodeVerdict(data: ReadinessData | null, nodeId: string): stri
 export function getNodeAction(data: ReadinessData | null, nodeId: string): string | null {
   if (!data) { return null; }
   return data.nodes[nodeId]?.action ?? null;
+}
+
+/** Get children readiness for a node. Returns empty record if no data. */
+export function getNodeChildren(data: ReadinessData | null, nodeId: string): Record<string, ChildReadiness> {
+  if (!data) { return {}; }
+  return data.nodes[nodeId]?.children ?? {};
 }
 
 /** Get global readiness score. Returns 0 if no data. */

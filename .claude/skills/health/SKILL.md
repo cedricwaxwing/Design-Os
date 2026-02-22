@@ -352,7 +352,15 @@ Apres le rapport, **ecrire les scores** dans `.claude/readiness.json` pour que l
   "globalScore": 45,
   "nodes": {
     "strategy":      { "score": 80, "verdict": "ready",     "action": null },
-    "discovery":     { "score": 60, "verdict": "push",      "action": "Valider les hypotheses" },
+    "discovery":     {
+      "score": 60, "verdict": "push", "action": "Valider les hypotheses",
+      "children": {
+        "discovery-domain":     { "score": 70, "label": "Domain Context" },
+        "discovery-personas":   { "score": 50, "label": "Personas" },
+        "discovery-interviews": { "score": 40, "label": "Interviews" },
+        "discovery-insights":   { "score": 60, "label": "Research Insights" }
+      }
+    },
     "ux":            { "score": 40, "verdict": "possible",   "action": "Completer le Screen Map" },
     "design-system": { "score": 50, "verdict": "push",      "action": "Remplir les tokens manquants" },
     "spec":          { "score": 0,  "verdict": "not-ready", "action": "UX requise d'abord" },
@@ -370,6 +378,7 @@ Apres le rapport, **ecrire les scores** dans `.claude/readiness.json` pour que l
 - Verdicts : `"ready"` (80-100%), `"push"` (50-79%), `"possible"` (25-49%), `"premature"` (10-24%), `"not-ready"` (0-9%)
 - Les scores derivent des checks de l'etape 2 : mapper les categories de checks (Onboarding, Discovery, Specs, DS, Build, Reviews) aux node IDs correspondants
 - `globalScore` = score global calcule a l'etape 3
+- Pour les nodes avec des sub-signaux (ex: Discovery), inclure un champ `children` avec le detail par sous-composante. Chaque child a un `score` (0-100) et un `label`
 
 ### Etape 6 — Recommandation de prochaine action
 
