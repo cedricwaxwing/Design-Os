@@ -4,10 +4,13 @@ import * as path from 'path';
 import { parseProject, parseMermaidFlow, layoutFlowNodes } from './parser';
 import { getWebviewContent } from './webview';
 import { loadReadiness, saveReadinessSnapshot } from './readiness';
-import { FlowNode, FlowEdge } from './types';
+import { FlowNode, FlowEdge, ConsoleCard } from './types';
+import { ConsoleViewProvider } from './console-webview';
 
 let currentPanel: vscode.WebviewPanel | undefined;
 let extensionContext: vscode.ExtensionContext;
+let consoleProvider: ConsoleViewProvider;
+let claudeTerminal: vscode.Terminal | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
   extensionContext = context;
@@ -17,6 +20,41 @@ export function activate(context: vscode.ExtensionContext) {
     openNavigator(context);
   });
   context.subscriptions.push(openCmd);
+
+  // Register Console panel
+  consoleProvider = new ConsoleViewProvider(context.extensionUri);
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider('designOsConsole', consoleProvider)
+  );
+
+  // Handle Console commands (dispatched from resolveWebviewView)
+  consoleProvider.onCommand((command) => runSlashCommand(command));
+
+  // Handle permission responses from Console
+  consoleProvider.onPermission((value) => {
+    if (claudeTerminal) {
+      claudeTerminal.sendText(value, false);
+      setTimeout(() => claudeTerminal?.sendText('\r', false), 100);
+    }
+  });
+
+  // Start hooks bridge to capture Claude activity
+  const root = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+  if (root) {
+    const bridgeWatcher = setupHooksBridge(root);
+    if (bridgeWatcher) {
+      context.subscriptions.push({ dispose: () => bridgeWatcher.close() });
+    }
+  }
+
+  // Clean up terminal reference when user closes it
+  context.subscriptions.push(
+    vscode.window.onDidCloseTerminal((terminal) => {
+      if (terminal === claudeTerminal) {
+        claudeTerminal = undefined;
+      }
+    })
+  );
 
   // Auto-open hint in status bar
   const statusItem = vscode.window.createStatusBarItem(
@@ -105,6 +143,14 @@ function openNavigator(context: vscode.ExtensionContext) {
       switch (message.type) {
         case 'runCommand':
           runSlashCommand(message.command);
+          // Route to Console: show as user card
+          consoleProvider.addCard({
+            id: 'nav-' + Date.now(),
+            type: 'user',
+            timestamp: Date.now(),
+            title: message.command,
+            detail: 'via Navigator',
+          });
           break;
         case 'openFile':
           openFile(message.path);
@@ -156,11 +202,38 @@ function refreshPanel() {
   }
 }
 
+function getOrCreateClaudeTerminal(): { terminal: vscode.Terminal; isNew: boolean } {
+  // Reuse existing Design OS terminal if still alive
+  if (claudeTerminal && vscode.window.terminals.includes(claudeTerminal)) {
+    return { terminal: claudeTerminal, isNew: false };
+  }
+  // Look for any terminal named "Design OS"
+  claudeTerminal = vscode.window.terminals.find(t => t.name === 'Design OS');
+  if (claudeTerminal) { return { terminal: claudeTerminal, isNew: false }; }
+  // Create a new terminal and start Claude
+  claudeTerminal = vscode.window.createTerminal('Design OS');
+  claudeTerminal.sendText('claude', true);
+  return { terminal: claudeTerminal, isNew: true };
+}
+
 function runSlashCommand(command: string) {
-  // Send the slash command to the integrated terminal
-  const terminal = vscode.window.activeTerminal || vscode.window.createTerminal('Design OS');
-  terminal.show(true);
-  terminal.sendText(command, true);
+  const { terminal, isNew } = getOrCreateClaudeTerminal();
+
+  // Claude Code uses Ink in raw mode — PTY buffering means we must
+  // split the text and the CR into two separate sendText() calls
+  // with a delay to force PTY flush between them.
+  const sendWithSubmit = () => {
+    terminal.sendText(command, false);          // Step 1: type the text
+    setTimeout(() => {
+      terminal.sendText('\r', false);           // Step 2: press Enter (after PTY flush)
+    }, 100);
+  };
+
+  if (isNew) {
+    setTimeout(sendWithSubmit, 3000);           // Wait for Claude CLI to boot
+  } else {
+    sendWithSubmit();
+  }
 }
 
 function openFile(filePath: string) {
@@ -474,4 +547,147 @@ export function deactivate() {
   if (currentPanel) {
     currentPanel.dispose();
   }
+}
+
+// ── Hooks Bridge: watch .claude/console-bridge.jsonl for Claude activity ──
+
+function setupHooksBridge(root: string): fs.FSWatcher | null {
+  const bridgePath = path.join(root, '.claude', 'console-bridge.jsonl');
+
+  // Ensure dir + file exist, truncate on fresh start
+  const bridgeDir = path.join(root, '.claude');
+  if (!fs.existsSync(bridgeDir)) { fs.mkdirSync(bridgeDir, { recursive: true }); }
+  fs.writeFileSync(bridgePath, '');
+
+  let lastSize = 0;
+
+  const watcher = fs.watch(bridgePath, (event) => {
+    if (event !== 'change') { return; }
+    let stats: fs.Stats;
+    try { stats = fs.statSync(bridgePath); } catch { return; }
+    if (stats.size <= lastSize) { lastSize = stats.size; return; }
+
+    // Read only the new bytes
+    const buf = Buffer.alloc(stats.size - lastSize);
+    const fd = fs.openSync(bridgePath, 'r');
+    fs.readSync(fd, buf, 0, buf.length, lastSize);
+    fs.closeSync(fd);
+    lastSize = stats.size;
+
+    const raw = buf.toString('utf-8');
+    // Try newline-separated first, fallback to concatenated JSON `}{`
+    let lines = raw.split('\n').filter(l => l.trim());
+    if (lines.length <= 1 && raw.includes('}{')) {
+      lines = raw.split(/\}\s*\{/).map((s, i, arr) => {
+        if (i > 0) { s = '{' + s; }
+        if (i < arr.length - 1) { s = s + '}'; }
+        return s;
+      }).filter(l => l.trim());
+    }
+    for (const line of lines) {
+      try {
+        const data = JSON.parse(line);
+        const card = hookEventToCard(data);
+        if (card) { consoleProvider.addCard(card); }
+        // Sync mode pill from hook event
+        const mode = data.permission_mode as string | undefined;
+        if (mode && consoleProvider.view) {
+          consoleProvider.view.webview.postMessage({ type: 'setMode', mode });
+        }
+      } catch { /* malformed line, skip */ }
+    }
+  });
+
+  return watcher;
+}
+
+function hookEventToCard(data: Record<string, unknown>): ConsoleCard | null {
+  const ts = Date.now();
+  const event = data.hook_event_name as string;
+
+  if (event === 'PostToolUse') {
+    const tool = (data.tool_name as string) || 'unknown';
+    const input = (data.tool_input as Record<string, unknown>) || {};
+
+    if (tool === 'Read' || tool === 'Glob' || tool === 'Grep') {
+      const target = (input.file_path || input.pattern || input.path || '') as string;
+      return { id: 'h-' + ts, type: 'read', timestamp: ts, title: path.basename(target) || tool, detail: target };
+    }
+    if (tool === 'Write' || tool === 'Edit') {
+      const fp = (input.file_path || '') as string;
+      return { id: 'h-' + ts, type: 'write', timestamp: ts, title: `${tool}: ${path.basename(fp)}`, detail: fp };
+    }
+    if (tool === 'Bash') {
+      const cmd = (input.command || '') as string;
+      const response = data.tool_response as Record<string, unknown> | undefined;
+      const stderr = (response?.stderr || '') as string;
+      const hasError = stderr.length > 0;
+      return {
+        id: 'h-' + ts,
+        type: hasError ? 'checkpoint' as const : 'agent-start' as const,
+        timestamp: ts,
+        title: `$ ${cmd.substring(0, 80)}${cmd.length > 80 ? '...' : ''}`,
+        detail: hasError ? `Erreur: ${stderr.substring(0, 100)}` : undefined,
+      };
+    }
+    // Skills — show skill name
+    if (tool === 'Skill') {
+      const skillName = (input.skill || 'unknown') as string;
+      return { id: 'h-' + ts, type: 'agent-start', timestamp: ts, title: `/${skillName}` };
+    }
+    // Other tools (Task, WebSearch, etc.)
+    return { id: 'h-' + ts, type: 'agent-start', timestamp: ts, title: tool };
+  }
+
+  if (event === 'Stop') {
+    // The Stop event doesn't include response text — read from transcript file
+    const transcriptPath = data.transcript_path as string;
+    if (!transcriptPath) { return null; }
+
+    try {
+      const content = fs.readFileSync(transcriptPath, 'utf-8');
+      const lines = content.split('\n').filter(l => l.trim());
+
+      // Walk backwards to find the last assistant message with text content
+      for (let i = lines.length - 1; i >= 0; i--) {
+        try {
+          const entry = JSON.parse(lines[i]);
+          if (entry.type === 'assistant' && Array.isArray(entry.message?.content)) {
+            const textBlock = entry.message.content.find(
+              (c: { type: string; text?: string }) => c.type === 'text' && c.text
+            );
+            if (textBlock) {
+              const msg = textBlock.text as string;
+              return {
+                id: 'h-' + ts,
+                type: 'response' as const,
+                timestamp: ts,
+                title: msg.substring(0, 150) + (msg.length > 150 ? '...' : ''),
+              };
+            }
+          }
+        } catch { /* malformed line */ }
+      }
+    } catch { /* can't read transcript */ }
+
+    return null;
+  }
+
+  if (event === 'Notification') {
+    const msg = (data.message || 'Notification') as string;
+    const isPermission = msg.toLowerCase().includes('permission') || msg.toLowerCase().includes('proceed');
+    return {
+      id: 'h-' + ts,
+      type: 'checkpoint' as const,
+      timestamp: ts,
+      title: msg,
+      actions: isPermission ? [
+        { label: 'Oui', value: '1' },
+        { label: 'Toujours', value: '2' },
+        { label: 'Non', value: '\x1b' },
+      ] : undefined,
+    };
+  }
+
+  return null;
 }

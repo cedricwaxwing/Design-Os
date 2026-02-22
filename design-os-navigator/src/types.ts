@@ -172,6 +172,26 @@ export interface GraphEdge {
   nogoGapCount?: number;
 }
 
+// ── Console types ──
+
+export type CardType = 'agent-start' | 'read' | 'write' | 'response' | 'user' | 'checkpoint' | 'transition';
+export type AgentMode = 'plan' | 'ask' | 'auto';
+
+export interface CardAction {
+  label: string;
+  value: string;
+}
+
+export interface ConsoleCard {
+  id: string;
+  type: CardType;
+  timestamp: number;
+  title: string;
+  detail?: string;
+  accentColor?: string;
+  actions?: CardAction[];
+}
+
 // ── Helpers ──
 
 export function emptySignals(): ContentSignals {

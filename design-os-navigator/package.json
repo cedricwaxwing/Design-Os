@@ -30,6 +30,15 @@
           "icon": "$(compass)"
         }
       ]
+    },
+    "views": {
+      "design-os": [
+        {
+          "type": "webview",
+          "id": "designOsConsole",
+          "name": "Console"
+        }
+      ]
     }
   },
   "scripts": {
