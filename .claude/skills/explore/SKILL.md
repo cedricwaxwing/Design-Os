@@ -1,6 +1,7 @@
 ---
 name: explore
 user-invocable: true
+panel-description: Prototype rapide pour valider une direction avant d'investir.
 description: >
   Agent Explore — Prototypage rapide. Genere un prototype minimal d'un composant ou d'une page
   pour valider une direction avant d'investir dans une spec complete.

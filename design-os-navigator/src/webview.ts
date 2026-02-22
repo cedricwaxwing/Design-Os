@@ -1199,7 +1199,18 @@ export function getWebviewContent(data: GraphData): string {
         '</div>';
       }
 
-      // ─── 3.5. Commands (open if onboarding done) ───
+      // ─── 3.5. File Preview ───
+      html += '<div class="file-preview">' +
+        '<div id="preview-content" class="file-preview-body placeholder">' +
+          '<span class="file-preview-placeholder-text">Aucun aper\\u00E7u</span>' +
+        '</div>' +
+        '<div id="preview-footer" class="file-preview-footer" style="display:none;">' +
+          '<span id="preview-name" class="file-preview-name"></span>' +
+          '<span class="file-preview-open">\\u2197</span>' +
+        '</div>' +
+      '</div>';
+
+      // ─── 3.6. Commands (open if onboarding done) ───
       if (node.commands.length > 0) {
         let commandsHtml = '';
         for (const cmd of node.commands) {
@@ -1212,17 +1223,6 @@ export function getWebviewContent(data: GraphData): string {
         const onboardingDone = strategyNode && strategyNode.readiness > 0;
         html += collapsible('commands', 'Commandes', node.commands.length, commandsHtml, !!onboardingDone);
       }
-
-      // ─── 3.6. File Preview ───
-      html += '<div class="file-preview">' +
-        '<div id="preview-content" class="file-preview-body placeholder">' +
-          '<span class="file-preview-placeholder-text">Aucun aper\\u00E7u</span>' +
-        '</div>' +
-        '<div id="preview-footer" class="file-preview-footer" style="display:none;">' +
-          '<span id="preview-name" class="file-preview-name"></span>' +
-          '<span class="file-preview-open">\\u2197</span>' +
-        '</div>' +
-      '</div>';
 
       // ─── 4. Activite recente (open by default) ───
       if (node.files.length > 0) {

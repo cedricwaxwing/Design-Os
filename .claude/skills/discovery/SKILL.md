@@ -1,6 +1,7 @@
 ---
 name: discovery
 user-invocable: true
+panel-description: Explore tes utilisateurs et structure tes hypotheses produit.
 description: >
   Agent Discovery Workshop du Design Operating System.
   Guide la creation de contenu de recherche utilisateur et de contexte domaine, meme quand l'utilisateur part de zero.

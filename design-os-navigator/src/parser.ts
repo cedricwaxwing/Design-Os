@@ -468,16 +468,24 @@ function discoverSkills(root: string): DiscoveredSkill[] {
     const invocable = extractFmField(frontmatter, 'user-invocable');
     if (invocable === 'false') { continue; }
 
-    // Extract description (may be multi-line with > indicator)
-    const description = extractFmMultiline(frontmatter, 'description');
-    // Split into sentences — phrase 1 = identité technique, phrase 2 = action, phrase 3+ = détails
-    const sentences = description.split(/\.\s/);
-    const label = sentences.length > 1
-      ? sentences[1].trim()
-      : sentences[0].replace(/^Agent .+? — /, '').trim();
-    const desc = sentences.length > 2
-      ? sentences.slice(2).join('. ').replace(/\s*Use when .+$/i, '').trim()
-      : '';
+    // Extract panel-description (dedicated UX copy) or fallback to parsed description
+    const panelDesc = extractFmField(frontmatter, 'panel-description');
+    let desc: string;
+    let label: string;
+
+    if (panelDesc) {
+      desc = panelDesc;
+      label = panelDesc;
+    } else {
+      const description = extractFmMultiline(frontmatter, 'description');
+      const sentences = description.split(/\.\s/);
+      label = sentences.length > 1
+        ? sentences[1].trim()
+        : sentences[0].replace(/^Agent .+? — /, '').trim();
+      desc = sentences.length > 2
+        ? sentences.slice(2).join('. ').replace(/\s*Use when .+$/i, '').trim()
+        : '';
+    }
 
     // Extract tags
     const tags = extractFmList(frontmatter, 'tags');

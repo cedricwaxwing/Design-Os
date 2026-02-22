@@ -1,6 +1,7 @@
 ---
 name: screen-map
 user-invocable: true
+panel-description: Verifie la coherence entre ecrans, specs et user stories.
 description: >
   Agent Screen-Map — Diagnostique l'integrite du mapping ecrans-specs-stories.
   Cross-reference le Screen Map, les specs existantes et les stories pour detecter
