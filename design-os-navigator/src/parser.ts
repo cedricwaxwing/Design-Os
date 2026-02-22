@@ -5,6 +5,7 @@ import {
   GraphEdge, GraphData, ContentSignals, SectionDetail, HistoryEntry,
   RecommendedAction, emptySignals, aggregateSignals, DocStatus,
   FlowNode, FlowEdge, FlowGraph,
+  GateCondition, MaturityTag, deriveMaturity,
 } from './types';
 import { loadReadiness, getNodeScore, getNodeChildren, getGlobalScore, ReadinessData, loadReadinessHistory } from './readiness';
 
@@ -18,8 +19,16 @@ export function parseProject(workspaceRoot: string): GraphData {
   const nodes = buildNodes(workspaceRoot, context, readinessData);
   const edges = buildEdges(nodes);
   const history = parseHistory(workspaceRoot);
-  const globalReadiness = getGlobalScore(readinessData);
   const readinessHistory = loadReadinessHistory(workspaceRoot);
+
+  // No auto-create baseline: skills write readiness.json via their persistence step.
+  // Estimated scores are transient and recalculated on each scan.
+
+  // Global readiness = total gates met / total gates
+  const totalGates = nodes.reduce((s, n) => s + n.gates.length, 0);
+  const metGates = nodes.reduce((s, n) => s + n.gates.filter(g => g.met).length, 0);
+  const globalReadiness = totalGates > 0 ? Math.round(metGates / totalGates * 100) : 0;
+
   return { context, nodes, edges, globalReadiness, history, readinessHistory };
 }
 
@@ -226,10 +235,17 @@ function countGenericSections(content: string): SectionCount {
     const nextIdx = i + 1 < headers.length ? content.indexOf(headers[i + 1], idx + 1) : content.length;
     const sectionContent = content.slice(idx + h.length, nextIdx).trim();
 
-    const hasRealContent = sectionContent.length > 30
-      && !/^\{[a-z_]+\}/.test(sectionContent)
-      && !sectionContent.startsWith('#______')
-      && !sectionContent.startsWith('<!-- GENERATED');
+    // Strip HTML comments and bracket placeholders to check if real content remains
+    const stripped = sectionContent
+      .replace(/<!--[\s\S]*?-->/g, '')           // remove all HTML comments
+      .replace(/\[(?:Principle \d|explanation|terme|definition|Regle \d|explication|description|.*?\.\.\.)\]/gi, '')  // bracket placeholders
+      .replace(/\{[a-z_]+\}/g, '')               // {placeholder} patterns
+      .replace(/^\s*[-|>\s*]+\s*$/gm, '')         // lines that are just -, |, or >
+      .replace(/\|\s*\|/g, '')                    // empty table cells
+      .replace(/#______/g, '')                    // blank tokens
+      .trim();
+
+    const hasRealContent = stripped.length > 30;
 
     const hasHypothesis = /\[HYPOTHESE\]/i.test(sectionContent);
     const hasContradiction = /\[CONTRADICTOIRE/i.test(sectionContent);
@@ -322,6 +338,7 @@ function listFiles(dirPath: string): FileInfo[] {
       const fileType = inferFileType(entry.name, dirPath);
       const signals = scanContentSignals(content, fileTypeToTemplateType(fileType));
       const modifiedAt = safeStatMtime(filePath);
+      const isScaffold = entry.name.endsWith('.md') ? detectScaffold(entry.name, content, signals) : false;
 
       files.push({
         name: entry.name,
@@ -331,11 +348,52 @@ function listFiles(dirPath: string): FileInfo[] {
         status: signals.status,
         signals,
         modifiedAt,
+        isScaffold,
       });
     }
   }
 
   return files;
+}
+
+/** Detect if a file is scaffold/framework (not user-generated content). */
+function detectScaffold(filename: string, content: string, signals: ContentSignals): boolean {
+  // README.md = folder documentation, never user content
+  if (filename === 'README.md') { return true; }
+  // No content at all
+  if (!content || content.trim().length === 0) { return true; }
+
+  // Framework instruction blockquotes — files shipped with Design OS template.
+  // These contain agent instructions like "> Source de verite", "> Remplis ce fichier", etc.
+  // Once a skill fills them in, it writes readiness.json directly (bypasses estimation).
+  const hasFrameworkHeader = /^>\s*(Source de verite|Remplis ce fichier|Ce fichier est auto-gen|Composants atomiques|Patterns reutilisables|Chaque composant.*DOIT|Les agents.*DOIVENT)/mi.test(content);
+  if (hasFrameworkHeader) { return true; }
+
+  // No filled sections at all = empty template
+  if (signals.sectionsTotal > 0 && signals.sectionsFilled === 0) { return true; }
+  // Has placeholders but zero filled sections = unfilled template
+  if (signals.placeholderCount > 0 && signals.sectionsFilled === 0) { return true; }
+  // Bracket-style template markers
+  const hasTemplateMarkers = /\{[a-z_]+\}|\[Principle \d\]|\[explanation\]|\[terme\]|\[definition\]/.test(content);
+  if (hasTemplateMarkers && signals.sectionsFilled <= 1) { return true; }
+  // HTML instruction comments = template scaffolding
+  const instructionComments = (content.match(/<!--\s*(?:GENERATED|Replace|END GENERATED|One sentence|[A-Z][a-z].*?\?|What|How|Who|In \d)/gi) || []).length;
+  if (instructionComments >= 2 && signals.sectionsFilled <= 1) { return true; }
+  // Content is mostly HTML comments + bracket placeholders (strip and check remaining)
+  const stripped = content
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/\[(?:Principle \d|explanation|terme|definition|Regle \d|explication|description|.*?\.\.\.)\]/gi, '')
+    .replace(/\{[a-z_]+\}/g, '')
+    .replace(/^#+\s+.*$/gm, '')       // headers
+    .replace(/^\s*[-|>\s*]+\s*$/gm, '') // decoration lines
+    .replace(/\|\s*\|/g, '')           // empty table cells
+    .replace(/#______/g, '')
+    .replace(/>\s*$/gm, '')            // blockquotes
+    .replace(/---/g, '')               // horizontal rules
+    .replace(/\*\*\[.*?\]\*\*/g, '')   // bold bracket placeholders
+    .trim();
+  if (stripped.length < 50) { return true; }
+  return false;
 }
 
 function listFilesRecursive(dirPath: string): FileInfo[] {
@@ -354,6 +412,7 @@ function listFilesRecursive(dirPath: string): FileInfo[] {
         const fileType = inferFileType(entry.name, dir);
         const signals = scanContentSignals(content, fileTypeToTemplateType(fileType));
         const modifiedAt = safeStatMtime(fullPath);
+        const isScaffold = entry.name.endsWith('.md') ? detectScaffold(entry.name, content, signals) : false;
 
         files.push({
           name: entry.name,
@@ -363,6 +422,7 @@ function listFilesRecursive(dirPath: string): FileInfo[] {
           status: signals.status,
           signals,
           modifiedAt,
+          isScaffold,
         });
       }
     }
@@ -370,6 +430,11 @@ function listFilesRecursive(dirPath: string): FileInfo[] {
 
   walk(dirPath);
   return files;
+}
+
+/** Count only real (non-scaffold) files for status determination. */
+function countReal(files: FileInfo[]): number {
+  return files.filter(f => !f.isScaffold).length;
 }
 
 function safeRead(filePath: string): string {
@@ -953,6 +1018,263 @@ function extractUxContext(journeyFiles: FileInfo[]): Record<string, unknown> {
 }
 
 // ═══════════════════════════════════════════════════════
+// GATE-BASED MATURITY EVALUATION
+// ═══════════════════════════════════════════════════════
+
+interface GateEvalContext {
+  root: string;
+  mod: string;
+  strategyFiles: FileInfo[];
+  domainFiles: FileInfo[];
+  personaFiles: FileInfo[];
+  interviewFiles: FileInfo[];
+  insightFiles: FileInfo[];
+  allDiscoveryFiles: FileInfo[];
+  uxFiles: FileInfo[];
+  hasScreenMap: boolean;
+  screenMapContent: string;
+  specFiles: FileInfo[];
+  dsFiles: FileInfo[];
+  dsContext: Record<string, unknown>;
+  srcFiles: FileInfo[];
+  testFiles: FileInfo[];
+  reviewFiles: FileInfo[];
+  materialFiles: FileInfo[];
+  labFiles: FileInfo[];
+  matNewCount: number;
+}
+
+function evaluateGates(nodeId: string, ctx: GateEvalContext): GateCondition[] {
+  switch (nodeId) {
+    case 'strategy': return evalStrategyGates(ctx);
+    case 'discovery': return evalDiscoveryGates(ctx);
+    case 'ux': return evalUxGates(ctx);
+    case 'spec': return evalSpecGates(ctx);
+    case 'design-system': return evalDsGates(ctx);
+    case 'build': return evalBuildGates(ctx);
+    case 'review': return evalReviewGates(ctx);
+    case 'material': return evalMaterialGates(ctx);
+    case 'lab': return evalLabGates(ctx);
+    default: return [];
+  }
+}
+
+function evalStrategyGates(ctx: GateEvalContext): GateCondition[] {
+  const stratDir = path.join(ctx.root, '01_Product', '01 Strategy');
+
+  // Gate 1: Brief rempli
+  const briefPath = path.join(stratDir, 'product-brief.md');
+  const briefExists = fs.existsSync(briefPath);
+  const briefContent = briefExists ? safeRead(briefPath) : '';
+  const briefSig = briefExists ? scanContentSignals(briefContent) : emptySignals();
+  const briefFilled = briefExists
+    && !detectScaffold('product-brief.md', briefContent, briefSig)
+    && briefSig.sectionsFilled >= 3;
+
+  // Gate 2: Vision North Star definie
+  const visionPath = path.join(stratDir, 'northstar-vision.md');
+  const visionContent = fs.existsSync(visionPath) ? safeRead(visionPath) : '';
+  const visionDefined = (() => {
+    const m = visionContent.match(/##\s*North Star Statement[\s\S]*?(?=\n##|$)/i);
+    if (!m) { return false; }
+    const stripped = m[0].replace(/##.*$/m, '').replace(/<!--[\s\S]*?-->/g, '').replace(/^>\s*$/gm, '').trim();
+    return stripped.length > 10;
+  })();
+
+  // Gate 3: Personas references (cross-node)
+  const personasExist = countReal(ctx.personaFiles) > 0;
+
+  // Gate 4: Roadmap defini
+  const roadmapDir = path.join(stratDir, 'roadmap');
+  const roadmapFiles = fs.existsSync(roadmapDir) ? listFilesRecursive(roadmapDir) : [];
+  const roadmapDefined = countReal(roadmapFiles) > 0;
+
+  // Gate 5: Brief valide VALIDEE
+  const briefValidated = briefExists && /status\s*:\s*VALIDEE|Statut\s*:\s*VALIDEE/i.test(briefContent);
+
+  return [
+    { id: 'strat-brief', label: 'Product brief rempli', met: briefFilled, command: '/onboarding' },
+    { id: 'strat-vision', label: 'Vision North Star definie', met: visionDefined, command: '/onboarding' },
+    { id: 'strat-personas', label: 'Personas references', met: personasExist, command: '/discovery' },
+    { id: 'strat-roadmap', label: 'Roadmap defini', met: roadmapDefined, command: '/onboarding' },
+    { id: 'strat-validated', label: 'Brief valide (VALIDEE)', met: briefValidated, command: '/spec' },
+  ];
+}
+
+function evalDiscoveryGates(ctx: GateEvalContext): GateCondition[] {
+  const domainOk = countReal(ctx.domainFiles) > 0;
+  const personasOk = countReal(ctx.personaFiles) > 0;
+  const interviewsOk = countReal(ctx.interviewFiles) > 0;
+  const insightsOk = countReal(ctx.insightFiles) > 0;
+
+  // All hypotheses validated = no unvalidated [HYPOTHESE] tags remain
+  const allFiles = ctx.allDiscoveryFiles;
+  const sig = aggregateSignals(allFiles.filter(f => !f.isScaffold));
+  const noHypothesis = sig.hypothesisCount === 0;
+
+  return [
+    { id: 'disc-domain', label: 'Domain context amorce', met: domainOk, command: '/discovery' },
+    { id: 'disc-personas', label: 'Personas crees', met: personasOk, command: '/discovery personas' },
+    { id: 'disc-interviews', label: 'Interviews documentees', met: interviewsOk, command: '/discovery' },
+    { id: 'disc-insights', label: 'Insights synthetises', met: insightsOk, command: '/discovery' },
+    { id: 'disc-hypotheses', label: '0 hypothese non validee', met: noHypothesis, command: '/discovery hypotheses' },
+  ];
+}
+
+function evalUxGates(ctx: GateEvalContext): GateCondition[] {
+  // Screen map created and not scaffold
+  const smOk = ctx.hasScreenMap && (() => {
+    const sig = scanContentSignals(ctx.screenMapContent);
+    return !detectScaffold('00_screen-map.md', ctx.screenMapContent, sig);
+  })();
+
+  // Journey or flow defined
+  const journeyOk = countReal(ctx.uxFiles) > 0;
+
+  // Stories mapped: screen-map references specs (contains links like X.Y-)
+  const storiesMapped = ctx.hasScreenMap && /\d+\.\d+-/.test(ctx.screenMapContent);
+
+  // UX hypotheses validated
+  const uxSig = aggregateSignals(ctx.uxFiles.filter(f => !f.isScaffold));
+  const noUxHypothesis = uxSig.hypothesisCount === 0;
+
+  return [
+    { id: 'ux-screenmap', label: 'Screen map cree', met: !!smOk, command: '/ux' },
+    { id: 'ux-journey', label: 'Journey/flow defini', met: journeyOk, command: '/ux' },
+    { id: 'ux-stories', label: 'Stories mappees', met: storiesMapped, command: '/screen-map' },
+    { id: 'ux-hypotheses', label: 'Hypotheses UX validees', met: noUxHypothesis, command: '/ux' },
+  ];
+}
+
+function evalSpecGates(ctx: GateEvalContext): GateCondition[] {
+  const realSpecs = ctx.specFiles.filter(f => !f.isScaffold);
+  const hasSpec = realSpecs.length > 0;
+
+  // At least one spec with >= 5 sections filled
+  const hasDeepSpec = realSpecs.some(f => f.signals.sectionsFilled >= 5);
+
+  // 0 TBD across all specs
+  const specSig = aggregateSignals(realSpecs);
+  const noTbd = specSig.tbdCount === 0;
+
+  // All specs VALIDEE
+  const allValidated = hasSpec && realSpecs.every(f => f.signals.status === 'VALIDEE');
+
+  return [
+    { id: 'spec-exists', label: '1+ spec existe', met: hasSpec, command: '/spec' },
+    { id: 'spec-deep', label: 'Spec avec 5+ sections', met: hasDeepSpec, command: '/spec' },
+    { id: 'spec-no-tbd', label: '0 TBD dans les specs', met: noTbd, command: '/spec' },
+    { id: 'spec-validated', label: 'Toutes specs VALIDEE', met: allValidated, command: '/spec' },
+  ];
+}
+
+function evalDsGates(ctx: GateEvalContext): GateCondition[] {
+  const dsCtx = ctx.dsContext as Record<string, unknown>;
+  const tokensDefined = (dsCtx.tokensDefined as number) || 0;
+  const tokensTotal = (dsCtx.tokensTotal as number) || 0;
+  const tokenFillPct = (dsCtx.tokenFillPct as number) || 0;
+
+  // Gate 1: Tokens definis (at least 1 real hex color)
+  const tokensOk = tokensDefined > 0;
+
+  // Gate 2: Components documented (sectionsFilled >= 2)
+  const compFile = ctx.dsFiles.find(f => f.name === 'components.md');
+  const compOk = !!compFile && !compFile.isScaffold && compFile.signals.sectionsFilled >= 2;
+
+  // Gate 3: Patterns definis
+  const patFile = ctx.dsFiles.find(f => f.name === 'patterns.md');
+  const patOk = !!patFile && !patFile.isScaffold && patFile.signals.sectionsFilled >= 1;
+
+  // Gate 4: DS imported/confirmed (tokens fill > 50%)
+  const dsConfirmed = tokensTotal > 0 && tokenFillPct > 50;
+
+  return [
+    { id: 'ds-tokens', label: 'Tokens definis', met: tokensOk, command: '/onboarding' },
+    { id: 'ds-components', label: 'Components documentes', met: compOk, command: '/onboarding' },
+    { id: 'ds-patterns', label: 'Patterns definis', met: patOk, command: '/onboarding' },
+    { id: 'ds-confirmed', label: 'DS importe/confirme', met: dsConfirmed, command: '/onboarding' },
+  ];
+}
+
+function evalBuildGates(ctx: GateEvalContext): GateCondition[] {
+  const hasSrc = ctx.srcFiles.length > 0;
+  const hasTests = ctx.testFiles.length > 0;
+
+  // Coverage spec→code: each spec has a matching src file
+  const realSpecs = ctx.specFiles.filter(f => !f.isScaffold);
+  const srcNames = ctx.srcFiles.map(f => f.name.toLowerCase());
+  const coverage = realSpecs.length > 0 && realSpecs.every(f => {
+    const slug = f.name.replace(/^\d+\.\d+-/, '').replace(/\.spec\.md$/, '').toLowerCase();
+    return srcNames.some(sn => sn.includes(slug));
+  });
+
+  // Review passed GO
+  const reviewGo = ctx.reviewFiles.some(f => {
+    const content = safeRead(f.path);
+    return /\bGO\b/.test(content) && !/NO-GO|NO_GO/i.test(content);
+  });
+
+  return [
+    { id: 'build-src', label: 'Code source existe', met: hasSrc, command: '/build' },
+    { id: 'build-tests', label: 'Tests existent', met: hasTests, command: '/build' },
+    { id: 'build-coverage', label: 'Coverage spec->code', met: coverage, command: '/build' },
+    { id: 'build-review-go', label: 'Review passee GO', met: reviewGo, command: '/review' },
+  ];
+}
+
+function evalReviewGates(ctx: GateEvalContext): GateCondition[] {
+  const hasReview = ctx.reviewFiles.length > 0;
+
+  // All reviews scored (contain X/Y pattern)
+  const allScored = hasReview && ctx.reviewFiles.every(f => {
+    const content = safeRead(f.path);
+    return /\d+\/\d+/.test(content);
+  });
+
+  // Global GO verdict
+  const globalGo = hasReview && (() => {
+    // Check last review file (sorted by name/date)
+    const sorted = [...ctx.reviewFiles].sort((a, b) => b.modifiedAt - a.modifiedAt);
+    const lastContent = safeRead(sorted[0].path);
+    return /\bGO\b/.test(lastContent) && !/NO-GO|NO_GO/i.test(lastContent);
+  })();
+
+  return [
+    { id: 'rev-exists', label: '1+ review existe', met: hasReview, command: '/review' },
+    { id: 'rev-scored', label: 'Toutes reviews scorees', met: allScored, command: '/review' },
+    { id: 'rev-go', label: 'Verdict GO global', met: globalGo, command: '/review' },
+  ];
+}
+
+function evalMaterialGates(ctx: GateEvalContext): GateCondition[] {
+  const hasFiles = countReal(ctx.materialFiles) > 0;
+  const allProcessed = hasFiles && ctx.matNewCount === 0;
+
+  // Extraction launched: at least 1 discovery file created from material
+  const extractionDone = countReal(ctx.allDiscoveryFiles) > 0;
+
+  return [
+    { id: 'mat-files', label: 'Documents deposes', met: hasFiles, command: '/discovery' },
+    { id: 'mat-processed', label: 'Tous traites', met: allProcessed, command: '/discovery' },
+    { id: 'mat-extracted', label: 'Extraction lancee', met: extractionDone, command: '/discovery' },
+  ];
+}
+
+function evalLabGates(ctx: GateEvalContext): GateCondition[] {
+  const hasPrototype = countReal(ctx.labFiles) > 0;
+
+  // Feedback integrated: a file with "feedback" or "note" in name exists
+  const hasFeedback = ctx.labFiles.some(f =>
+    /feedback|note|retour/i.test(f.name) && !f.isScaffold
+  );
+
+  return [
+    { id: 'lab-proto', label: 'Prototype existe', met: hasPrototype, command: '/explore' },
+    { id: 'lab-feedback', label: 'Feedback integre', met: hasFeedback, command: '/explore' },
+  ];
+}
+
+// ═══════════════════════════════════════════════════════
 // NODE BUILDING
 // ═══════════════════════════════════════════════════════
 
@@ -986,8 +1308,9 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     commands: skillMap['strategy'] || [],
     dependsOn: ['material'],
     unlocks: ['discovery'],
-    status: strategyFiles.length > 0 ? 'ready' : 'empty',
+    status: countReal(strategyFiles) > 0 ? 'ready' : 'empty',
     contextData: strategyContext,
+    gates: [], maturity: 'VIDE' as MaturityTag,
   });
 
   // --- Discovery ---
@@ -1024,8 +1347,9 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
         makeChildNode('discovery-insights', 'Research Insights', 'discovery', insightFiles, dc['discovery-insights']?.score ?? 0),
       ];
     })(),
-    status: allDiscoveryFiles.length > 0 ? 'active' : 'empty',
+    status: countReal(allDiscoveryFiles) > 0 ? 'active' : 'empty',
     contextData: discoveryContext,
+    gates: [], maturity: 'VIDE' as MaturityTag,
   });
 
   // --- Material (inserted after discovery so we can compare mtimes) ---
@@ -1049,8 +1373,9 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     commands: materialCmds,
     dependsOn: [],
     unlocks: ['strategy', 'discovery'],
-    status: materialFiles.length === 0 ? 'empty' : (matNewCount > 0 ? 'blocked' : 'ready'),
+    status: countReal(materialFiles) === 0 ? 'empty' : (matNewCount > 0 ? 'blocked' : 'ready'),
     contextData: matCtx,
+    gates: [], maturity: 'VIDE' as MaturityTag,
   });
 
   // --- UX Design ---
@@ -1090,8 +1415,9 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     commands: skillMap['ux'] || [],
     dependsOn: ['discovery'],
     unlocks: ['spec', 'ui'],
-    status: hasScreenMap || uxFiles.length > 0 ? 'active' : 'empty',
+    status: hasScreenMap || countReal(uxFiles) > 0 ? 'active' : 'empty',
     contextData: uxContext,
+    gates: [], maturity: 'VIDE' as MaturityTag,
   });
 
   // --- Spec ---
@@ -1126,6 +1452,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     unlocks: ['build'],
     status: specFiles.length > 0 ? 'active' : 'empty',
     contextData: specContext,
+    gates: [], maturity: 'VIDE' as MaturityTag,
   });
 
   // --- UI ---
@@ -1142,6 +1469,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     dependsOn: ['ux'],
     unlocks: ['spec'],
     status: screenFiles.length > 0 ? 'active' : 'empty',
+    gates: [], maturity: 'VIDE' as MaturityTag,
   });
 
   // --- Design System ---
@@ -1163,8 +1491,9 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     commands: skillMap['design-system'] || [],
     dependsOn: [],
     unlocks: ['ui', 'build'],
-    status: dsFiles.length > 0 ? 'ready' : 'empty',
+    status: countReal(dsFiles) > 0 ? 'ready' : 'empty',
     contextData: dsContext,
+    gates: [], maturity: 'VIDE' as MaturityTag,
   });
 
   // --- Build ---
@@ -1186,6 +1515,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     dependsOn: ['spec'],
     unlocks: ['review'],
     status: srcFiles.length > 0 ? 'active' : 'empty',
+    gates: [], maturity: 'VIDE' as MaturityTag,
   });
 
   // --- Review ---
@@ -1205,6 +1535,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     dependsOn: ['build'],
     unlocks: [],
     status: reviewFiles.length > 0 ? 'active' : 'empty',
+    gates: [], maturity: 'VIDE' as MaturityTag,
   });
 
   // --- Lab ---
@@ -1223,12 +1554,31 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     commands: skillMap['lab'] || [],
     dependsOn: [],
     unlocks: ['discovery', 'ux', 'spec'],
-    status: labFiles.length > 0 ? 'active' : 'empty',
+    status: countReal(labFiles) > 0 ? 'active' : 'empty',
+    gates: [], maturity: 'VIDE' as MaturityTag,
   });
 
-  // ── Load readiness from persisted .claude/readiness.json ──
+  // ── Evaluate gates for each node → derive maturity + readiness ──
+  const screenMapContent = hasScreenMap ? safeRead(screenMapPath) : '';
+  const gateCtx: GateEvalContext = {
+    root, mod,
+    strategyFiles, domainFiles, personaFiles, interviewFiles, insightFiles,
+    allDiscoveryFiles, uxFiles, hasScreenMap, screenMapContent,
+    specFiles, dsFiles, dsContext,
+    srcFiles, testFiles, reviewFiles,
+    materialFiles, labFiles, matNewCount,
+  };
+
   for (const node of nodes) {
-    node.readiness = getNodeScore(readinessData, node.id);
+    node.gates = evaluateGates(node.id, gateCtx);
+    node.maturity = deriveMaturity(node.gates);
+    // Readiness = gate ratio (0-100), with persisted override if available
+    const persisted = getNodeScore(readinessData, node.id);
+    if (persisted > 0) {
+      node.readiness = persisted;
+    } else if (node.gates.length > 0) {
+      node.readiness = Math.round(node.gates.filter(g => g.met).length / node.gates.length * 100);
+    }
   }
 
   // Assign recommended actions based on lowest-scoring upstream
@@ -1253,6 +1603,7 @@ function makeChildNode(id: string, label: string, phase: Phase, files: FileInfo[
     dependsOn: [],
     unlocks: [],
     status: files.length > 0 ? 'ready' : 'empty',
+    gates: [], maturity: 'VIDE' as MaturityTag,
   };
 }
 
@@ -1269,6 +1620,51 @@ function collectSectionsFromFiles(files: FileInfo[]): SectionDetail[] {
     }
   }
   return all;
+}
+
+/** Estimate readiness from content signals when readiness.json is absent.
+ *  Only counts real (non-scaffold) files — READMEs and unfilled templates are excluded. */
+function estimateReadiness(node: DesignOsNode): number {
+  const realFiles = node.files.filter(f => !f.isScaffold);
+  if (realFiles.length === 0) { return 0; }
+
+  const signals = aggregateSignals(realFiles);
+
+  // Base: completeness × reliability × 100
+  let score = signals.completeness * signals.reliability * 100;
+
+  // Bonus: validated docs boost score
+  if (signals.validatedCount > 0) { score = Math.min(100, score * 1.2); }
+
+  // Penalty: TBD and placeholders reduce score
+  if (signals.tbdCount > 0) { score *= 0.8; }
+  if (signals.placeholderCount > 3) { score *= 0.7; }
+
+  // Node-specific weights
+  switch (node.id) {
+    case 'strategy':
+      score = realFiles.length > 0 ? Math.max(score, 20) : 0;
+      break;
+    case 'discovery': {
+      let childTotal = 0;
+      for (const c of (node.children || [])) {
+        const realChildFiles = c.files.filter(f => !f.isScaffold);
+        if (realChildFiles.length > 0) { childTotal += 25; }
+      }
+      score = Math.max(score, childTotal);
+      break;
+    }
+    case 'spec':
+      if (signals.status === 'VALIDEE') { score = Math.max(score, 70); }
+      break;
+    case 'design-system': {
+      const tokenFill = (node.contextData as Record<string, unknown>)?.tokenFillPct as number || 0;
+      score = Math.max(score, tokenFill * 0.8);
+      break;
+    }
+  }
+
+  return Math.round(Math.min(100, Math.max(0, score)));
 }
 
 function assignRecommendedActions(nodes: DesignOsNode[]): void {
@@ -1355,15 +1751,44 @@ function buildEdges(nodes: DesignOsNode[]): GraphEdge[] {
     { from: 'lab', to: 'spec', type: 'dependency' },
   ];
 
-  // Check for NO-GO in review files — add nogo edges
+  // Check for NO-GO in review files — add nogo edges with gap type
   const reviewNode = nodes.find(n => n.id === 'review');
   if (reviewNode) {
-    const hasNoGo = reviewNode.files.some(f => {
+    let hasNoGo = false;
+    const gapCounts: Record<string, number> = {};
+
+    for (const f of reviewNode.files) {
       const content = safeRead(f.path);
-      return /NO-GO|NO_GO/i.test(content);
-    });
+      if (/NO-GO|NO_GO/i.test(content)) {
+        hasNoGo = true;
+        // Count gap types: IMPL, SPEC, DESIGN, DISCOVERY
+        const implCount = (content.match(/\bIMPL\b/g) || []).length;
+        const specCount = (content.match(/\bSPEC\b/g) || []).length;
+        const designCount = (content.match(/\bDESIGN\b/g) || []).length;
+        const discoveryCount = (content.match(/\bDISCOVERY\b/g) || []).length;
+        gapCounts['IMPL'] = (gapCounts['IMPL'] || 0) + implCount;
+        gapCounts['SPEC'] = (gapCounts['SPEC'] || 0) + specCount;
+        gapCounts['DESIGN'] = (gapCounts['DESIGN'] || 0) + designCount;
+        gapCounts['DISCOVERY'] = (gapCounts['DISCOVERY'] || 0) + discoveryCount;
+      }
+    }
+
     if (hasNoGo) {
-      edges.push({ from: 'review', to: 'build', type: 'nogo' });
+      // Find dominant gap type
+      let dominantType = 'IMPL';
+      let dominantCount = 0;
+      for (const [type, count] of Object.entries(gapCounts)) {
+        if (count > dominantCount) {
+          dominantType = type;
+          dominantCount = count;
+        }
+      }
+      const totalGaps = Object.values(gapCounts).reduce((a, b) => a + b, 0);
+      edges.push({
+        from: 'review', to: 'build', type: 'nogo',
+        nogoGapType: dominantType,
+        nogoGapCount: totalGaps,
+      });
     }
   }
 

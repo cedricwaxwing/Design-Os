@@ -198,6 +198,17 @@ Pour CHAQUE critere de la section 2 :
 
 Ecris le rapport dans `03_Review/{module}/reviews/review-X.Y-nom.md`
 
+### Etape 5 — Persistance du readiness
+
+Apres avoir termine, mettre a jour `.claude/readiness.json` pour que le Design OS Navigator reflète les changements :
+
+1. **Lire** le fichier `.claude/readiness.json` existant (ou creer un objet vide si absent)
+2. **Mettre a jour** le score du node `review` en recalculant depuis les signaux produits
+3. **Recalculer** le `globalScore` (moyenne de tous les nodes)
+4. **Ecrire** le fichier avec `updatedBy: "/review"`
+
+**Verdicts** : `ready` (80-100%), `push` (50-79%), `possible` (25-49%), `premature` (10-24%), `not-ready` (0-9%)
+
 ## Format du rapport
 
 ```markdown

@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { ReadinessSnapshot } from './types';
+import { ReadinessSnapshot, DesignOsNode } from './types';
 
 /**
  * Readiness data persisted by /o and /health in .claude/readiness.json.
@@ -67,6 +67,37 @@ export function getNodeChildren(data: ReadinessData | null, nodeId: string): Rec
 export function getGlobalScore(data: ReadinessData | null): number {
   if (!data) { return 0; }
   return data.globalScore ?? 0;
+}
+
+// ── Baseline readiness auto-creation ──
+
+function scoreToVerdict(score: number): string {
+  if (score >= 80) { return 'ready'; }
+  if (score >= 50) { return 'push'; }
+  if (score >= 25) { return 'possible'; }
+  if (score >= 10) { return 'premature'; }
+  return 'not-ready';
+}
+
+/** Write a baseline readiness.json from estimated scores when none exists. */
+export function writeBaselineReadiness(root: string, nodes: DesignOsNode[]): void {
+  const data: ReadinessData = {
+    module: '',
+    updatedAt: new Date().toISOString(),
+    updatedBy: 'navigator-auto',
+    globalScore: Math.round(nodes.reduce((s, n) => s + n.readiness, 0) / nodes.length),
+    nodes: {},
+  };
+  for (const node of nodes) {
+    data.nodes[node.id] = {
+      score: node.readiness,
+      verdict: scoreToVerdict(node.readiness),
+      action: null,
+    };
+  }
+  const filePath = path.join(root, '.claude', 'readiness.json');
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
 }
 
 // ── Readiness history persistence ──

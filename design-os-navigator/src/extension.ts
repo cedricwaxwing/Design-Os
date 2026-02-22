@@ -31,14 +31,28 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Watch for file changes and refresh the panel
   const watcher = vscode.workspace.createFileSystemWatcher('{**/*.md,.claude/readiness.json}');
+  let lastGlobalScore: number | null = null;
+
   const refresh = (uri: vscode.Uri) => {
     if (!currentPanel) { return; }
-    // Snapshot readiness history when readiness.json changes
+    // Snapshot readiness history + notify when readiness.json changes
     if (uri.fsPath.endsWith('readiness.json') && !uri.fsPath.endsWith('readiness-history.json')) {
       const root = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
       if (root) {
         const rd = loadReadiness(root);
-        if (rd) { saveReadinessSnapshot(root, rd); }
+        if (rd) {
+          saveReadinessSnapshot(root, rd);
+          // Notify webview of readiness change
+          if (lastGlobalScore !== null && rd.globalScore !== lastGlobalScore) {
+            currentPanel.webview.postMessage({
+              type: 'readinessChanged',
+              globalScore: rd.globalScore,
+              previousScore: lastGlobalScore,
+              updatedBy: rd.updatedBy || '',
+            });
+          }
+          lastGlobalScore = rd.globalScore;
+        }
       }
     }
     refreshPanel();

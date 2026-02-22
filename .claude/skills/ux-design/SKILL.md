@@ -548,6 +548,17 @@ Avant de declarer les hypotheses validees, appliquer le filtre lean :
 | Coherence DS | Les patterns existent dans le design system ? | Adapter ou proposer ajout au DS |
 | Complexite dev raisonnable | Un dev peut coder ca en scope raisonnable ? | Simplifier le pattern |
 
+### Etape 6 — Persistance du readiness
+
+Apres avoir termine, mettre a jour `.claude/readiness.json` pour que le Design OS Navigator reflète les changements :
+
+1. **Lire** le fichier `.claude/readiness.json` existant (ou creer un objet vide si absent)
+2. **Mettre a jour** le score du node `ux` en recalculant depuis les signaux produits
+3. **Recalculer** le `globalScore` (moyenne de tous les nodes)
+4. **Ecrire** le fichier avec `updatedBy: "/ux"`
+
+**Verdicts** : `ready` (80-100%), `push` (50-79%), `possible` (25-49%), `premature` (10-24%), `not-ready` (0-9%)
+
 ---
 
 ## Grille des UX patterns (reference rapide)

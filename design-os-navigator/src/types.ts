@@ -62,6 +62,27 @@ export interface FlowGraph {
   edges: FlowEdge[];
 }
 
+// ── Gate-based maturity system ──
+
+export interface GateCondition {
+  id: string;
+  label: string;
+  met: boolean;
+  command?: string;  // skill to run if not met
+}
+
+export type MaturityTag = 'VIDE' | 'AMORCE' | 'EN COURS' | 'COMPLET' | 'VALIDE';
+
+export function deriveMaturity(gates: GateCondition[]): MaturityTag {
+  if (gates.length === 0) { return 'VIDE'; }
+  const ratio = gates.filter(g => g.met).length / gates.length;
+  if (ratio === 0) { return 'VIDE'; }
+  if (ratio < 0.4) { return 'AMORCE'; }
+  if (ratio < 0.8) { return 'EN COURS'; }
+  if (ratio < 1) { return 'COMPLET'; }
+  return 'VALIDE';
+}
+
 // ── File & node types ──
 
 export interface FileInfo {
@@ -72,6 +93,7 @@ export interface FileInfo {
   status: DocStatus;
   signals: ContentSignals;
   modifiedAt: number;  // timestamp ms from fs.statSync().mtimeMs
+  isScaffold?: boolean;  // true = framework/template file, not user content
 }
 
 export type FileType =
@@ -84,6 +106,7 @@ export interface DesignOsNode {
   label: string;
   phase: Phase;
   readiness: number;
+  isEstimated?: boolean;
   previousReadiness?: number;
   fileCount: number;
   files: FileInfo[];
@@ -96,6 +119,8 @@ export interface DesignOsNode {
   recommendedAction?: RecommendedAction;
   status: 'ready' | 'active' | 'blocked' | 'empty';
   contextData?: Record<string, unknown>;
+  gates: GateCondition[];
+  maturity: MaturityTag;
 }
 
 export interface CommandInfo {
@@ -143,6 +168,8 @@ export interface GraphEdge {
   from: string;
   to: string;
   type: 'flow' | 'dependency' | 'nogo';
+  nogoGapType?: string;
+  nogoGapCount?: number;
 }
 
 // ── Helpers ──

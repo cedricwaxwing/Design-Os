@@ -254,35 +254,40 @@ export function getWebviewContent(data: GraphData): string {
       color: var(--text-dim);
     }
 
-    /* ── Readiness Bar ── */
-    .readiness-bar {
-      flex: 1;
-      height: 4px;
-      background: color-mix(in srgb, var(--text) 10%, transparent);
-      border-radius: 2px;
-      overflow: hidden;
+    /* ── Gate Dots + Maturity Tag ── */
+    .gate-dots {
+      display: flex;
+      gap: 3px;
+      align-items: center;
     }
-
-    .readiness-fill {
-      height: 100%;
-      border-radius: 2px;
-      transition: width 0.4s ease;
-      background: linear-gradient(90deg, var(--error), var(--warning), var(--success));
-      background-size: 300% 100%;
+    .gate-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--text) 15%, transparent);
+      transition: background 0.3s;
     }
-    .readiness-fill.low { background-position: 0% 0; }
-    .readiness-fill.medium { background-position: 50% 0; }
-    .readiness-fill.high { background-position: 100% 0; }
-
-    .readiness-pct {
+    .gate-dot.met { background: var(--success); }
+    .gate-ratio {
       font-size: 10px;
       font-weight: 600;
-      min-width: 28px;
+      min-width: 24px;
       text-align: right;
+      color: var(--text-dim);
     }
-    .readiness-pct.low { color: var(--error); }
-    .readiness-pct.medium { color: var(--warning); }
-    .readiness-pct.high { color: var(--success); }
+    .maturity-tag {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .maturity-tag.VIDE { background: color-mix(in srgb, var(--text) 8%, transparent); color: var(--text-dim); }
+    .maturity-tag.AMORCE { background: color-mix(in srgb, var(--error) 15%, transparent); color: var(--error); }
+    .maturity-tag.EN-COURS { background: color-mix(in srgb, var(--warning) 15%, transparent); color: var(--warning); }
+    .maturity-tag.COMPLET { background: color-mix(in srgb, var(--success) 15%, transparent); color: var(--success); }
+    .maturity-tag.VALIDE { background: color-mix(in srgb, var(--success) 25%, transparent); color: var(--success); }
 
     /* ── Detail Panel Header ── */
     .detail-header {
@@ -332,37 +337,62 @@ export function getWebviewContent(data: GraphData): string {
       color: var(--text);
     }
 
-    /* ── Detail Readiness ── */
-    .detail-readiness {
+    /* ── Detail Gate Checklist ── */
+    .detail-gates {
       padding: 12px 16px;
       border-bottom: 1px solid var(--border);
     }
-
-    .detail-readiness-bar {
-      height: 6px;
-      background: color-mix(in srgb, var(--text) 10%, transparent);
-      border-radius: 4px;
-      overflow: hidden;
-      margin-bottom: 8px;
-    }
-
-    .detail-readiness-fill {
-      height: 100%;
-      border-radius: 3px;
-      transition: width 0.4s ease;
-      background: linear-gradient(90deg, var(--error), var(--warning), var(--success));
-      background-size: 300% 100%;
-    }
-    .detail-readiness-fill.low { background-position: 0% 0; }
-    .detail-readiness-fill.medium { background-position: 50% 0; }
-    .detail-readiness-fill.high { background-position: 100% 0; }
-
-    .detail-readiness-label {
+    .detail-gates-header {
       display: flex;
       justify-content: space-between;
-      font-size: 11px;
-      color: var(--text-dim);
+      align-items: center;
+      margin-bottom: 8px;
     }
+    .detail-gates-header .maturity-tag { font-size: 10px; }
+    .detail-gates-bar {
+      height: 4px;
+      background: color-mix(in srgb, var(--text) 10%, transparent);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .detail-gates-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: var(--success);
+      transition: width 0.4s ease;
+    }
+    .gate-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .gate-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+      font-size: 12px;
+      color: var(--text);
+    }
+    .gate-item .gate-icon {
+      font-size: 13px;
+      width: 16px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .gate-item.met .gate-icon { color: var(--success); }
+    .gate-item.unmet .gate-icon { color: var(--text-dim); }
+    .gate-item.unmet .gate-label { color: var(--text-dim); }
+    .gate-item .gate-cmd {
+      margin-left: auto;
+      font-size: 10px;
+      color: var(--accent);
+      cursor: pointer;
+      opacity: 0.7;
+      flex-shrink: 0;
+    }
+    .gate-item .gate-cmd:hover { opacity: 1; text-decoration: underline; }
 
     .delta { font-weight: 600; margin-left: 8px; }
     .delta.up { color: var(--success); }
@@ -1158,6 +1188,156 @@ export function getWebviewContent(data: GraphData): string {
       border-radius: 2px;
     }
 
+    /* ── Estimated readiness indicator ── */
+    .readiness-pct.estimated,
+    .detail-readiness-label .estimated {
+      font-style: italic;
+      opacity: 0.8;
+    }
+
+    /* ── Profile badge ── */
+    .profile-badge {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: color-mix(in srgb, var(--text) 8%, transparent);
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Filter bar ── */
+    .filter-bar {
+      display: flex;
+      gap: 4px;
+      padding: 0 16px 8px;
+      background: var(--surface);
+    }
+    .filter-chip {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .filter-chip:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .filter-chip.active {
+      background: color-mix(in srgb, var(--accent) 15%, transparent);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .node.filtered-out { opacity: 0.12; pointer-events: none; transition: opacity 0.3s ease; }
+    .edge-line.filtered-out { opacity: 0.05 !important; transition: opacity 0.3s ease; }
+
+    /* ── Edge highlight ── */
+    .edge-line.highlighted {
+      stroke: var(--accent) !important;
+      opacity: 1 !important;
+      stroke-width: 2.5px !important;
+      filter: drop-shadow(0 0 4px rgba(137,180,250,0.3));
+    }
+
+    /* ── NO-GO edge label ── */
+    .nogo-label {
+      font-size: 9px;
+      fill: var(--error);
+      font-weight: 600;
+    }
+
+    /* ── Material badges ── */
+    .material-status {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .material-badge {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .material-badge.pending {
+      background: color-mix(in srgb, var(--warning) 15%, transparent);
+      color: var(--warning);
+    }
+    .material-badge.ok {
+      background: color-mix(in srgb, var(--success) 15%, transparent);
+      color: var(--success);
+    }
+
+    /* ── Toast notification ── */
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    @keyframes toastOut {
+      from { opacity: 1; }
+      to   { opacity: 0; }
+    }
+    .toast {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 12px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      animation: toastIn 0.3s ease;
+    }
+    .toast.hiding {
+      animation: toastOut 0.3s ease forwards;
+    }
+    .toast-icon { font-size: 14px; }
+    .toast-delta.up { color: var(--success); }
+    .toast-delta.down { color: var(--error); }
+
+    /* ── Zoom controls ── */
+    .zoom-controls {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px;
+      z-index: 10;
+    }
+    .zoom-btn {
+      width: 26px;
+      height: 26px;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .zoom-btn:hover { background: color-mix(in srgb, var(--text) 8%, transparent); }
+    .zoom-level {
+      font-size: 10px;
+      color: var(--text-dim);
+      min-width: 36px;
+      text-align: center;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 700px) {
       .app { flex-direction: column; }
@@ -1173,12 +1353,26 @@ export function getWebviewContent(data: GraphData): string {
         <div class="header-left">
           <h1>Design OS Navigator</h1>
           <span class="module-badge" id="module-badge"></span>
+          <span class="profile-badge" id="profile-badge" style="display:none"></span>
         </div>
         <span class="readiness-global" id="global-readiness"></span>
+      </div>
+      <div class="filter-bar" id="filter-bar">
+        <button class="filter-chip active" data-filter="all">Tous</button>
+        <button class="filter-chip" data-filter="active">Actifs</button>
+        <button class="filter-chip" data-filter="empty">Vides</button>
+        <button class="filter-chip" data-filter="ready">Prets</button>
+        <button class="filter-chip" data-filter="blocked">Bloques</button>
       </div>
       <div class="graph-panel" id="graph-panel">
         <div class="graph-container" id="graph-container">
           <svg class="edges-svg" id="edges-svg"></svg>
+        </div>
+        <div class="zoom-controls" id="zoom-controls">
+          <button class="zoom-btn" id="zoom-out" title="Zoom out">&#8722;</button>
+          <span class="zoom-level" id="zoom-level">100%</span>
+          <button class="zoom-btn" id="zoom-in" title="Zoom in">&#43;</button>
+          <button class="zoom-btn" id="zoom-fit" title="Fit to view">&#8862;</button>
         </div>
       </div>
     </div>
@@ -1245,6 +1439,7 @@ export function getWebviewContent(data: GraphData): string {
     function closePanel() {
       selectedNodeId = null;
       document.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
+      document.querySelectorAll('.edge-line.highlighted').forEach(function(e) { e.classList.remove('highlighted'); });
       detailPanel.classList.add('hidden');
       document.getElementById('drag-handle').classList.add('hidden');
     }
@@ -1263,12 +1458,23 @@ export function getWebviewContent(data: GraphData): string {
       return 'low';
     }
 
-    function verdict(pct) {
-      if (pct >= 80) return 'Pret';
-      if (pct >= 50) return 'Pousser';
-      if (pct >= 25) return 'Possible';
-      if (pct >= 10) return 'Premature';
-      return 'Pas pret';
+    function maturityCls(tag) {
+      return (tag || 'VIDE').replace(/\\s+/g, '-');
+    }
+
+    function gateDots(gates) {
+      if (!gates || gates.length === 0) return '';
+      var html = '<span class="gate-dots">';
+      for (var i = 0; i < gates.length; i++) {
+        html += '<span class="gate-dot' + (gates[i].met ? ' met' : '') + '"></span>';
+      }
+      html += '</span>';
+      return html;
+    }
+
+    function gateRatio(gates) {
+      if (!gates || gates.length === 0) return '0/0';
+      return gates.filter(function(g) { return g.met; }).length + '/' + gates.length;
     }
 
     function formatDate(dateStr) {
@@ -1695,9 +1901,25 @@ export function getWebviewContent(data: GraphData): string {
       } else {
         badge.style.display = 'none';
       }
-      var globalSparkHtml = sparkline(getSparklineValues('global'), 60, 18);
+
+      // Profile badge
+      var profileBadge = document.getElementById('profile-badge');
+      if (data.context.profile) {
+        profileBadge.textContent = data.context.profile;
+        profileBadge.style.display = '';
+      } else {
+        profileBadge.style.display = 'none';
+      }
+
+      // Compute global gate counts
+      var totalGatesCount = 0, metGatesCount = 0;
+      for (var ni = 0; ni < data.nodes.length; ni++) {
+        var ng = data.nodes[ni].gates || [];
+        totalGatesCount += ng.length;
+        for (var gi2 = 0; gi2 < ng.length; gi2++) { if (ng[gi2].met) metGatesCount++; }
+      }
       document.getElementById('global-readiness').innerHTML =
-        'Readiness global : ' + data.globalReadiness + '%' + globalSparkHtml;
+        'Maturite : ' + metGatesCount + '/' + totalGatesCount + ' conditions';
 
       container.querySelectorAll('.node').forEach(n => n.remove());
 
@@ -1754,9 +1976,19 @@ export function getWebviewContent(data: GraphData): string {
         if (edge.type === 'nogo') edgeCls += ' nogo';
         if (readiness > 0 && edge.type !== 'nogo') edgeCls += ' animated';
 
-        edgesHtml += '<path class="' + edgeCls + '" style="stroke:' + edgeColor +
+        edgesHtml += '<path class="' + edgeCls + '" data-from="' + edge.from + '" data-to="' + edge.to +
+          '" style="stroke:' + edgeColor +
           ';stroke-width:' + strokeWidth + ';opacity:' + edgeOpacity + '" d="M' + x1 + ',' + y1 +
           ' C' + x1 + ',' + midY + ' ' + x2 + ',' + midY + ' ' + x2 + ',' + y2 + '" />';
+
+        // NO-GO edge label
+        if (edge.type === 'nogo' && edge.nogoGapType) {
+          var labelX = (x1 + x2) / 2;
+          var labelY = midY - 6;
+          edgesHtml += '<text class="nogo-label" x="' + labelX + '" y="' + labelY +
+            '" text-anchor="middle">' + edge.nogoGapType +
+            (edge.nogoGapCount ? ' (' + edge.nogoGapCount + ')' : '') + '</text>';
+        }
       }
       svg.innerHTML = edgesHtml;
 
@@ -1773,7 +2005,6 @@ export function getWebviewContent(data: GraphData): string {
         el.style.left = pos.x + 'px';
         el.style.top = pos.y + 'px';
 
-        const c = cls(node.readiness);
         const icon = nodeIcons[node.id] || '\\u25CB';
 
         const hypCount = node.signals ? node.signals.hypothesisCount : 0;
@@ -1787,9 +2018,9 @@ export function getWebviewContent(data: GraphData): string {
             node.label + badge +
           '</div>' +
           '<div class="node-meta">' +
-            '<span class="node-files">' + node.fileCount + ' fichier' + (node.fileCount !== 1 ? 's' : '') + '</span>' +
-            '<div class="readiness-bar"><div class="readiness-fill ' + c + '" style="width:' + node.readiness + '%"></div></div>' +
-            '<span class="readiness-pct ' + c + '">' + node.readiness + '%</span>' +
+            '<span class="maturity-tag ' + maturityCls(node.maturity) + '">' + (node.maturity || 'VIDE') + '</span>' +
+            gateDots(node.gates) +
+            '<span class="gate-ratio">' + gateRatio(node.gates) + '</span>' +
           '</div>';
 
         el.addEventListener('click', () => selectNode(node.id));
@@ -1814,12 +2045,18 @@ export function getWebviewContent(data: GraphData): string {
       const nodeEl = document.querySelector('[data-node-id="' + nodeId + '"]');
       if (nodeEl) nodeEl.classList.add('selected');
 
+      // Highlight connected edges
+      var svgEl = document.getElementById('edges-svg');
+      svgEl.querySelectorAll('.edge-line').forEach(function(e) {
+        e.classList.remove('highlighted');
+        if (e.getAttribute('data-from') === nodeId || e.getAttribute('data-to') === nodeId) {
+          e.classList.add('highlighted');
+        }
+      });
+
       const panel = document.getElementById('detail-panel');
       panel.classList.remove('hidden');
       document.getElementById('drag-handle').classList.remove('hidden');
-
-      const c = cls(node.readiness);
-      const v = verdict(node.readiness);
 
       let html = '';
 
@@ -1832,23 +2069,33 @@ export function getWebviewContent(data: GraphData): string {
         '<button class="close-btn" id="close-panel-btn" title="Fermer (Echap)">\\u2715</button>' +
       '</div>';
 
-      // ─── 2. Readiness (always visible, compact) ───
-      let deltaHtml = '';
-      if (node.previousReadiness !== undefined && node.previousReadiness !== null) {
-        const diff = node.readiness - node.previousReadiness;
-        if (diff !== 0) {
-          const sign = diff > 0 ? '\\u2191 +' : '\\u2193 ';
-          const dcls = diff > 0 ? 'up' : 'down';
-          deltaHtml = '<span class="delta ' + dcls + '">' + sign + diff + '%</span>';
-        }
+      // ─── 2. Gate checklist (always visible) ───
+      var gates = node.gates || [];
+      var metCount = gates.filter(function(g) { return g.met; }).length;
+      var gateTotal = gates.length;
+      var gatePct = gateTotal > 0 ? Math.round(metCount / gateTotal * 100) : 0;
+
+      html += '<div class="detail-gates">' +
+        '<div class="detail-gates-header">' +
+          '<span class="maturity-tag ' + maturityCls(node.maturity) + '">' + (node.maturity || 'VIDE') + '</span>' +
+          '<span style="font-size:12px;color:var(--text-dim)">' + metCount + '/' + gateTotal + ' conditions</span>' +
+        '</div>' +
+        '<div class="detail-gates-bar"><div class="detail-gates-fill" style="width:' + gatePct + '%"></div></div>' +
+        '<ul class="gate-list">';
+
+      for (var gi = 0; gi < gates.length; gi++) {
+        var g = gates[gi];
+        var gCls = g.met ? 'met' : 'unmet';
+        var gIcon = g.met ? '&#10003;' : '&#10007;';
+        var gCmd = (!g.met && g.command) ? '<span class="gate-cmd" data-command="' + g.command + '">' + g.command + '</span>' : '';
+        html += '<li class="gate-item ' + gCls + '">' +
+          '<span class="gate-icon">' + gIcon + '</span>' +
+          '<span class="gate-label">' + g.label + '</span>' +
+          gCmd +
+        '</li>';
       }
 
-      var nodeSparkHtml = sparkline(getSparklineValues(node.id), 80, 22);
-
-      html += '<div class="detail-readiness">' +
-        '<div class="detail-readiness-bar"><div class="detail-readiness-fill ' + c + '" style="width:' + node.readiness + '%"></div></div>' +
-        '<div class="detail-readiness-label"><span>' + v + deltaHtml + '</span><span>' + node.readiness + '%' + nodeSparkHtml + '</span></div>' +
-      '</div>';
+      html += '</ul></div>';
 
       // ─── 2b. File Preview (right below readiness) ───
       html += '<div class="file-preview">' +
@@ -2040,6 +2287,15 @@ export function getWebviewContent(data: GraphData): string {
 
       // What's Next command spans
       panel.querySelectorAll('.whats-next-cmd').forEach(cmd => {
+        cmd.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const command = cmd.getAttribute('data-command');
+          if (command) vscode.postMessage({ type: 'runCommand', command: command });
+        });
+      });
+
+      // Gate checklist command spans
+      panel.querySelectorAll('.gate-cmd').forEach(cmd => {
         cmd.addEventListener('click', (e) => {
           e.stopPropagation();
           const command = cmd.getAttribute('data-command');
@@ -2262,6 +2518,109 @@ export function getWebviewContent(data: GraphData): string {
 
     // ── Init ──
     renderGraph();
+
+    // ── Filter chips ──
+    document.querySelectorAll('.filter-chip').forEach(function(chip) {
+      chip.addEventListener('click', function() {
+        var filter = chip.getAttribute('data-filter');
+        document.querySelectorAll('.filter-chip').forEach(function(c) { c.classList.remove('active'); });
+        chip.classList.add('active');
+
+        document.querySelectorAll('.node').forEach(function(nodeEl) {
+          var nid = nodeEl.dataset.nodeId;
+          var nd = data.nodes.find(function(n) { return n.id === nid; });
+          if (!nd) return;
+          if (filter === 'all' || nd.status === filter) {
+            nodeEl.classList.remove('filtered-out');
+          } else {
+            nodeEl.classList.add('filtered-out');
+          }
+        });
+
+        var svgEl = document.getElementById('edges-svg');
+        svgEl.querySelectorAll('.edge-line').forEach(function(e) {
+          var fromId = e.getAttribute('data-from');
+          var toId = e.getAttribute('data-to');
+          var fromOut = document.querySelector('[data-node-id="' + fromId + '"].filtered-out');
+          var toOut = document.querySelector('[data-node-id="' + toId + '"].filtered-out');
+          if (fromOut || toOut) {
+            e.classList.add('filtered-out');
+          } else {
+            e.classList.remove('filtered-out');
+          }
+        });
+      });
+    });
+
+    // ── Zoom controls ──
+    var zoomLevel = 1;
+    var graphContainer = document.getElementById('graph-container');
+    var graphPanel = document.getElementById('graph-panel');
+
+    function setZoom(level) {
+      zoomLevel = Math.min(2, Math.max(0.4, level));
+      graphContainer.style.transform = 'scale(' + zoomLevel + ')';
+      graphContainer.style.transformOrigin = 'top left';
+      document.getElementById('zoom-level').textContent = Math.round(zoomLevel * 100) + '%';
+    }
+
+    function fitToView() {
+      var pw = graphPanel.clientWidth;
+      var ph = graphPanel.clientHeight;
+      var cw = parseInt(graphContainer.style.width) || 600;
+      var ch = parseInt(graphContainer.style.height) || 800;
+      var sx = pw / cw;
+      var sy = ph / ch;
+      setZoom(Math.min(sx, sy, 1));
+    }
+
+    document.getElementById('zoom-in').addEventListener('click', function() { setZoom(zoomLevel + 0.1); });
+    document.getElementById('zoom-out').addEventListener('click', function() { setZoom(zoomLevel - 0.1); });
+    document.getElementById('zoom-fit').addEventListener('click', fitToView);
+
+    // Ctrl+scroll to zoom
+    graphPanel.addEventListener('wheel', function(e) {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        var delta = e.deltaY > 0 ? -0.05 : 0.05;
+        setZoom(zoomLevel + delta);
+      }
+    }, { passive: false });
+
+    // ── Toast notification system ──
+    var previousGlobalReadiness = data.globalReadiness;
+
+    window.addEventListener('message', function(event) {
+      var msg = event.data;
+      if (msg.type === 'readinessChanged') {
+        var delta = msg.globalScore - previousGlobalReadiness;
+        if (delta !== 0) {
+          showToast(delta, msg.updatedBy || '');
+          previousGlobalReadiness = msg.globalScore;
+        }
+      }
+    });
+
+    function showToast(delta, source) {
+      var existing = document.querySelector('.toast');
+      if (existing) existing.remove();
+
+      var toast = document.createElement('div');
+      toast.className = 'toast';
+      var sign = delta > 0 ? '+' : '';
+      var dcls = delta > 0 ? 'up' : 'down';
+      var icon = delta > 0 ? '\\u2191' : '\\u2193';
+      toast.innerHTML =
+        '<span class="toast-icon">' + icon + '</span>' +
+        '<span class="toast-delta ' + dcls + '">' + sign + delta + '%</span>' +
+        '<span>Readiness ' + (source ? 'via ' + source : 'mise a jour') + '</span>';
+      document.body.appendChild(toast);
+
+      setTimeout(function() {
+        toast.classList.add('hiding');
+        setTimeout(function() { toast.remove(); }, 300);
+      }, 3000);
+    }
   </script>
 </body>
 </html>`;
