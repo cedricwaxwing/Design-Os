@@ -1402,8 +1402,7 @@ export function getWebviewContent(data: GraphData): string {
 
       if (upcoming.length === 0) return '';
 
-      var html = '<div class="whats-next">';
-      html += '<div class="whats-next-title">Prochaines etapes</div>';
+      var html = '';
       for (var j = 0; j < upcoming.length; j++) {
         var step = upcoming[j];
         var c = cls(step.readiness);
@@ -1414,7 +1413,6 @@ export function getWebviewContent(data: GraphData): string {
           '<span class="whats-next-cmd" data-command="' + step.command + '">' + step.command + '</span>' +
         '</div>';
       }
-      html += '</div>';
       return html;
     }
 
@@ -1875,13 +1873,7 @@ export function getWebviewContent(data: GraphData): string {
         '</div>';
       }
 
-      // ─── 3.3b. What's Next? Lookahead ───
-      html += renderWhatsNext(node);
-
-      // ─── 3.4. Contextual section (node-specific) ───
-      html += renderContextSection(node);
-
-      // ─── 3.5. Commands ───
+      // ─── 3.1. Commands ───
       if (node.commands.length > 0) {
         let commandsHtml = '';
         for (const cmd of node.commands) {
@@ -1890,12 +1882,19 @@ export function getWebviewContent(data: GraphData): string {
             '<span class="command-desc">' + cmd.description + '</span>' +
           '</button>';
         }
-        const strategyNode = data.nodes.find(n => n.id === 'strategy');
-        const onboardingDone = strategyNode && strategyNode.readiness > 0;
         html += collapsible('commands', 'Commandes', node.commands.length, commandsHtml, false);
       }
 
-      // ─── 4. Activite recente (open by default) ───
+      // ─── 3.2. What's Next (collapsible) ───
+      var whatsNextContent = renderWhatsNext(node);
+      if (whatsNextContent) {
+        html += collapsible('whats-next', 'Prochaines etapes', null, whatsNextContent, false);
+      }
+
+      // ─── 3.3. Contextual section (node-specific) ───
+      html += renderContextSection(node);
+
+      // ─── 4. Activite recente ───
       if (node.files.length > 0) {
         const sorted = node.files.slice().sort((a, b) => (b.modifiedAt || 0) - (a.modifiedAt || 0));
         const maxShow = 8;
@@ -2254,6 +2253,10 @@ export function getWebviewContent(data: GraphData): string {
             parent.appendChild(s);
           }
         });
+
+        // Force deps (Relations) to always be last
+        var depsEl = sectionMap['deps'];
+        if (depsEl) parent.appendChild(depsEl);
       }
     })();
 
