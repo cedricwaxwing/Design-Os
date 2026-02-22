@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { ReadinessSnapshot } from './types';
 
 /**
  * Readiness data persisted by /o and /health in .claude/readiness.json.
@@ -66,4 +67,45 @@ export function getNodeChildren(data: ReadinessData | null, nodeId: string): Rec
 export function getGlobalScore(data: ReadinessData | null): number {
   if (!data) { return 0; }
   return data.globalScore ?? 0;
+}
+
+// ── Readiness history persistence ──
+
+const HISTORY_FILE = 'readiness-history.json';
+const MAX_SNAPSHOTS = 50;
+
+/** Load readiness history from .claude/readiness-history.json. */
+export function loadReadinessHistory(root: string): ReadinessSnapshot[] {
+  const filePath = path.join(root, '.claude', HISTORY_FILE);
+  if (!fs.existsSync(filePath)) { return []; }
+  try {
+    const raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    return Array.isArray(raw) ? raw : [];
+  } catch { return []; }
+}
+
+/** Append a snapshot to .claude/readiness-history.json. Dedup + cap at 50. */
+export function saveReadinessSnapshot(root: string, readinessData: ReadinessData): void {
+  const history = loadReadinessHistory(root);
+
+  const scores: Record<string, number> = {};
+  for (const [nodeId, nodeData] of Object.entries(readinessData.nodes)) {
+    scores[nodeId] = nodeData.score;
+  }
+
+  // Dedup: skip if scores identical to last snapshot
+  if (history.length > 0) {
+    const last = history[history.length - 1];
+    const sameGlobal = last.globalScore === readinessData.globalScore;
+    const sameScores = Object.keys(scores).length === Object.keys(last.scores).length
+      && Object.entries(scores).every(([k, v]) => last.scores[k] === v);
+    if (sameGlobal && sameScores) { return; }
+  }
+
+  history.push({ timestamp: Date.now(), globalScore: readinessData.globalScore, scores });
+
+  while (history.length > MAX_SNAPSHOTS) { history.shift(); }
+
+  const filePath = path.join(root, '.claude', HISTORY_FILE);
+  fs.writeFileSync(filePath, JSON.stringify(history, null, 2), 'utf-8');
 }

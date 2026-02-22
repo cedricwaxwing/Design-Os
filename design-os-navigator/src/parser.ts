@@ -4,8 +4,9 @@ import {
   ProjectContext, DesignOsNode, FileInfo, FileType, CommandInfo,
   GraphEdge, GraphData, ContentSignals, SectionDetail, HistoryEntry,
   RecommendedAction, emptySignals, aggregateSignals, DocStatus,
+  FlowNode, FlowEdge, FlowGraph,
 } from './types';
-import { loadReadiness, getNodeScore, getNodeChildren, getGlobalScore, ReadinessData } from './readiness';
+import { loadReadiness, getNodeScore, getNodeChildren, getGlobalScore, ReadinessData, loadReadinessHistory } from './readiness';
 
 // ═══════════════════════════════════════════════════════
 // PUBLIC API
@@ -18,8 +19,8 @@ export function parseProject(workspaceRoot: string): GraphData {
   const edges = buildEdges(nodes);
   const history = parseHistory(workspaceRoot);
   const globalReadiness = getGlobalScore(readinessData);
-
-  return { context, nodes, edges, globalReadiness, history };
+  const readinessHistory = loadReadinessHistory(workspaceRoot);
+  return { context, nodes, edges, globalReadiness, history, readinessHistory };
 }
 
 // ═══════════════════════════════════════════════════════
@@ -439,7 +440,7 @@ const TAG_TO_NODES: Record<string, string[]> = {
 };
 
 /** Known node IDs in the graph */
-const NODE_IDS = ['strategy', 'discovery', 'ux', 'design-system', 'spec', 'ui', 'build', 'review', 'lab'];
+const NODE_IDS = ['material', 'strategy', 'discovery', 'ux', 'design-system', 'spec', 'ui', 'build', 'review', 'lab'];
 
 /**
  * Scan .claude/skills/ and parse YAML frontmatter from each SKILL.md.
@@ -582,6 +583,376 @@ function extractFmList(fm: string, field: string): string[] {
 }
 
 // ═══════════════════════════════════════════════════════
+// CONTEXTUAL DATA EXTRACTION
+// ═══════════════════════════════════════════════════════
+
+function extractStrategyContext(strategyDir: string): Record<string, unknown> {
+  const northstarPath = path.join(strategyDir, 'northstar-vision.md');
+  const ctx: Record<string, unknown> = { northStar: '', principles: [] as string[], antiGoals: [] as string[], successCriteria: [] as string[] };
+
+  if (!fs.existsSync(northstarPath)) { return ctx; }
+  const content = safeRead(northstarPath);
+  if (!content) { return ctx; }
+
+  // Extract North Star: first blockquote (> line)
+  const quoteMatch = content.match(/^>\s*(.+)$/m);
+  if (quoteMatch) { ctx.northStar = quoteMatch[1].trim(); }
+
+  // Extract Principles: lines like "1. **Name** — explanation" or "- **Name** — explanation"
+  const principleMatches = content.match(/^(?:\d+\.\s+|\-\s+)\*\*(.+?)\*\*\s*[—–-]\s*(.+)$/gm);
+  if (principleMatches) {
+    ctx.principles = principleMatches.map(p => {
+      const m = p.match(/\*\*(.+?)\*\*\s*[—–-]\s*(.+)$/);
+      return m ? m[1].trim() : p.replace(/^[\d.\-\s]+/, '').trim();
+    });
+  }
+
+  // Extract Anti-Goals: bullets after "## Anti-Goals"
+  const antiSection = content.match(/##\s*Anti.?Goals[\s\S]*?(?=\n##|\n$|$)/i);
+  if (antiSection) {
+    const bullets = antiSection[0].match(/^[-*]\s+(.+)$/gm);
+    if (bullets) {
+      ctx.antiGoals = bullets.map(b => b.replace(/^[-*]\s+/, '').trim()).filter(b => b.length > 1);
+    }
+  }
+
+  // Extract Success Looks Like: bullets after "## Success"
+  const successSection = content.match(/##\s*Success[\s\S]*?(?=\n##|\n$|$)/i);
+  if (successSection) {
+    const bullets = successSection[0].match(/^[-*]\s+(.+)$/gm);
+    if (bullets) {
+      ctx.successCriteria = bullets.map(b => b.replace(/^[-*]\s+/, '').trim()).filter(b => b.length > 1);
+    }
+  }
+
+  return ctx;
+}
+
+function extractDiscoveryContext(files: FileInfo[]): Record<string, unknown> {
+  let patternCount = 0;
+  let jtbdCount = 0;
+  let opportunityCount = 0;
+
+  for (const f of files) {
+    if (!f.name.endsWith('.md')) { continue; }
+    const content = safeRead(f.path);
+    if (!content) { continue; }
+    patternCount += (content.match(/\[PATTERN\]/gi) || []).length;
+    jtbdCount += (content.match(/\[JTBD\]/gi) || []).length;
+    opportunityCount += (content.match(/\[OPPORTUNIT/gi) || []).length;
+  }
+
+  return {
+    patternCount,
+    jtbdCount,
+    opportunityCount,
+    // hypothesisCount and contradictionCount already in signals
+  };
+}
+
+function extractDesignSystemContext(dsBase: string, dsFiles: FileInfo[]): Record<string, unknown> {
+  const tokensPath = path.join(dsBase, 'tokens.md');
+  let tokensDefined = 0;
+  let tokensPlaceholder = 0;
+  let componentCount = 0;
+
+  if (fs.existsSync(tokensPath)) {
+    const content = safeRead(tokensPath);
+    if (content) {
+      tokensPlaceholder = (content.match(/#______/g) || []).length;
+      tokensDefined = (content.match(/#[0-9A-Fa-f]{6}\b/g) || []).length;
+    }
+  }
+
+  // Count components from components.md sections (## headers)
+  const componentsPath = path.join(dsBase, 'components.md');
+  if (fs.existsSync(componentsPath)) {
+    const content = safeRead(componentsPath);
+    if (content) {
+      const headers = content.match(/^##\s+/gm);
+      componentCount = headers ? headers.length : 0;
+    }
+  }
+
+  const tokensTotal = tokensDefined + tokensPlaceholder;
+  const tokenFillPct = tokensTotal > 0 ? Math.round((tokensDefined / tokensTotal) * 100) : 0;
+
+  return {
+    tokensDefined,
+    tokensPlaceholder,
+    tokensTotal,
+    tokenFillPct,
+    componentCount,
+    fileCount: dsFiles.length,
+  };
+}
+
+function extractSpecContext(
+  specFiles: FileInfo[],
+  screenFiles: FileInfo[],
+  buildFileNames: string[],
+  reviewFileNames: string[],
+): Record<string, unknown> {
+  const sevenDaysAgo = Date.now() - 7 * 86400000;
+  const buildNamesLower = buildFileNames.map(n => n.toLowerCase());
+  const reviewNamesLower = reviewFileNames.map(n => n.toLowerCase());
+
+  // Build pipeline items
+  const pipeline: Array<{
+    id: string; name: string; label: string; path: string;
+    status: string; completeness: number;
+    hasBuilt: boolean; hasReview: boolean; isStale: boolean;
+  }> = [];
+
+  for (const f of specFiles) {
+    const match = f.name.match(/^(\d+\.\d+)-(.+)\.spec\.md$/);
+    if (!match) { continue; }
+    const specId = match[1];
+    const specSlug = match[2];
+
+    // Cross-ref build: check if any build file contains the slug
+    const slugVariants = [
+      specSlug.toLowerCase(),                                    // overview-page
+      specSlug.replace(/-/g, '').toLowerCase(),                  // overviewpage
+    ];
+    const hasBuilt = buildNamesLower.some(bn =>
+      slugVariants.some(sv => bn.includes(sv))
+    );
+
+    // Cross-ref review: check if any review file contains the spec ID or slug
+    const hasReview = reviewNamesLower.some(rn =>
+      rn.includes(specId) || rn.includes(specSlug.toLowerCase())
+    );
+
+    // Determine effective stage
+    let stage: string = f.status || 'DRAFT';
+    if (hasReview) { stage = 'REVIEWED'; }
+    else if (hasBuilt && (f.status === 'VALIDEE' || f.status === 'LIVREE')) { stage = 'BUILT'; }
+
+    pipeline.push({
+      id: specId,
+      name: specSlug,
+      label: specId + '-' + specSlug,
+      path: f.path,
+      status: stage,
+      completeness: f.signals ? f.signals.completeness : 0,
+      hasBuilt,
+      hasReview,
+      isStale: f.status === 'DRAFT' && f.modifiedAt > 0 && f.modifiedAt < sevenDaysAgo,
+    });
+  }
+
+  // Sort by spec ID
+  pipeline.sort((a, b) => {
+    const [aMaj, aMin] = a.id.split('.').map(Number);
+    const [bMaj, bMin] = b.id.split('.').map(Number);
+    return aMaj !== bMaj ? aMaj - bMaj : aMin - bMin;
+  });
+
+  return {
+    screenCount: screenFiles.length,
+    specCount: specFiles.length,
+    pipeline,
+    staleCount: pipeline.filter(p => p.isStale).length,
+  };
+}
+
+function extractMaterialContext(materialFiles: FileInfo[], discoveryFiles: FileInfo[]): Record<string, unknown> {
+  let latestDiscovery = 0;
+  for (const f of discoveryFiles) {
+    if (f.modifiedAt > latestDiscovery) { latestDiscovery = f.modifiedAt; }
+  }
+
+  const newFiles: string[] = [];
+  for (const f of materialFiles) {
+    if (latestDiscovery === 0 || f.modifiedAt > latestDiscovery) {
+      newFiles.push(f.name);
+    }
+  }
+
+  return {
+    totalFiles: materialFiles.length,
+    newFiles,
+    newCount: newFiles.length,
+  };
+}
+
+// ═══════════════════════════════════════════════════════
+// MERMAID FLOW PARSING
+// ═══════════════════════════════════════════════════════
+
+/** Parse a mermaid flowchart block into FlowNode[] + FlowEdge[]. */
+export function parseMermaidFlow(mermaidCode: string): { direction: 'LR' | 'TD'; nodes: FlowNode[]; edges: FlowEdge[] } {
+  const lines = mermaidCode.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('%%'));
+  let direction: 'LR' | 'TD' = 'LR';
+  const nodesMap = new Map<string, FlowNode>();
+  const edges: FlowEdge[] = [];
+
+  // Detect direction
+  const dirLine = lines.find(l => /^flowchart\s+(LR|TD|TB|RL)/i.test(l));
+  if (dirLine) {
+    const m = dirLine.match(/flowchart\s+(LR|TD|TB|RL)/i);
+    if (m) direction = (m[1] === 'TB' ? 'TD' : m[1]) as 'LR' | 'TD';
+  }
+
+  function addNode(id: string, label: string, type: FlowNode['type']) {
+    if (!nodesMap.has(id)) {
+      nodesMap.set(id, { id, label, type });
+    }
+  }
+
+  function detectNodeType(id: string, label: string, bracket: string): FlowNode['type'] {
+    if (bracket === '(' || bracket === '([') return 'terminal';
+    if (bracket === '{') return 'decision';
+    if (/erreur|error/i.test(label)) return 'error';
+    return 'screen';
+  }
+
+  // Node patterns: A[text], A([text]), A{text}, A(text)
+  const nodePatterns = [
+    { re: /([A-Za-z_]\w*)\(\[([^\]]*)\]\)/g, bracket: '([' },   // A([text])
+    { re: /([A-Za-z_]\w*)\{([^}]*)\}/g, bracket: '{' },          // A{text}
+    { re: /([A-Za-z_]\w*)\[([^\]]*)\]/g, bracket: '[' },          // A[text]
+    { re: /([A-Za-z_]\w*)\(([^)]*)\)/g, bracket: '(' },           // A(text)
+  ];
+
+  // Edge patterns: A -->|label| B or A --> B
+  const edgeRe = /([A-Za-z_]\w*)\s*-->(?:\|([^|]*)\|)?\s*([A-Za-z_]\w*)/g;
+
+  for (const line of lines) {
+    if (/^flowchart|^graph|^style|^classDef|^class\s/i.test(line)) {
+      // Parse style lines for color
+      const styleMatch = line.match(/^style\s+(\w+)\s+fill:(#[0-9A-Fa-f]+)/);
+      if (styleMatch) {
+        const node = nodesMap.get(styleMatch[1]);
+        if (node) node.color = styleMatch[2];
+      }
+      continue;
+    }
+
+    // Extract nodes from the line
+    for (const pat of nodePatterns) {
+      let m;
+      pat.re.lastIndex = 0;
+      while ((m = pat.re.exec(line)) !== null) {
+        addNode(m[1], m[2], detectNodeType(m[1], m[2], pat.bracket));
+      }
+    }
+
+    // Extract edges from the line
+    let em;
+    edgeRe.lastIndex = 0;
+    while ((em = edgeRe.exec(line)) !== null) {
+      edges.push({ from: em[1], to: em[3], label: em[2] || undefined });
+      // Ensure nodes exist even if defined inline without brackets
+      if (!nodesMap.has(em[1])) addNode(em[1], em[1], 'screen');
+      if (!nodesMap.has(em[3])) addNode(em[3], em[3], 'screen');
+    }
+  }
+
+  return { direction, nodes: Array.from(nodesMap.values()), edges };
+}
+
+/** Auto-layout flow nodes using BFS layers. */
+export function layoutFlowNodes(nodes: FlowNode[], edges: FlowEdge[], direction: 'LR' | 'TD'): void {
+  if (nodes.length === 0) return;
+
+  const adj = new Map<string, string[]>();
+  for (const n of nodes) adj.set(n.id, []);
+  for (const e of edges) {
+    const list = adj.get(e.from);
+    if (list) list.push(e.to);
+  }
+
+  // Find root: node with no incoming edges
+  const hasIncoming = new Set(edges.map(e => e.to));
+  let root = nodes.find(n => !hasIncoming.has(n.id));
+  if (!root) root = nodes[0];
+
+  // BFS layering
+  const layers: string[][] = [];
+  const visited = new Set<string>();
+  const queue: { id: string; depth: number }[] = [{ id: root.id, depth: 0 }];
+  visited.add(root.id);
+
+  while (queue.length > 0) {
+    const { id, depth } = queue.shift()!;
+    if (!layers[depth]) layers[depth] = [];
+    layers[depth].push(id);
+
+    for (const next of (adj.get(id) || [])) {
+      if (!visited.has(next)) {
+        visited.add(next);
+        queue.push({ id: next, depth: depth + 1 });
+      }
+    }
+  }
+
+  // Add unvisited nodes to last layer
+  for (const n of nodes) {
+    if (!visited.has(n.id)) {
+      if (!layers[layers.length - 1]) layers.push([]);
+      layers[layers.length - 1].push(n.id);
+    }
+  }
+
+  // Assign positions
+  const nodeW = 180;
+  const nodeH = 70;
+  const gapX = direction === 'LR' ? 220 : 120;
+  const gapY = direction === 'LR' ? 100 : 140;
+
+  for (let d = 0; d < layers.length; d++) {
+    const layer = layers[d];
+    const totalHeight = layer.length * (direction === 'LR' ? gapY : gapX);
+    const startOffset = -(totalHeight - (direction === 'LR' ? gapY : gapX)) / 2;
+
+    for (let i = 0; i < layer.length; i++) {
+      const node = nodes.find(n => n.id === layer[i]);
+      if (!node) continue;
+
+      if (direction === 'LR') {
+        node.x = 40 + d * gapX;
+        node.y = 60 + startOffset + i * gapY + totalHeight / 2;
+      } else {
+        node.x = 40 + startOffset + i * gapX + totalHeight / 2;
+        node.y = 60 + d * gapY;
+      }
+    }
+  }
+}
+
+/** Extract UX context: count journeys (SVG) and flows (MD with mermaid). */
+function extractUxContext(journeyFiles: FileInfo[]): Record<string, unknown> {
+  const journeys = journeyFiles.filter(f =>
+    f.name.endsWith('.svg') && !f.name.startsWith('_template')
+  );
+  const flowFiles = journeyFiles.filter(f =>
+    f.name.endsWith('.md') && !f.name.startsWith('_template') && !f.name.startsWith('README')
+  );
+
+  const flows: { name: string; path: string; nodeCount: number }[] = [];
+  for (const f of flowFiles) {
+    const content = safeRead(f.path);
+    const mermaidMatch = content.match(/```mermaid\n([\s\S]*?)```/);
+    if (mermaidMatch) {
+      const parsed = parseMermaidFlow(mermaidMatch[1]);
+      flows.push({
+        name: f.name.replace(/\.md$/, '').replace(/^flow-/, ''),
+        path: f.path,
+        nodeCount: parsed.nodes.length,
+      });
+    }
+  }
+
+  return {
+    journeyCount: journeys.length,
+    flowCount: flows.length,
+    flows,
+  };
+}
+
+// ═══════════════════════════════════════════════════════
 // NODE BUILDING
 // ═══════════════════════════════════════════════════════
 
@@ -593,31 +964,30 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
   const skills = discoverSkills(root);
   const skillMap = mapSkillsToNodes(skills);
 
+  // --- Material ---
+  const materialFiles = listFilesRecursive(path.join(root, '01_Product', '00 Material'));
+
   // --- Strategy ---
   const strategyFiles = listFilesRecursive(path.join(root, '01_Product', '01 Strategy'));
-  const materialFiles = listFilesRecursive(path.join(root, '01_Product', '00 Material'));
-  const allStrategyFiles = [...strategyFiles, ...materialFiles];
-  const strategySig = aggregateSignals(allStrategyFiles);
+  const strategySig = aggregateSignals(strategyFiles);
 
-  // Also scan CLAUDE.md for strategy completeness
-  const claudeMdPath = path.join(root, 'CLAUDE.md');
-  const claudeSignals = fs.existsSync(claudeMdPath)
-    ? scanContentSignals(safeRead(claudeMdPath))
-    : emptySignals();
+  // Extract strategy context from northstar-vision.md
+  const strategyContext = extractStrategyContext(path.join(root, '01_Product', '01 Strategy'));
 
   nodes.push({
     id: 'strategy',
     label: 'Strategy',
     phase: 'strategy',
     readiness: 0,
-    fileCount: allStrategyFiles.length,
-    files: allStrategyFiles,
+    fileCount: strategyFiles.length,
+    files: strategyFiles,
     signals: strategySig,
     sections: [],
     commands: skillMap['strategy'] || [],
-    dependsOn: [],
+    dependsOn: ['material'],
     unlocks: ['discovery'],
-    status: allStrategyFiles.length > 0 ? 'ready' : 'empty',
+    status: strategyFiles.length > 0 ? 'ready' : 'empty',
+    contextData: strategyContext,
   });
 
   // --- Discovery ---
@@ -629,6 +999,9 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
   const allDiscoveryFiles = [...domainFiles, ...interviewFiles, ...insightFiles, ...personaFiles];
   const discoverySig = aggregateSignals(allDiscoveryFiles);
   const discoverySections: SectionDetail[] = [];
+
+  // Count discovery-specific markers across all files
+  const discoveryContext = extractDiscoveryContext(allDiscoveryFiles);
 
   nodes.push({
     id: 'discovery',
@@ -652,6 +1025,32 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
       ];
     })(),
     status: allDiscoveryFiles.length > 0 ? 'active' : 'empty',
+    contextData: discoveryContext,
+  });
+
+  // --- Material (inserted after discovery so we can compare mtimes) ---
+  const matCtx = extractMaterialContext(materialFiles, allDiscoveryFiles);
+  const matNewCount = (matCtx.newCount as number) || 0;
+  const materialCmds = skillMap['material'] || [];
+  const discoveryCmd = (skillMap['discovery'] || []).find(c => c.command === '/discovery');
+  if (discoveryCmd && !materialCmds.some(c => c.command === '/discovery')) {
+    materialCmds.push(discoveryCmd);
+  }
+
+  nodes.unshift({
+    id: 'material',
+    label: 'Material',
+    phase: 'strategy',
+    readiness: 0,
+    fileCount: materialFiles.length,
+    files: materialFiles,
+    signals: aggregateSignals(materialFiles),
+    sections: [],
+    commands: materialCmds,
+    dependsOn: [],
+    unlocks: ['strategy', 'discovery'],
+    status: materialFiles.length === 0 ? 'empty' : (matNewCount > 0 ? 'blocked' : 'ready'),
+    contextData: matCtx,
   });
 
   // --- UX Design ---
@@ -677,6 +1076,8 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     });
   }
 
+  const uxContext = extractUxContext(uxFiles);
+
   nodes.push({
     id: 'ux',
     label: 'UX Design',
@@ -690,6 +1091,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     dependsOn: ['discovery'],
     unlocks: ['spec', 'ui'],
     status: hasScreenMap || uxFiles.length > 0 ? 'active' : 'empty',
+    contextData: uxContext,
   });
 
   // --- Spec ---
@@ -699,6 +1101,16 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
   const screenFiles = screenBase ? listFilesRecursive(screenBase) : [];
   const allSpecFiles = [...specFiles, ...screenFiles];
   const specSections = collectSectionsFromFiles(specFiles);
+
+  // Collect build/review file names early for spec cross-reference
+  const buildDir = mod ? path.join(root, '02_Build', mod, 'src') : '';
+  const srcFileNames = buildDir && fs.existsSync(buildDir)
+    ? listFilesRecursive(buildDir).map(f => f.name) : [];
+  const reviewDir = mod ? path.join(root, '03_Review', mod) : '';
+  const reviewFileNames = reviewDir && fs.existsSync(reviewDir)
+    ? listFilesRecursive(reviewDir).map(f => f.name) : [];
+
+  const specContext = extractSpecContext(specFiles, screenFiles, srcFileNames, reviewFileNames);
 
   nodes.push({
     id: 'spec',
@@ -713,6 +1125,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     dependsOn: ['ux'],
     unlocks: ['build'],
     status: specFiles.length > 0 ? 'active' : 'empty',
+    contextData: specContext,
   });
 
   // --- UI ---
@@ -735,6 +1148,9 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
   const dsBase = path.join(root, '01_Product', '05 Design System');
   const dsFiles = listFiles(dsBase);
 
+  // Extract design system context (token fill rate, component count)
+  const dsContext = extractDesignSystemContext(dsBase, dsFiles);
+
   nodes.push({
     id: 'design-system',
     label: 'Design System',
@@ -748,6 +1164,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     dependsOn: [],
     unlocks: ['ui', 'build'],
     status: dsFiles.length > 0 ? 'ready' : 'empty',
+    contextData: dsContext,
   });
 
   // --- Build ---
@@ -805,7 +1222,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     sections: [],
     commands: skillMap['lab'] || [],
     dependsOn: [],
-    unlocks: [],
+    unlocks: ['discovery', 'ux', 'spec'],
     status: labFiles.length > 0 ? 'active' : 'empty',
   });
 
@@ -900,6 +1317,20 @@ function assignRecommendedActions(nodes: DesignOsNode[]): void {
       break; // Only one recommended action at a time
     }
   }
+
+  // Material: separate from main pipeline — recommend if new files exist
+  const materialNode = nodes.find(n => n.id === 'material');
+  if (materialNode && materialNode.contextData) {
+    const newCount = (materialNode.contextData as Record<string, unknown>).newCount as number || 0;
+    if (newCount > 0 && !materialNode.recommendedAction) {
+      materialNode.recommendedAction = {
+        command: '/discovery',
+        label: 'Traiter le material',
+        reason: `${newCount} fichier(s) non traite(s) dans Material`,
+        priority: 'high',
+      };
+    }
+  }
 }
 
 type Phase = import('./types').Phase;
@@ -907,6 +1338,7 @@ type Phase = import('./types').Phase;
 function buildEdges(nodes: DesignOsNode[]): GraphEdge[] {
   const edges: GraphEdge[] = [
     // Main flow
+    { from: 'material', to: 'strategy', type: 'flow' },
     { from: 'strategy', to: 'discovery', type: 'flow' },
     { from: 'discovery', to: 'ux', type: 'flow' },
     { from: 'ux', to: 'spec', type: 'flow' },
@@ -917,6 +1349,10 @@ function buildEdges(nodes: DesignOsNode[]): GraphEdge[] {
     // Design system feeds into UI and Build
     { from: 'design-system', to: 'ui', type: 'dependency' },
     { from: 'design-system', to: 'build', type: 'dependency' },
+    // Lab influences Discovery, UX and Spec (experimentation space)
+    { from: 'lab', to: 'discovery', type: 'dependency' },
+    { from: 'lab', to: 'ux', type: 'dependency' },
+    { from: 'lab', to: 'spec', type: 'dependency' },
   ];
 
   // Check for NO-GO in review files — add nogo edges

@@ -154,15 +154,26 @@ export function getWebviewContent(data: GraphData): string {
       z-index: 0;
     }
 
+    @keyframes edgeFlow {
+      to { stroke-dashoffset: -20; }
+    }
+
     .edge-line {
       stroke: var(--border);
       stroke-width: 1.5;
       fill: none;
-      transition: stroke-width 0.3s ease;
+      transition: stroke-width 0.3s ease, stroke 0.3s ease, opacity 0.3s ease;
+    }
+    .edge-line.animated {
+      stroke-dasharray: 4 16;
+      animation: edgeFlow 1.5s linear infinite;
     }
     .edge-line.dependency {
       stroke-dasharray: 6 4;
-      opacity: 0.5;
+    }
+    .edge-line.dependency.animated {
+      stroke-dasharray: 6 4 2 4;
+      animation: edgeFlow 2s linear infinite;
     }
     .edge-line.nogo {
       stroke: var(--error);
@@ -461,6 +472,158 @@ export function getWebviewContent(data: GraphData): string {
       font-size: 11px;
       color: var(--text-dim);
     }
+
+    /* ── What's Next Lookahead ── */
+    .whats-next {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .whats-next-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .whats-next-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 0;
+    }
+
+    .whats-next-num {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--text) 10%, transparent);
+      color: var(--text-dim);
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .whats-next-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .whats-next-label {
+      font-size: 12px;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .whats-next-pct {
+      font-size: 10px;
+      font-weight: 600;
+      flex-shrink: 0;
+      min-width: 30px;
+      text-align: right;
+    }
+
+    .whats-next-cmd {
+      font-family: var(--vscode-editor-font-family, monospace);
+      font-size: 10px;
+      color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 8%, transparent);
+      padding: 1px 6px;
+      border-radius: 3px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background var(--transition);
+    }
+
+    .whats-next-cmd:hover {
+      background: color-mix(in srgb, var(--accent) 20%, transparent);
+    }
+
+    /* ── Sparklines ── */
+    .sparkline-container {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      margin-left: 8px;
+    }
+
+    .sparkline svg { display: block; }
+
+    .sparkline-line {
+      fill: none;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .sparkline-line.up { stroke: var(--success); }
+    .sparkline-line.down { stroke: var(--error); }
+    .sparkline-line.flat { stroke: var(--text-dim); }
+
+    .sparkline-area { opacity: 0.1; }
+    .sparkline-area.up { fill: var(--success); }
+    .sparkline-area.down { fill: var(--error); }
+    .sparkline-area.flat { fill: var(--text-dim); }
+
+    .sparkline-dot { r: 2; }
+    .sparkline-dot.up { fill: var(--success); }
+    .sparkline-dot.down { fill: var(--error); }
+    .sparkline-dot.flat { fill: var(--text-dim); }
+
+    /* ── Flow list (UX context) ── */
+    .flow-list { display: flex; flex-direction: column; gap: 4px; }
+
+    .flow-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      background: color-mix(in srgb, var(--text) 4%, transparent);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    .flow-item:hover { background: color-mix(in srgb, var(--text) 10%, transparent); }
+
+    .flow-name { flex: 1; font-size: 12px; font-weight: 500; }
+
+    .flow-badge {
+      font-size: 10px;
+      color: var(--text-dim);
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      padding: 1px 6px;
+      border-radius: 3px;
+    }
+
+    .flow-open {
+      font-size: 14px;
+      color: var(--accent);
+      cursor: pointer;
+      opacity: 0.5;
+      transition: opacity var(--transition);
+    }
+    .flow-item:hover .flow-open { opacity: 1; }
+
+    /* ── Drag-and-drop sections ── */
+    .draggable-section { position: relative; transition: opacity 0.2s ease; }
+    .draggable-section.dragging { opacity: 0.4; }
+    .draggable-section.drag-above { border-top: 2px solid var(--accent); }
+    .draggable-section.drag-below { border-bottom: 2px solid var(--accent); }
+
+    .drag-handle-icon {
+      cursor: grab;
+      opacity: 0;
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-right: 4px;
+      transition: opacity var(--transition);
+      user-select: none;
+    }
+    .collapsible-header:hover .drag-handle-icon { opacity: 0.5; }
+    .drag-handle-icon:hover { opacity: 1 !important; }
 
     /* ── Confidence signals ── */
     .confidence-row {
@@ -805,6 +968,196 @@ export function getWebviewContent(data: GraphData): string {
     .child-count { font-size: 11px; color: var(--text-dim); }
     .child-count.empty { color: var(--error); }
 
+    /* ── Contextual Sections ── */
+    .ctx-section {
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+    }
+
+    .ctx-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .ctx-north-star {
+      font-size: 13px;
+      font-style: italic;
+      color: var(--text);
+      line-height: 1.5;
+      padding: 8px 12px;
+      border-left: 2px solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 5%, transparent);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .ctx-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .ctx-list li {
+      font-size: 12px;
+      color: var(--text);
+      padding: 4px 0;
+      line-height: 1.4;
+    }
+
+    .ctx-list li::before {
+      content: '\\25B8 ';
+      color: var(--text-dim);
+      margin-right: 4px;
+    }
+
+    .ctx-list li.anti::before {
+      content: '\\2717 ';
+      color: var(--error);
+    }
+
+    .ctx-counters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .ctx-counter {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--text) 8%, transparent);
+      color: var(--text);
+    }
+
+    .ctx-counter .count {
+      font-weight: 600;
+    }
+
+    .ctx-counter.warn {
+      background: color-mix(in srgb, var(--error) 12%, transparent);
+      color: var(--error);
+    }
+
+    .ctx-counter.info {
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      color: var(--accent);
+    }
+
+    .ctx-token-bar {
+      height: 8px;
+      border-radius: 4px;
+      background: color-mix(in srgb, var(--text) 12%, transparent);
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .ctx-token-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    .ctx-token-fill.high { background: var(--success); }
+    .ctx-token-fill.medium { background: var(--warning); }
+    .ctx-token-fill.low { background: var(--error); }
+
+    .ctx-token-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    /* ── Spec Pipeline Grid ── */
+    .spec-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .spec-cell {
+      width: 44px;
+      height: 44px;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      border: 1px solid transparent;
+    }
+    .spec-cell:hover {
+      transform: scale(1.1);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .spec-cell-id {
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .spec-cell-icon {
+      font-size: 12px;
+      margin-top: 2px;
+      line-height: 1;
+    }
+
+    .spec-cell.draft {
+      background: color-mix(in srgb, var(--info) 15%, transparent);
+      color: var(--info);
+      border-color: color-mix(in srgb, var(--info) 30%, transparent);
+    }
+    .spec-cell.en-cours {
+      background: color-mix(in srgb, var(--warning) 15%, transparent);
+      color: var(--warning);
+      border-color: color-mix(in srgb, var(--warning) 30%, transparent);
+    }
+    .spec-cell.validee {
+      background: color-mix(in srgb, var(--success) 12%, transparent);
+      color: var(--success);
+      border-color: color-mix(in srgb, var(--success) 25%, transparent);
+    }
+    .spec-cell.built {
+      background: color-mix(in srgb, var(--success) 25%, transparent);
+      color: var(--success);
+      border-color: var(--success);
+    }
+    .spec-cell.reviewed {
+      background: var(--success);
+      color: #1e1e2e;
+      border-color: var(--success);
+    }
+    .spec-cell.stale {
+      border-color: var(--warning);
+      border-style: dashed;
+    }
+
+    .spec-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .spec-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      color: var(--text-dim);
+    }
+    .spec-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 700px) {
       .app { flex-direction: column; }
@@ -839,19 +1192,20 @@ export function getWebviewContent(data: GraphData): string {
 
     // ── Node positions ──
     const positions = {
-      'strategy':       { x: 230, y: 20 },
-      'discovery':      { x: 230, y: 120 },
-      'ux':             { x: 230, y: 240 },
-      'design-system':  { x: 20,  y: 240 },
-      'spec':           { x: 160, y: 370 },
-      'ui':             { x: 350, y: 370 },
-      'build':          { x: 230, y: 490 },
-      'review':         { x: 230, y: 600 },
-      'lab':            { x: 430, y: 490 },
+      'material':       { x: 230, y: 20 },
+      'strategy':       { x: 230, y: 120 },
+      'discovery':      { x: 230, y: 220 },
+      'ux':             { x: 230, y: 340 },
+      'design-system':  { x: 20,  y: 340 },
+      'spec':           { x: 160, y: 470 },
+      'ui':             { x: 350, y: 470 },
+      'build':          { x: 230, y: 590 },
+      'review':         { x: 230, y: 700 },
+      'lab':            { x: 440, y: 340 },
     };
 
     const nodeIcons = {
-      'strategy': '\\u25C6', 'discovery': '\\u25CE', 'ux': '\\u25C7',
+      'material': '\\u25A3', 'strategy': '\\u25C6', 'discovery': '\\u25CE', 'ux': '\\u25C7',
       'design-system': '\\u25A0', 'spec': '\\u25B6', 'ui': '\\u25CF',
       'build': '\\u2699', 'review': '\\u2713', 'lab': '\\u26A1',
     };
@@ -1027,21 +1381,307 @@ export function getWebviewContent(data: GraphData): string {
       }
     }
 
+    // ── What's Next? Lookahead ──
+    function renderWhatsNext(node) {
+      var pipeline = ['strategy', 'discovery', 'ux', 'spec', 'build', 'review'];
+      var cmdMap = {
+        strategy: '/onboarding', discovery: '/discovery', ux: '/ux',
+        spec: '/spec', build: '/build', review: '/review',
+      };
+      var currentIdx = pipeline.indexOf(node.id);
+      if (currentIdx === -1) return '';
+
+      var upcoming = [];
+      for (var i = currentIdx + 1; i < pipeline.length && upcoming.length < 3; i++) {
+        var stepId = pipeline[i];
+        var stepNode = data.nodes.find(function(n) { return n.id === stepId; });
+        if (!stepNode) continue;
+        if (stepNode.readiness >= 100) continue;
+        upcoming.push({ id: stepId, label: stepNode.label, readiness: stepNode.readiness, command: cmdMap[stepId] || '' });
+      }
+
+      if (upcoming.length === 0) return '';
+
+      var html = '<div class="whats-next">';
+      html += '<div class="whats-next-title">Prochaines etapes</div>';
+      for (var j = 0; j < upcoming.length; j++) {
+        var step = upcoming[j];
+        var c = cls(step.readiness);
+        html += '<div class="whats-next-step">' +
+          '<span class="whats-next-num">' + (j + 1) + '</span>' +
+          '<div class="whats-next-info"><span class="whats-next-label">' + step.label + '</span></div>' +
+          '<span class="whats-next-pct ' + c + '">' + step.readiness + '%</span>' +
+          '<span class="whats-next-cmd" data-command="' + step.command + '">' + step.command + '</span>' +
+        '</div>';
+      }
+      html += '</div>';
+      return html;
+    }
+
+    // ── Sparkline renderer ──
+    function sparkline(values, width, height) {
+      if (!values || values.length < 2) return '';
+      var w = width || 60;
+      var h = height || 20;
+      var pad = 2;
+
+      var first = values[0];
+      var last = values[values.length - 1];
+      var trend = last > first ? 'up' : (last < first ? 'down' : 'flat');
+
+      var stepX = (w - 2) / (values.length - 1);
+      var points = [];
+      for (var i = 0; i < values.length; i++) {
+        var x = 1 + i * stepX;
+        var y = pad + (h - 2 * pad) * (1 - values[i] / 100);
+        points.push(x.toFixed(1) + ',' + y.toFixed(1));
+      }
+      var polyStr = points.join(' ');
+
+      var areaPoints = points.slice();
+      areaPoints.push((1 + (values.length - 1) * stepX).toFixed(1) + ',' + h);
+      areaPoints.push('1,' + h);
+      var areaStr = areaPoints.join(' ');
+
+      var lastX = 1 + (values.length - 1) * stepX;
+      var lastY = pad + (h - 2 * pad) * (1 - last / 100);
+
+      return '<span class="sparkline-container"><svg class="sparkline" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '">' +
+        '<polygon class="sparkline-area ' + trend + '" points="' + areaStr + '" />' +
+        '<polyline class="sparkline-line ' + trend + '" points="' + polyStr + '" />' +
+        '<circle class="sparkline-dot ' + trend + '" cx="' + lastX.toFixed(1) + '" cy="' + lastY.toFixed(1) + '" r="2" />' +
+      '</svg></span>';
+    }
+
+    function getSparklineValues(nodeId) {
+      var history = data.readinessHistory;
+      if (!history || history.length < 2) return [];
+      var values = [];
+      for (var i = 0; i < history.length; i++) {
+        if (nodeId === 'global') {
+          values.push(history[i].globalScore || 0);
+        } else {
+          values.push((history[i].scores && history[i].scores[nodeId]) || 0);
+        }
+      }
+      return values;
+    }
+
+    // ── Contextual section renderer ──
+    function renderContextSection(node) {
+      var ctx = node.contextData;
+      if (!ctx) return '';
+      var html = '';
+
+      // ── Strategy: North Star + Principles + Anti-Goals (collapsible) ──
+      if (node.id === 'strategy') {
+        if (ctx.northStar) {
+          html += collapsible('north-star', 'North Star', null,
+            '<div class="ctx-north-star">' + ctx.northStar + '</div>', false);
+        }
+        var principles = ctx.principles || [];
+        if (principles.length > 0) {
+          var pHtml = '<ul class="ctx-list">';
+          for (var i = 0; i < principles.length; i++) {
+            pHtml += '<li>' + principles[i] + '</li>';
+          }
+          pHtml += '</ul>';
+          html += collapsible('principles', 'Principes directeurs', principles.length, pHtml, false);
+        }
+        var antiGoals = ctx.antiGoals || [];
+        if (antiGoals.length > 0) {
+          var agHtml = '<ul class="ctx-list">';
+          for (var j = 0; j < antiGoals.length; j++) {
+            agHtml += '<li class="anti">' + antiGoals[j] + '</li>';
+          }
+          agHtml += '</ul>';
+          html += collapsible('anti-goals', 'Anti-Goals', antiGoals.length, agHtml, false);
+        }
+      }
+
+      // ── Discovery: Counters (collapsible) ──
+      if (node.id === 'discovery') {
+        var sig = node.signals || {};
+        var hasAny = (ctx.patternCount || 0) + (ctx.jtbdCount || 0) + (ctx.opportunityCount || 0)
+          + (sig.hypothesisCount || 0) + (sig.contradictionCount || 0);
+        if (hasAny > 0) {
+          var countersHtml = '<div class="ctx-counters">';
+          if (sig.hypothesisCount > 0) {
+            countersHtml += '<span class="ctx-counter info"><span class="count">' + sig.hypothesisCount + '</span> hypothese' + (sig.hypothesisCount > 1 ? 's' : '') + '</span>';
+          }
+          if (sig.contradictionCount > 0) {
+            countersHtml += '<span class="ctx-counter warn"><span class="count">' + sig.contradictionCount + '</span> contradiction' + (sig.contradictionCount > 1 ? 's' : '') + '</span>';
+          }
+          if (ctx.patternCount > 0) {
+            countersHtml += '<span class="ctx-counter"><span class="count">' + ctx.patternCount + '</span> pattern' + (ctx.patternCount > 1 ? 's' : '') + '</span>';
+          }
+          if (ctx.jtbdCount > 0) {
+            countersHtml += '<span class="ctx-counter"><span class="count">' + ctx.jtbdCount + '</span> JTBD</span>';
+          }
+          if (ctx.opportunityCount > 0) {
+            countersHtml += '<span class="ctx-counter info"><span class="count">' + ctx.opportunityCount + '</span> opportunite' + (ctx.opportunityCount > 1 ? 's' : '') + '</span>';
+          }
+          countersHtml += '</div>';
+          html += collapsible('discovery-signals', 'Signaux discovery', null, countersHtml, false);
+        }
+      }
+
+      // ── Design System: Token fill rate + component count ──
+      if (node.id === 'design-system') {
+        var total = ctx.tokensTotal || 0;
+        var defined = ctx.tokensDefined || 0;
+        var pct = ctx.tokenFillPct || 0;
+        var barCls = pct >= 70 ? 'high' : (pct >= 30 ? 'medium' : 'low');
+
+        html += '<div class="ctx-section">' +
+          '<div class="ctx-label">Tokens</div>' +
+          '<div class="ctx-token-bar"><div class="ctx-token-fill ' + barCls + '" style="width:' + pct + '%"></div></div>' +
+          '<div class="ctx-token-label"><span>' + defined + '/' + total + ' definis</span><span>' + pct + '%</span></div>' +
+        '</div>';
+
+        if (ctx.componentCount > 0) {
+          html += '<div class="ctx-section">' +
+            '<div class="ctx-label">Composants</div>' +
+            '<div class="ctx-counters">' +
+              '<span class="ctx-counter"><span class="count">' + ctx.componentCount + '</span> composant' + (ctx.componentCount > 1 ? 's' : '') + '</span>' +
+              '<span class="ctx-counter"><span class="count">' + ctx.fileCount + '</span> fichier' + (ctx.fileCount > 1 ? 's' : '') + '</span>' +
+            '</div>' +
+          '</div>';
+        }
+      }
+
+      // ── Spec: pipeline grid ──
+      if (node.id === 'spec') {
+        var pipeline = ctx.pipeline || [];
+        var screenCount = ctx.screenCount || 0;
+        var staleCount = ctx.staleCount || 0;
+
+        if (pipeline.length > 0) {
+          var stageIcons = { DRAFT: '\\u25CB', 'EN COURS': '\\u29BF', VALIDEE: '\\u25B8', BUILT: '\\u2699', REVIEWED: '\\u2713' };
+          var stageLabels = { DRAFT: 'Draft', 'EN COURS': 'En cours', VALIDEE: 'Validee', BUILT: 'Code', REVIEWED: 'Review' };
+
+          html += '<div class="ctx-section">' +
+            '<div class="ctx-label">Pipeline specs</div>' +
+            '<div class="ctx-counters">' +
+              '<span class="ctx-counter"><span class="count">' + pipeline.length + '</span> spec' + (pipeline.length > 1 ? 's' : '') + '</span>' +
+              '<span class="ctx-counter"><span class="count">' + screenCount + '</span> ecran' + (screenCount > 1 ? 's' : '') + '</span>';
+          if (staleCount > 0) {
+            html += '<span class="ctx-counter warn"><span class="count">' + staleCount + '</span> stale</span>';
+          }
+          html += '</div>' +
+            '<div class="spec-grid">';
+
+          for (var p = 0; p < pipeline.length; p++) {
+            var item = pipeline[p];
+            var cellCls = 'spec-cell';
+            if (item.status === 'DRAFT') cellCls += ' draft';
+            else if (item.status === 'EN COURS') cellCls += ' en-cours';
+            else if (item.status === 'VALIDEE') cellCls += ' validee';
+            else if (item.status === 'BUILT') cellCls += ' built';
+            else if (item.status === 'REVIEWED') cellCls += ' reviewed';
+            if (item.isStale) cellCls += ' stale';
+
+            var icon = stageIcons[item.status] || '\\u25CB';
+            var tooltip = item.label + ' — ' + (stageLabels[item.status] || item.status);
+            if (item.isStale) tooltip += ' (stale)';
+
+            html += '<div class="' + cellCls + '" title="' + tooltip + '" data-spec-path="' + (item.path || '').replace(/"/g, '&quot;') + '">' +
+              '<span class="spec-cell-id">' + item.id + '</span>' +
+              '<span class="spec-cell-icon">' + icon + '</span>' +
+            '</div>';
+          }
+
+          html += '</div>' +
+            '<div class="spec-legend">' +
+              '<span class="spec-legend-item"><span class="spec-legend-dot" style="background:var(--info)"></span>Draft</span>' +
+              '<span class="spec-legend-item"><span class="spec-legend-dot" style="background:var(--warning)"></span>En cours</span>' +
+              '<span class="spec-legend-item"><span class="spec-legend-dot" style="background:color-mix(in srgb,var(--success) 50%,transparent)"></span>Validee</span>' +
+              '<span class="spec-legend-item"><span class="spec-legend-dot" style="background:var(--success)"></span>Code</span>' +
+              '<span class="spec-legend-item"><span class="spec-legend-dot" style="background:var(--success);opacity:1"></span>Review</span>' +
+            '</div>' +
+          '</div>';
+        }
+      }
+
+      // ── UX: journeys + flows ──
+      if (node.id === 'ux') {
+        var jCount = ctx.journeyCount || 0;
+        var fCount = ctx.flowCount || 0;
+        var flows = ctx.flows || [];
+
+        if (jCount > 0 || fCount > 0) {
+          html += '<div class="ctx-section"><div class="ctx-label">Parcours utilisateur</div><div class="ctx-counters">';
+          html += '<span class="ctx-counter"><span class="count">' + jCount + '</span> journey' + (jCount > 1 ? 's' : '') + ' SVG</span>';
+          html += '<span class="ctx-counter"><span class="count">' + fCount + '</span> flow' + (fCount > 1 ? 's' : '') + '</span>';
+          html += '</div></div>';
+        }
+
+        if (flows.length > 0) {
+          html += '<div class="ctx-section"><div class="ctx-label">Flows detectes</div>';
+          html += '<div class="flow-list">';
+          for (var fi = 0; fi < flows.length; fi++) {
+            var flow = flows[fi];
+            html += '<div class="flow-item" data-flow-path="' + flow.path + '">' +
+              '<span class="flow-name">' + flow.name + '</span>' +
+              '<span class="flow-badge">' + flow.nodeCount + ' ecrans</span>' +
+              '<span class="flow-open" title="Ouvrir le flow interactif">\\u2197</span>' +
+            '</div>';
+          }
+          html += '</div></div>';
+        }
+      }
+
+      // ── Material: new/unprocessed files ──
+      if (node.id === 'material') {
+        var totalMat = ctx.totalFiles || 0;
+        var newMat = ctx.newFiles || [];
+        var newMatCount = ctx.newCount || 0;
+
+        if (totalMat > 0) {
+          html += '<div class="ctx-section"><div class="ctx-label">Fichiers source</div><div class="ctx-counters">';
+          html += '<span class="ctx-counter"><span class="count">' + totalMat + '</span> fichier' + (totalMat > 1 ? 's' : '') + '</span>';
+          if (newMatCount > 0) {
+            html += '<span class="ctx-counter warn"><span class="count">' + newMatCount + '</span> non traite' + (newMatCount > 1 ? 's' : '') + '</span>';
+          } else {
+            html += '<span class="ctx-counter" style="background:color-mix(in srgb,var(--success) 12%,transparent);color:var(--success)">Tous traites</span>';
+          }
+          html += '</div></div>';
+
+          if (newMatCount > 0 && newMat.length <= 5) {
+            html += '<div class="ctx-section"><div class="ctx-label" style="color:var(--warning)">Non traites</div><ul class="ctx-list">';
+            for (var m = 0; m < newMat.length; m++) {
+              html += '<li class="anti">' + newMat[m] + '</li>';
+            }
+            html += '</ul></div>';
+          }
+        }
+      }
+
+      return html;
+    }
+
     // ── Collapsible section builder ──
     function collapsible(id, title, count, content, openByDefault) {
       if (!content) return '';
-      const openCls = openByDefault ? ' open' : '';
+      var isOpen = openByDefault;
+      try {
+        var saved = JSON.parse(localStorage.getItem('designOs.openSections') || '{}');
+        if (saved.hasOwnProperty(id)) isOpen = saved[id];
+      } catch(e) {}
+      const openCls = isOpen ? ' open' : '';
       const countHtml = count !== null && count !== undefined
         ? '<span class="collapsible-count">' + count + '</span>'
         : '';
-      return '<div class="collapsible' + openCls + '" data-section="' + id + '">' +
+      return '<div class="draggable-section" data-section-id="' + id + '" draggable="true">' +
+        '<div class="collapsible' + openCls + '" data-section="' + id + '">' +
         '<div class="collapsible-header">' +
+          '<span class="drag-handle-icon" title="Deplacer">\\u2807</span>' +
           '<span class="chevron">\\u25B8</span>' +
           '<span class="collapsible-title">' + title + '</span>' +
           countHtml +
         '</div>' +
         '<div class="collapsible-body">' + content + '</div>' +
-      '</div>';
+      '</div></div>';
     }
 
     // ── Render graph ──
@@ -1057,8 +1697,9 @@ export function getWebviewContent(data: GraphData): string {
       } else {
         badge.style.display = 'none';
       }
-      document.getElementById('global-readiness').textContent =
-        'Readiness global : ' + data.globalReadiness + '%';
+      var globalSparkHtml = sparkline(getSparklineValues('global'), 60, 18);
+      document.getElementById('global-readiness').innerHTML =
+        'Readiness global : ' + data.globalReadiness + '%' + globalSparkHtml;
 
       container.querySelectorAll('.node').forEach(n => n.remove());
 
@@ -1089,13 +1730,34 @@ export function getWebviewContent(data: GraphData): string {
 
         const sourceNode = data.nodes.find(n => n.id === edge.from);
         const readiness = sourceNode ? sourceNode.readiness : 0;
-        const strokeWidth = edge.type === 'nogo' ? 2 : (1 + readiness / 100 * 1.5);
+
+        // Dynamic color, opacity and width based on source readiness
+        let edgeColor, edgeOpacity;
+        if (edge.type === 'nogo') {
+          edgeColor = 'var(--error)';
+          edgeOpacity = 0.8;
+        } else if (readiness === 0) {
+          edgeColor = 'rgba(255,255,255,0.35)';
+          edgeOpacity = 1;
+        } else if (readiness < 30) {
+          edgeColor = 'var(--error)';
+          edgeOpacity = 0.4 + readiness / 100 * 0.4;
+        } else if (readiness < 70) {
+          edgeColor = 'var(--warning)';
+          edgeOpacity = 0.5 + readiness / 100 * 0.4;
+        } else {
+          edgeColor = 'var(--success)';
+          edgeOpacity = 0.6 + readiness / 100 * 0.3;
+        }
+        const strokeWidth = edge.type === 'nogo' ? 2 : (0.75 + readiness / 100 * 1.75);
 
         let edgeCls = 'edge-line';
         if (edge.type === 'dependency') edgeCls += ' dependency';
         if (edge.type === 'nogo') edgeCls += ' nogo';
+        if (readiness > 0 && edge.type !== 'nogo') edgeCls += ' animated';
 
-        edgesHtml += '<path class="' + edgeCls + '" style="stroke-width:' + strokeWidth + '" d="M' + x1 + ',' + y1 +
+        edgesHtml += '<path class="' + edgeCls + '" style="stroke:' + edgeColor +
+          ';stroke-width:' + strokeWidth + ';opacity:' + edgeOpacity + '" d="M' + x1 + ',' + y1 +
           ' C' + x1 + ',' + midY + ' ' + x2 + ',' + midY + ' ' + x2 + ',' + y2 + '" />';
       }
       svg.innerHTML = edgesHtml;
@@ -1135,6 +1797,7 @@ export function getWebviewContent(data: GraphData): string {
         el.addEventListener('click', () => selectNode(node.id));
         container.appendChild(el);
       }
+
     }
 
     // ── Select node → detail panel (with toggle) ──
@@ -1182,9 +1845,22 @@ export function getWebviewContent(data: GraphData): string {
         }
       }
 
+      var nodeSparkHtml = sparkline(getSparklineValues(node.id), 80, 22);
+
       html += '<div class="detail-readiness">' +
         '<div class="detail-readiness-bar"><div class="detail-readiness-fill ' + c + '" style="width:' + node.readiness + '%"></div></div>' +
-        '<div class="detail-readiness-label"><span>' + v + deltaHtml + '</span><span>' + node.readiness + '%</span></div>' +
+        '<div class="detail-readiness-label"><span>' + v + deltaHtml + '</span><span>' + node.readiness + '%' + nodeSparkHtml + '</span></div>' +
+      '</div>';
+
+      // ─── 2b. File Preview (right below readiness) ───
+      html += '<div class="file-preview">' +
+        '<div id="preview-content" class="file-preview-body placeholder">' +
+          '<span class="file-preview-placeholder-text">Aucun aper\u00E7u</span>' +
+        '</div>' +
+        '<div id="preview-footer" class="file-preview-footer" style="display:none;">' +
+          '<span id="preview-name" class="file-preview-name"></span>' +
+          '<span class="file-preview-open">\u2197</span>' +
+        '</div>' +
       '</div>';
 
       // ─── 3. Recommended action (always visible, not collapsible) ───
@@ -1199,18 +1875,13 @@ export function getWebviewContent(data: GraphData): string {
         '</div>';
       }
 
-      // ─── 3.5. File Preview ───
-      html += '<div class="file-preview">' +
-        '<div id="preview-content" class="file-preview-body placeholder">' +
-          '<span class="file-preview-placeholder-text">Aucun aper\\u00E7u</span>' +
-        '</div>' +
-        '<div id="preview-footer" class="file-preview-footer" style="display:none;">' +
-          '<span id="preview-name" class="file-preview-name"></span>' +
-          '<span class="file-preview-open">\\u2197</span>' +
-        '</div>' +
-      '</div>';
+      // ─── 3.3b. What's Next? Lookahead ───
+      html += renderWhatsNext(node);
 
-      // ─── 3.6. Commands (open if onboarding done) ───
+      // ─── 3.4. Contextual section (node-specific) ───
+      html += renderContextSection(node);
+
+      // ─── 3.5. Commands ───
       if (node.commands.length > 0) {
         let commandsHtml = '';
         for (const cmd of node.commands) {
@@ -1221,7 +1892,7 @@ export function getWebviewContent(data: GraphData): string {
         }
         const strategyNode = data.nodes.find(n => n.id === 'strategy');
         const onboardingDone = strategyNode && strategyNode.readiness > 0;
-        html += collapsible('commands', 'Commandes', node.commands.length, commandsHtml, !!onboardingDone);
+        html += collapsible('commands', 'Commandes', node.commands.length, commandsHtml, false);
       }
 
       // ─── 4. Activite recente (open by default) ───
@@ -1254,9 +1925,7 @@ export function getWebviewContent(data: GraphData): string {
           filesHtml += '<div class="empty-state">+ ' + (node.files.length - maxShow) + ' autres fichiers</div>';
         }
 
-        html += collapsible('activity', 'Activite recente', node.files.length, filesHtml, true);
-      } else {
-        html += collapsible('activity', 'Activite recente', 0, '<div class="empty-state">Aucun fichier</div>', false);
+        html += collapsible('activity', 'Activite recente', node.files.length, filesHtml, false);
       }
 
       // ─── 5. Confidence signals (collapsed by default) ───
@@ -1345,11 +2014,19 @@ export function getWebviewContent(data: GraphData): string {
       const closeBtn = document.getElementById('close-panel-btn');
       if (closeBtn) closeBtn.addEventListener('click', closePanel);
 
-      // Collapsible toggle
+      // Collapsible toggle with localStorage persistence
       panel.querySelectorAll('.collapsible-header').forEach(header => {
         header.addEventListener('click', () => {
           const section = header.parentElement;
           section.classList.toggle('open');
+          var sectionId = section.getAttribute('data-section');
+          if (sectionId) {
+            try {
+              var openSections = JSON.parse(localStorage.getItem('designOs.openSections') || '{}');
+              openSections[sectionId] = section.classList.contains('open');
+              localStorage.setItem('designOs.openSections', JSON.stringify(openSections));
+            } catch(e) {}
+          }
         });
       });
 
@@ -1362,11 +2039,36 @@ export function getWebviewContent(data: GraphData): string {
         });
       });
 
+      // What's Next command spans
+      panel.querySelectorAll('.whats-next-cmd').forEach(cmd => {
+        cmd.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const command = cmd.getAttribute('data-command');
+          if (command) vscode.postMessage({ type: 'runCommand', command: command });
+        });
+      });
+
       // File items — click triggers preview for SVG/HTML, direct open for others
       panel.querySelectorAll('.file-item').forEach(item => {
         item.addEventListener('click', () => {
           const filePath = item.getAttribute('data-path');
           if (filePath) requestPreview(filePath);
+        });
+      });
+
+      // Spec grid cells — click opens the spec file
+      panel.querySelectorAll('.spec-cell').forEach(cell => {
+        cell.addEventListener('click', () => {
+          const specPath = cell.getAttribute('data-spec-path');
+          if (specPath) vscode.postMessage({ type: 'openFile', path: specPath });
+        });
+      });
+
+      // Flow items — click opens the flow in a new interactive panel
+      panel.querySelectorAll('.flow-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const flowPath = item.getAttribute('data-flow-path');
+          if (flowPath) vscode.postMessage({ type: 'openFlowPreview', path: flowPath });
         });
       });
 
@@ -1436,6 +2138,123 @@ export function getWebviewContent(data: GraphData): string {
       });
 
       graphPanel.addEventListener('contextmenu', (e) => e.preventDefault());
+    })();
+
+    // ── Drag-and-drop section reordering ──
+    (function() {
+      var dragSrcId = null;
+
+      function setupDragListeners() {
+        var panel = document.getElementById('detail-panel');
+        if (!panel) return;
+
+        panel.addEventListener('dragstart', function(e) {
+          var section = e.target.closest('.draggable-section');
+          if (!section) return;
+          dragSrcId = section.getAttribute('data-section-id');
+          section.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', dragSrcId);
+        });
+
+        panel.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          var target = e.target.closest('.draggable-section');
+          if (!target || target.getAttribute('data-section-id') === dragSrcId) return;
+
+          // Clear all indicators
+          panel.querySelectorAll('.drag-above, .drag-below').forEach(function(el) {
+            el.classList.remove('drag-above', 'drag-below');
+          });
+
+          var rect = target.getBoundingClientRect();
+          var mid = rect.top + rect.height / 2;
+          if (e.clientY < mid) {
+            target.classList.add('drag-above');
+          } else {
+            target.classList.add('drag-below');
+          }
+        });
+
+        panel.addEventListener('dragleave', function(e) {
+          var target = e.target.closest('.draggable-section');
+          if (target) {
+            target.classList.remove('drag-above', 'drag-below');
+          }
+        });
+
+        panel.addEventListener('drop', function(e) {
+          e.preventDefault();
+          var target = e.target.closest('.draggable-section');
+          if (!target || !dragSrcId) return;
+
+          var targetId = target.getAttribute('data-section-id');
+          if (targetId === dragSrcId) return;
+
+          var src = panel.querySelector('.draggable-section[data-section-id="' + dragSrcId + '"]');
+          if (!src) return;
+
+          var rect = target.getBoundingClientRect();
+          var mid = rect.top + rect.height / 2;
+          if (e.clientY < mid) {
+            target.parentNode.insertBefore(src, target);
+          } else {
+            target.parentNode.insertBefore(src, target.nextSibling);
+          }
+
+          // Save new order
+          var sections = panel.querySelectorAll('.draggable-section');
+          var order = [];
+          sections.forEach(function(s) { order.push(s.getAttribute('data-section-id')); });
+          vscode.postMessage({ type: 'saveSectionOrder', order: order });
+        });
+
+        panel.addEventListener('dragend', function() {
+          dragSrcId = null;
+          panel.querySelectorAll('.dragging, .drag-above, .drag-below').forEach(function(el) {
+            el.classList.remove('dragging', 'drag-above', 'drag-below');
+          });
+        });
+      }
+
+      // Re-attach listeners after each selectNode render
+      var origSelectNode = selectNode;
+      selectNode = function(nodeId) {
+        origSelectNode(nodeId);
+        setupDragListeners();
+        applySavedOrder();
+      };
+
+      function applySavedOrder() {
+        var savedOrder = data.sectionOrder;
+        if (!savedOrder || savedOrder.length === 0) return;
+
+        var panel = document.getElementById('detail-panel');
+        if (!panel) return;
+
+        var container = panel.querySelector('.detail-panel-content') || panel;
+        var sections = container.querySelectorAll('.draggable-section');
+        if (sections.length === 0) return;
+
+        // Build a map of section elements
+        var sectionMap = {};
+        sections.forEach(function(s) { sectionMap[s.getAttribute('data-section-id')] = s; });
+
+        // Reorder according to saved order
+        var parent = sections[0].parentNode;
+        for (var i = 0; i < savedOrder.length; i++) {
+          var el = sectionMap[savedOrder[i]];
+          if (el) parent.appendChild(el);
+        }
+
+        // Append any sections not in the saved order
+        sections.forEach(function(s) {
+          if (savedOrder.indexOf(s.getAttribute('data-section-id')) === -1) {
+            parent.appendChild(s);
+          }
+        });
+      }
     })();
 
     // ── Init ──

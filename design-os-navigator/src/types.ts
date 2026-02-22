@@ -37,6 +37,31 @@ export interface HistoryEntry {
 
 export type DocStatus = 'DRAFT' | 'VALIDEE' | 'EN COURS' | 'LIVREE' | undefined;
 
+// ── Flow graph types (User Journey) ──
+
+export interface FlowNode {
+  id: string;
+  label: string;
+  type: 'screen' | 'decision' | 'terminal' | 'error';
+  color?: string;
+  x?: number;
+  y?: number;
+}
+
+export interface FlowEdge {
+  from: string;
+  to: string;
+  label?: string;
+}
+
+export interface FlowGraph {
+  name: string;
+  path: string;
+  direction: 'LR' | 'TD';
+  nodes: FlowNode[];
+  edges: FlowEdge[];
+}
+
 // ── File & node types ──
 
 export interface FileInfo {
@@ -70,6 +95,7 @@ export interface DesignOsNode {
   children?: DesignOsNode[];
   recommendedAction?: RecommendedAction;
   status: 'ready' | 'active' | 'blocked' | 'empty';
+  contextData?: Record<string, unknown>;
 }
 
 export interface CommandInfo {
@@ -97,12 +123,20 @@ export interface ProjectContext {
   language: string;
 }
 
+export interface ReadinessSnapshot {
+  timestamp: number;
+  globalScore: number;
+  scores: Record<string, number>;
+}
+
 export interface GraphData {
   context: ProjectContext;
   nodes: DesignOsNode[];
   edges: GraphEdge[];
   globalReadiness: number;
   history: HistoryEntry[];
+  readinessHistory: ReadinessSnapshot[];
+  sectionOrder?: string[];
 }
 
 export interface GraphEdge {
