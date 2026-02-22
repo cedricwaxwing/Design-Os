@@ -725,7 +725,13 @@ function extractDesignSystemContext(dsBase: string, dsFiles: FileInfo[]): Record
     const content = safeRead(tokensPath);
     if (content) {
       tokensPlaceholder = (content.match(/#______/g) || []).length;
-      tokensDefined = (content.match(/#[0-9A-Fa-f]{6}\b/g) || []).length;
+      // Strip HTML comments before matching — comments contain instruction hex values
+      // (e.g., "Light mode: bg-base=#FFFFFF") that are NOT user-defined tokens
+      const contentNoComments = content.replace(/<!--[\s\S]*?-->/g, '');
+      // Exclude built-in semantic colors that ship with the template
+      const BUILTIN_COLORS = ['#22C55E', '#F59E0B', '#EF4444', '#3B82F6'];
+      const allHex = contentNoComments.match(/#[0-9A-Fa-f]{6}\b/g) || [];
+      tokensDefined = allHex.filter(c => !BUILTIN_COLORS.includes(c.toUpperCase())).length;
     }
   }
 
@@ -1108,9 +1114,11 @@ function evalDiscoveryGates(ctx: GateEvalContext): GateCondition[] {
   const insightsOk = countReal(ctx.insightFiles) > 0;
 
   // All hypotheses validated = no unvalidated [HYPOTHESE] tags remain
+  // Prerequisite: must have real files (avoid vacuously true on empty project)
   const allFiles = ctx.allDiscoveryFiles;
-  const sig = aggregateSignals(allFiles.filter(f => !f.isScaffold));
-  const noHypothesis = sig.hypothesisCount === 0;
+  const realDiscFiles = allFiles.filter(f => !f.isScaffold);
+  const sig = aggregateSignals(realDiscFiles);
+  const noHypothesis = realDiscFiles.length > 0 && sig.hypothesisCount === 0;
 
   return [
     { id: 'disc-domain', label: 'Domain context amorce', met: domainOk, command: '/discovery' },
@@ -1135,8 +1143,10 @@ function evalUxGates(ctx: GateEvalContext): GateCondition[] {
   const storiesMapped = ctx.hasScreenMap && /\d+\.\d+-/.test(ctx.screenMapContent);
 
   // UX hypotheses validated
-  const uxSig = aggregateSignals(ctx.uxFiles.filter(f => !f.isScaffold));
-  const noUxHypothesis = uxSig.hypothesisCount === 0;
+  // Prerequisite: must have real files (avoid vacuously true on empty project)
+  const realUxFiles = ctx.uxFiles.filter(f => !f.isScaffold);
+  const uxSig = aggregateSignals(realUxFiles);
+  const noUxHypothesis = realUxFiles.length > 0 && uxSig.hypothesisCount === 0;
 
   return [
     { id: 'ux-screenmap', label: 'Screen map cree', met: !!smOk, command: '/ux' },
@@ -1154,8 +1164,9 @@ function evalSpecGates(ctx: GateEvalContext): GateCondition[] {
   const hasDeepSpec = realSpecs.some(f => f.signals.sectionsFilled >= 5);
 
   // 0 TBD across all specs
+  // Prerequisite: must have real specs (avoid vacuously true on empty project)
   const specSig = aggregateSignals(realSpecs);
-  const noTbd = specSig.tbdCount === 0;
+  const noTbd = hasSpec && specSig.tbdCount === 0;
 
   // All specs VALIDEE
   const allValidated = hasSpec && realSpecs.every(f => f.signals.status === 'VALIDEE');
@@ -1301,7 +1312,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     label: 'Strategy',
     phase: 'strategy',
     readiness: 0,
-    fileCount: strategyFiles.length,
+    fileCount: countReal(strategyFiles),
     files: strategyFiles,
     signals: strategySig,
     sections: [],
@@ -1331,7 +1342,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     label: 'Discovery',
     phase: 'discovery',
     readiness: 0,
-    fileCount: allDiscoveryFiles.length,
+    fileCount: countReal(allDiscoveryFiles),
     files: allDiscoveryFiles,
     signals: discoverySig,
     sections: discoverySections,
@@ -1366,7 +1377,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     label: 'Material',
     phase: 'strategy',
     readiness: 0,
-    fileCount: materialFiles.length,
+    fileCount: countReal(materialFiles),
     files: materialFiles,
     signals: aggregateSignals(materialFiles),
     sections: [],
@@ -1408,7 +1419,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     label: 'UX Design',
     phase: 'ux',
     readiness: 0,
-    fileCount: allUxFiles.length,
+    fileCount: countReal(allUxFiles),
     files: allUxFiles,
     signals: aggregateSignals(allUxFiles),
     sections: [],
@@ -1443,7 +1454,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     label: 'Spec',
     phase: 'spec',
     readiness: 0,
-    fileCount: allSpecFiles.length,
+    fileCount: countReal(allSpecFiles),
     files: allSpecFiles,
     signals: aggregateSignals(allSpecFiles),
     sections: specSections,
@@ -1461,7 +1472,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     label: 'UI Design',
     phase: 'ui',
     readiness: 0,
-    fileCount: screenFiles.length,
+    fileCount: countReal(screenFiles),
     files: screenFiles,
     signals: aggregateSignals(screenFiles),
     sections: [],
@@ -1484,7 +1495,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     label: 'Design System',
     phase: 'strategy',
     readiness: 0,
-    fileCount: dsFiles.length,
+    fileCount: countReal(dsFiles),
     files: dsFiles,
     signals: aggregateSignals(dsFiles),
     sections: [],
@@ -1507,7 +1518,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     label: 'Build',
     phase: 'build',
     readiness: 0,
-    fileCount: allBuildFiles.length,
+    fileCount: countReal(allBuildFiles),
     files: allBuildFiles,
     signals: aggregateSignals(allBuildFiles),
     sections: [],
@@ -1527,7 +1538,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     label: 'Review',
     phase: 'review',
     readiness: 0,
-    fileCount: reviewFiles.length,
+    fileCount: countReal(reviewFiles),
     files: reviewFiles,
     signals: aggregateSignals(reviewFiles),
     sections: collectSectionsFromFiles(reviewFiles),
@@ -1547,7 +1558,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     label: 'Lab',
     phase: 'lab',
     readiness: 0,
-    fileCount: labFiles.length,
+    fileCount: countReal(labFiles),
     files: labFiles,
     signals: aggregateSignals(labFiles),
     sections: [],
@@ -1595,7 +1606,7 @@ function makeChildNode(id: string, label: string, phase: Phase, files: FileInfo[
   return {
     id, label, phase,
     readiness: readinessScore,
-    fileCount: files.length,
+    fileCount: countReal(files),
     files,
     signals: emptySignals(),
     sections: [],
