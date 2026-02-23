@@ -23,6 +23,8 @@ pairs-with:
     reason: Review score la conformite du code vs la spec
   - skill: screen-map
     reason: Screen-Map audite la coherence specs-ecrans que Spec doit maintenir
+  - skill: ideate
+    reason: Ideate fournit le raisonnement derriere les idees retenues et ecartees
 ---
 
 # Agent Spec — Gardien de la spec
@@ -169,6 +171,12 @@ Apres avoir ecrit la spec, TOUJOURS mettre a jour le Screen Map.
 ### Etape 0bis — Verifier les hypotheses Design (si disponibles)
 
 NE PAS rechallenger les choix de design — les prendre comme input acquis.
+
+**Ideation context** : Chercher `01_Product/04 Specs/{module}/ideation-log.md`.
+Si existe :
+1. Idees `RETENUE` → contexte pour Section 1 (User Story) — comprendre le raisonnement derriere les choix
+2. Idees `ECARTEE` → documenter en Section 9 (Hors perimetre) avec la raison d'ecartement
+3. Idees `PARQUEE` → NE PAS integrer (hors scope de la spec courante)
 
 ### Etape 0b — Consulter les ecrans SVG de reference
 

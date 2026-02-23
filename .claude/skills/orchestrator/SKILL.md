@@ -53,6 +53,7 @@ Tu es l'**Orchestrateur** du Design Operating System. Ton role est de comprendre
 | Agent | Commande | Scope | Mode par defaut |
 |-------|----------|-------|-----------------|
 | Discovery Agent | `/discovery` | Enrichir la comprehension utilisateurs/domaine, structurer les hypotheses, ingerer le Material (Etape 0b) | Exploration guidee |
+| Ideation Agent | `/ideate` | Brainstormer et persister toutes les idees | Exploration (capture) |
 | UX Design Agent | `/ux` | Explorer des directions UX, challenger les hypotheses | Exploration (2+ options) |
 | Spec Agent | `/spec` | Generer des specs completes depuis une source | Execution |
 | Build Agent | `/build` | Coder en TDD depuis une spec validee | Execution |
@@ -61,6 +62,8 @@ Tu es l'**Orchestrateur** du Design Operating System. Ton role est de comprendre
 | Wireframe Agent | `/wireframe` | Wireframes low-fidelity, boards juxtaposes, navigation layouts | Exploration |
 | Explore Agent | `/explore` | Prototyper rapidement (happy path) | Execution |
 | Screen-Map Agent | `/screen-map` | Diagnostiquer la coherence ecrans-specs-stories | Diagnostic |
+| Export Agent | `/export` | Exporter la config projet en JSON | Execution |
+| Import Agent | `/import` | Bootstrapper depuis un export collaborateur | Execution |
 
 ---
 
@@ -271,6 +274,113 @@ Chaque agent peut fonctionner en :
 
 **Regle** : En cas de doute, preferer `exploration`.
 
+### Mode Wizard — Questions interactives (QCM)
+
+Quand une decision importante doit etre prise, utiliser l'outil `AskUserQuestion` pour proposer des choix en QCM plutot que du texte libre. Cela facilite l'interaction et accelere les decisions.
+
+**Lecture de la preference utilisateur** :
+
+Au demarrage, lire `guidance_mode` dans `.claude/profile.md` :
+
+| `guidance_mode` | Comportement |
+|-----------------|--------------|
+| `wizard` | TOUTES les questions a choix (2-4 options) utilisent `AskUserQuestion` |
+| `hybrid` (defaut) | Decisions structurantes en QCM, reste en texte libre |
+| `freeform` | Jamais de QCM, tout en texte (comportement legacy) |
+
+Si `guidance_mode` n'est pas defini → comportement `hybrid` par defaut.
+
+**Quand utiliser le mode wizard** :
+
+| Situation | Utiliser QCM ? | Exemple |
+|-----------|----------------|---------|
+| Choix entre 2-4 options claires | **Oui** | "Quel layout : A, B ou C ?" |
+| Validation de plan (GO / modifier / annuler) | **Oui** | "Plan propose. On lance ?" |
+| Choix d'intent ou de mode | **Oui** | "Mode MVP, Epic ou Revamp ?" |
+| Choix de direction UX | **Oui** | "Modal, drawer ou page dediee ?" |
+| Selection de module | **Oui** | "Quel module activer ?" |
+| Question ouverte / creative | **Non** | "Decris ta feature" |
+| Feedback libre / critique | **Non** | "Qu'est-ce qui ne va pas ?" |
+| Plus de 4 options | **Non** | Lister en texte, demander un numero |
+
+**Format des questions QCM** :
+
+```yaml
+# Structure d'une question AskUserQuestion
+question: "Question claire et directe ?"
+header: "Label court"  # max 12 caracteres (ex: "Layout", "Intent", "Module")
+options:
+  - label: "Option A (Recommande)"  # Mettre la recommandation en premier
+    description: "Explication courte de l'option"
+  - label: "Option B"
+    description: "Explication courte"
+  - label: "Option C"
+    description: "Explication courte"
+multiSelect: false  # true si plusieurs choix possibles
+```
+
+**Exemples d'utilisation** :
+
+1. **Validation de plan** :
+   ```
+   question: "Plan propose pour '{feature}'. On lance ?"
+   header: "Plan"
+   options:
+     - label: "Lancer"
+       description: "Demarrer le flow avec ce plan"
+     - label: "Modifier"
+       description: "Ajuster les etapes avant de lancer"
+     - label: "Annuler"
+       description: "Revenir au contexte sans executer"
+   ```
+
+2. **Choix de direction UX** :
+   ```
+   question: "Quel pattern pour afficher les details ?"
+   header: "Pattern"
+   options:
+     - label: "Drawer (Recommande)"
+       description: "Panneau lateral, garde le contexte visible"
+     - label: "Modal"
+       description: "Overlay centre, focus total sur le contenu"
+     - label: "Page dediee"
+       description: "Navigation complete, plus d'espace"
+   ```
+
+3. **Choix d'intent projet** :
+   ```
+   question: "Quel est l'objectif principal du projet ?"
+   header: "Intent"
+   options:
+     - label: "MVP"
+       description: "Shipper vite un flow E2E minimal"
+     - label: "Epic"
+       description: "Workflow complet spec-driven"
+     - label: "Revamp"
+       description: "Ameliorer l'existant avec non-regression"
+     - label: "Design System"
+       description: "Construire une librairie de composants"
+   ```
+
+**Regles du mode wizard** :
+
+1. **Recommandation visible** — Toujours mettre l'option recommandee en premier avec "(Recommande)" dans le label
+2. **Descriptions utiles** — Chaque option a une description qui aide a choisir (pas de description vide)
+3. **Max 4 options** — Au-dela, utiliser du texte ou splitter en plusieurs questions
+4. **Header court** — Max 12 caracteres, en PascalCase ou un mot simple
+5. **Option "Autre"** — L'outil ajoute automatiquement une option "Autre" pour le texte libre, pas besoin de l'ajouter
+6. **multiSelect** — Utiliser `true` uniquement si les choix ne sont pas mutuellement exclusifs
+
+**Propagation aux agents** :
+
+Chaque agent qui propose des choix DEVRAIT utiliser le mode wizard quand les criteres ci-dessus sont remplis. Les agents concernes :
+
+- `/ux` — Choix de direction, validation de solution tree
+- `/spec` — Choix de granularite, validation avant generation
+- `/onboarding` — Toutes les questions de configuration
+- `/wireframe` — Choix de layout, validation de board
+- `/o` — Validation de plan, choix d'agent a injecter
+
 ---
 
 ## Commandes d'override
@@ -280,7 +390,7 @@ L'utilisateur peut intervenir a **tout moment** avec ces commandes :
 | Commande | Effet | Exemple |
 |----------|-------|---------|
 | `/stop` | Pause immediate, etat sauvegarde | "stop, je veux reflechir" |
-| `/variants [n]` | Genere n alternatives (defaut: 3) | "/variants 4" |
+| `/variants [n]` | Genere n alternatives avec QCM de mode (defaut: 3) | "/variants 3" |
 | `/back` | Revient a l'etape precedente (dans la session courante) | "/back, le layout ne me va pas" |
 | `/fork [nom]` | Cree une variante parallele | "/fork version-dark" |
 | `/why` | Explique le raisonnement | "/why ce choix de layout ?" |
@@ -291,6 +401,54 @@ L'utilisateur peut intervenir a **tout moment** avec ces commandes :
 | `/commands` | Affiche la liste de toutes les commandes disponibles | "/commands" |
 
 **Regle** : Ces commandes sont toujours prioritaires sur le flow en cours.
+
+### Commande /variants — Mode de generation
+
+Quand l'utilisateur invoque `/variants`, poser systematiquement un QCM (via `AskUserQuestion`) pour clarifier le mode de generation :
+
+```yaml
+header: "Variants"
+question: "Comment generer les {n} variants ?"
+options:
+  - label: "A partir du precedent (Recommande)"
+    description: "Garde la base existante, modifie des elements"
+  - label: "Nouveaux"
+    description: "Repart de zero pour chaque variant"
+  - label: "Mix"
+    description: "1 a partir du precedent + {n-1} nouveaux"
+```
+
+**Comportement selon le mode** :
+
+| Mode | Contexte transmis a l'agent | Nommage des fichiers |
+|------|----------------------------|---------------------|
+| A partir du precedent | Fichier precedent + "modifie X, garde Y" | `[nom]-v2.tsx`, `[nom]-v3.tsx` |
+| Nouveaux | Specs originales uniquement | `[nom]-alt-A.tsx`, `[nom]-alt-B.tsx` |
+| Mix | Premier = precedent, reste = specs | `[nom]-v2.tsx` + `[nom]-alt-A.tsx` |
+
+**Handoff vers l'agent** :
+
+Quand `/variants` est invoque, l'orchestrateur transmet au bon agent (explore, ui, wireframe) :
+
+```yaml
+handoff:
+  from: orchestrator
+  to: {agent}
+  context:
+    variants_mode: incremental | fresh | mix
+    variants_count: {n}
+    base_file: "[chemin du fichier precedent si incremental/mix]"
+    keep_elements: "[elements a conserver si incremental]"
+    change_elements: "[elements a modifier]"
+```
+
+**Affichage attendu** : L'agent affiche pour chaque variant ce qui a ete garde vs modifie :
+
+```
+Variant 2 (a partir de v1) :
+✓ Garde : layout general, navigation, footer
+✗ Modifie : header (drawer → tabs), couleur accent
+```
 
 ---
 
@@ -769,6 +927,9 @@ Consultee a chaque transition pour construire la notification :
 | Explore | `/explore` | Prototypage rapide | Prototype jetable, happy path, mock data. | Prototype rapide pour voir et decider. | Prototype happy path dans 04_Lab/. Pas de tests. | Un fichier TSX, mock data inline, design system respecte. | `/back`, `/skip` |
 | Screen-Map | `/screen-map` | Diagnostic d'integrite | Audit de la coherence ecrans-specs-stories. | On verifie que tout est bien mappe. | Cross-reference Screen Map, specs, stories. Rapport diagnostic. | Diagnostic du mapping ecrans/specs. Detecte les orphelins. | `/back` |
 | Health | `/health` | Diagnostic global | Bilan de sante du projet : onboarding, tokens, specs, code, reviews. | Etat des lieux en 30 secondes. | Score global avec checks par categorie. | Health check : ratio tests/source, specs sans TBD, tokens remplis. | `/health quick`, `/health all` |
+| Export | `/export` | Exporteur de config | Serialise la config projet en JSON portable. | On genere le fichier de partage. | Preview des sections, confirmation, ecriture JSON. | project.export.json a la racine. | `/export [module]` |
+| Import | `/import` | Importeur de config | Bootstrap le projet depuis un export collaborateur. | On importe la config du collegue. | Validation JSON, preview, ecriture sequentielle avec confirmation. | CLAUDE.md, context.md, modules, tokens, screen-maps. | — |
+| Ideation | `/ideate` | Coffre-fort a idees | Brainstorme librement, persiste TOUTES les idees avec raisonnement. | On brainstorme, tout est note. | Phase libre + structuration. Tags : RETENUE/ECARTEE/PARQUEE. | ideation-log.md mis a jour. Idees tagguees. | `/ideate quick`, `/ideate review` |
 
 ### Questions ouvertes dans le handoff
 

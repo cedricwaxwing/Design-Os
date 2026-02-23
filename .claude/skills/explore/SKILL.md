@@ -82,6 +82,61 @@ Un prototype est jetable. Son seul but est de repondre a la question : "Est-ce q
 
 ---
 
+## Gestion des variants
+
+Quand invoque via `/variants` (depuis l'orchestrator ou directement) :
+
+### 1. Lire le handoff (si present)
+
+Si l'orchestrator a transmis un handoff, utiliser le mode indique :
+- `incremental` : Lire le fichier `base_file`, garder la structure, modifier les elements demandes
+- `fresh` : Ignorer les fichiers precedents, repartir des specs/contexte
+- `mix` : Premier variant = incremental, reste = fresh
+
+### 2. Si pas de handoff (appel direct)
+
+Poser le QCM via `AskUserQuestion` :
+
+```yaml
+header: "Variants"
+question: "Comment generer les variants ?"
+options:
+  - label: "A partir du precedent (Recommande)"
+    description: "Garde la base, modifie des elements"
+  - label: "Nouveaux"
+    description: "Repart de zero pour chaque variant"
+```
+
+### 3. Nommage des fichiers
+
+| Mode | Pattern de nommage | Exemple |
+|------|-------------------|---------|
+| Incremental | `[nom]-v{N}-explore.tsx` | `dashboard-v2-explore.tsx` |
+| Fresh | `[nom]-alt-{lettre}-explore.tsx` | `dashboard-alt-A-explore.tsx` |
+
+### 4. Affichage du diff
+
+Pour chaque variant, afficher ce qui a ete garde vs modifie :
+
+```
+Variant 2 (a partir de v1) :
+✓ Garde : layout grid, navigation sidebar, footer
+✗ Modifie : header (drawer → topbar), couleur accent (blue → green)
+
+→ Fichier : 04_Lab/{module}/dashboard-v2-explore.tsx
+```
+
+### 5. Enchainement incremental
+
+En mode "a partir du precedent", chaque variant part du precedent :
+- v2 ← v1 (base)
+- v3 ← v2
+- v4 ← v3
+
+Cela permet de construire des iterations progressives sans perdre le travail precedent.
+
+---
+
 ## Regles
 
 1. **Happy path uniquement** — Pas d'etat vide, pas d'etat erreur, pas de loading. Juste le cas nominal avec des donnees realistes.

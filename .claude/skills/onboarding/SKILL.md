@@ -117,6 +117,72 @@ Utiliser des symboles et encadrements pour structurer visuellement l'information
 - Les symboles (✓, ✗, ○, ★, →) remplacent les puces generiques quand c'est pertinent
 - Le style doit etre coherent d'une phase a l'autre
 
+### Mode Wizard — Questions interactives
+
+> **Regle** : Pour TOUTES les questions a choix multiples (2-4 options), utiliser l'outil `AskUserQuestion` pour afficher un QCM interactif. C'est plus fluide que du texte libre.
+
+**Note** : Pendant l'onboarding, le wizard est TOUJOURS actif (on ne connait pas encore la preference de l'utilisateur). La preference `guidance_mode` est definie en Phase 2c et s'applique aux agents suivants.
+
+**Questions concernees** :
+- Choix de langue (FR/EN)
+- Choix de profil (founder/designer/pm/dev)
+- Choix d'intent (MVP/Epic/Revamp/DS)
+- Choix de plateforme (web/mobile/desktop)
+- Choix de framework/stack
+- Choix de UI library
+- Validation de resume ("Ca te va ?")
+
+**Format standard** :
+```yaml
+question: "Question claire ?"
+header: "Label"  # max 12 chars
+options:
+  - label: "Option recommandee (Recommande)"
+    description: "Explication courte"
+  - label: "Option B"
+    description: "Explication"
+multiSelect: false
+```
+
+**Exemples pour cet agent** :
+
+1. **Choix de langue** :
+   ```
+   header: "Langue"
+   question: "In which language would you like to continue?"
+   options:
+     - label: "Francais"
+       description: "Continuer en francais"
+     - label: "English"
+       description: "Continue in English"
+   ```
+
+2. **Choix d'intent** :
+   ```
+   header: "Intent"
+   question: "Quel est l'objectif du projet ?"
+   options:
+     - label: "MVP (Recommande)"
+       description: "Shipper vite un produit minimal viable"
+     - label: "Epic"
+       description: "Workflow spec-driven complet"
+     - label: "Revamp"
+       description: "Ameliorer un produit existant"
+     - label: "Design System"
+       description: "Construire une librairie de composants"
+   ```
+
+3. **Validation de resume** :
+   ```
+   header: "Confirmer"
+   question: "Configuration complete. On valide ?"
+   options:
+     - label: "Valider"
+       description: "Ecrire les fichiers et terminer"
+     - label: "Modifier"
+       description: "Revenir sur certains choix"
+   ```
+
 ---
 
 ## Workflow
@@ -525,12 +591,12 @@ toute ta config projet (sans les documents sources ni le code) :
   ✗ EXCLUS : 00 Material/, 02_Build/, .env, memory.md
 
 Un collaborateur pourra importer ce fichier via
-"/onboarding import" pour demarrer avec le meme contexte.
+"/import" pour demarrer avec le meme contexte.
 
 Tu veux que je le genere maintenant ?
 ```
 
-- Si oui → generer `project.export.json` (sera cree en Phase 8)
+- Si oui → deleguer a `/export` (invoquer le skill)
 - Si non → noter la preference, disponible via `/export` plus tard
 
 **Si non** : Terminer Phase 0c.
@@ -908,6 +974,49 @@ L'utilisateur peut valider d'un "oui" ou corriger un element specifique. Ne pose
 **Action** : Ecrire le profil dans `.claude/profile.md` avec les valeurs correspondantes.
 
 **Defaut** : Si l'utilisateur ne sait pas → `standard` (PM-like, equilibre entre design et execution).
+
+### Phase 2c — Mode de guidage
+
+**Objectif** : Definir comment l'utilisateur prefere interagir avec les agents — via des choix guides (QCM) ou en texte libre.
+
+**Question** (via `AskUserQuestion` — QCM obligatoire pour cette question) :
+
+```yaml
+header: "Guidage"
+question: "Comment preferes-tu interagir avec les agents ?"
+options:
+  - label: "Guide (Recommande)"
+    description: "Questions a choix multiples, decisions rapides"
+  - label: "Hybride"
+    description: "QCM pour les choix cles, texte libre pour le reste"
+  - label: "Libre"
+    description: "Texte libre, tu tapes tes reponses comme tu veux"
+```
+
+**Explications detaillees** (affichees si l'utilisateur hesite ou demande "/why") :
+
+| Mode | Experience | Ideal pour |
+|------|------------|------------|
+| **Guide** | Chaque decision importante est un QCM interactif. Tu cliques sur ton choix, l'agent avance. Moins de friction, decisions rapides. | Founders, PM, nouveaux utilisateurs, sessions mobiles |
+| **Hybride** | QCM pour les choix structurants (direction UX, validation de plan, choix de pattern). Texte libre pour les questions ouvertes et creatives. | Designers, devs, utilisateurs intermediaires |
+| **Libre** | Pas de QCM, tout en texte. Tu reponds comme tu veux. L'agent pose des questions ouvertes et interprete tes reponses. | Power users, utilisateurs qui preferent taper |
+
+**Mapping vers le comportement** :
+
+| Mode | Valeur `guidance_mode` | Comportement des agents |
+|------|----------------------|------------------------|
+| Guide | `wizard` | TOUTES les questions a choix utilisent `AskUserQuestion` |
+| Hybride | `hybrid` | Choix cles (plan, direction, validation) en QCM, reste en texte |
+| Libre | `freeform` | Jamais de QCM, tout en texte (comportement legacy) |
+
+**Action** : Ecrire `guidance_mode: {mode}` dans `.claude/profile.md`.
+
+**Defaut** : `hybrid` — meilleur equilibre entre fluidite et flexibilite.
+
+**Regle pour les agents** : Chaque agent lit `guidance_mode` dans `.claude/profile.md` au demarrage (Etape 0). Si le mode est :
+- `wizard` → Utiliser `AskUserQuestion` pour TOUS les choix 2-4 options
+- `hybrid` → Utiliser `AskUserQuestion` pour les decisions structurantes (voir liste dans la section "Mode Wizard" de chaque skill)
+- `freeform` → Ne jamais utiliser `AskUserQuestion`, tout en texte
 
 ### Phase 3 — Utilisateurs et Roles
 
@@ -1495,8 +1604,14 @@ Pour creer ces documents fondateurs plus tard :
    pillar: {pilier}
    ```
 
-3. **`.claude/profile.md`** — Ecrire le profil utilisateur avec les valeurs de la Phase 0 (langue) et Phase 2b (profil)
-   - Le champ `language:` est ecrit en premier avec le code ISO choisi a la Phase 0
+3. **`.claude/profile.md`** — Ecrire le profil utilisateur avec les valeurs de la Phase 0 (langue), Phase 2b (profil) et Phase 2c (guidage)
+   ```yaml
+   language: {code_iso}        # Phase 0 — fr, en, de, es, pt...
+   profile: {profil}           # Phase 2b — designer, founder, pm, dev, other
+   checkpoint_mode: {mode}     # Derive du profil — granular, minimal, standard
+   guidance_mode: {mode}       # Phase 2c — wizard, hybrid, freeform
+   integration_mode: {mode}    # Phase 0b — zero, material, advanced (si applicable)
+   ```
 
 4. **`modules-registry.md`** — Ecrire le registre des modules
 
@@ -1730,8 +1845,9 @@ Si l'utilisateur lance `/onboarding` sur un projet deja configure :
    - H) Reconfigurer depuis zero
    - I) Juste voir le resume actuel
    - J) Configurer l'integration d'un produit existant (lance Phase 0c)
-   - K) Importer un project.export.json (importe la config d'un collaborateur)
+   - K) Importer un project.export.json → lance `/import`
    - L) Changer l'intent projet (actuellement : [intent])
+   - M) Changer le mode de guidage (actuellement : [guidance_mode])
 
 3. Selon le choix, ne modifier que la section concernee
 4. **Garde-fou** : En mode reconfiguration, toujours montrer un diff avant/apres avant d'ecrire. Ne jamais ecraser sans confirmation explicite.
@@ -1745,7 +1861,7 @@ L'onboarding est **TERMINE** quand :
 - [ ] `CLAUDE.md` est rempli (pas de `{placeholder}` restant)
 - [ ] `CLAUDE.md` section "Project Intent" renseignee
 - [ ] `.claude/context.md` pointe vers le premier module ET contient l'intent projet
-- [ ] `.claude/profile.md` contient la langue et le profil utilisateur
+- [ ] `.claude/profile.md` contient la langue, le profil utilisateur et le mode de guidage (`guidance_mode`)
 - [ ] `modules-registry.md` contient au moins 1 module
 - [ ] Les dossiers du premier module existent
 - [ ] `tokens.md` contient la palette de couleurs generee (zero `#______`)

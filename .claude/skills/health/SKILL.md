@@ -203,7 +203,16 @@ Executer chaque check et collecter les resultats. Chaque check produit un verdic
 | Taille de memory.md | Compter les lignes | ATTENTION si > 500 lignes ("envisager un archivage") |
 | Questions ouvertes | Grep `Questions ouvertes` dans memory.md, verifier si non-vides | ATTENTION avec la liste |
 
-#### 2.8 — Product Readiness
+#### 2.8 — Ideation (informatif)
+
+| Check | Comment | Verdict |
+|-------|---------|---------|
+| Ideation log existe | Glob `01_Product/04 Specs/{module}/ideation-log.md` | Info si present, Info "pas de log d'ideation" sinon |
+| Idees non evaluees (tag IDEE) | Grep `IDEE` dans ideation-log.md, compter | ATTENTION si > 5 → Action : lancer `/ideate review` |
+| Parking lot non-vide | Compter les lignes du Parking Lot (hors header) | Info → proposer `/ideate review` si > 0 |
+| Ratio idees evaluees | (RETENUE + ECARTEE + PARQUEE) / Total | Info (afficher le ratio) |
+
+#### 2.9 — Product Readiness
 
 Calculer le score de maturite par agent en utilisant la meme logique que l'orchestrateur (voir `.claude/skills/orchestrator/SKILL.md`, section "Product Readiness").
 
@@ -319,6 +328,12 @@ Domain Context : {renseigne/vide}
 Sessions enregistrees : {n}
 Taille memory.md : {n} lignes
 Questions ouvertes : {n} → {liste courte}
+
+--- Ideation ---
+Ideation log : {present/absent}
+Idees totales : {n} (RETENUE: {n}, ECARTEE: {n}, PARQUEE: {n}, EXPLOREE: {n}, IDEE: {n})
+Parking lot : {n} idees en attente
+{Si IDEE > 5} → Action : lancer /ideate review
 
 --- Product Readiness ---
 ╭──────────────────────────────────────────╮

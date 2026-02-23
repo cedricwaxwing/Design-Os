@@ -44,7 +44,7 @@ This project uses a spec-driven framework in 3 phases. No code is written withou
 ### Development Cycle
 
 ```
-Strategy → Discovery → User Flows → [Draft] → Design (hypotheses) → Wireframe (layout boards) → Plan (spec) → Ship (code TDD) → Analyze (conformity) → Triage NO-GO (IMPL→Ship | SPEC→Plan | DESIGN→Wireframe | DISCOVERY→Discovery) | GO→Done
+Strategy → Discovery → [Ideate →] User Flows → [Draft] → Design (hypotheses) → Wireframe (layout boards) → Plan (spec) → Ship (code TDD) → Analyze (conformity) → Triage NO-GO (IMPL→Ship | SPEC→Plan | DESIGN→Wireframe | DISCOVERY→Discovery) | GO→Done
 ```
 
 The Draft is optional — it validates a direction before investing in a full spec.
@@ -54,12 +54,12 @@ The Design phase is a co-creation phase that challenges UX choices and validates
 
 Each intent activates a mode in every skill. Skills read the intent from `.claude/context.md` (field `intent`). If no intent is set, all skills default to **Epic** (standard behavior).
 
-| Intent | Discovery | UX | Wireframe | Spec | Build | Review |
-|--------|-----------|-----|-----------|------|-------|--------|
-| **MVP** | LIGHT | FAST | FLOW (optional) | LITE (5 sections) | RAPID | FLOW (E2E) |
-| **Epic** | STANDARD | STANDARD | STANDARD | STANDARD (9 sections) | STANDARD (TDD) | STANDARD |
-| **Revamp** | DEEP | CHALLENGE | BEFORE/AFTER | DELTA (+non-regression) | CAREFUL | DELTA |
-| **Design System** | AUDIT | PATTERNS | SKIP | COMPONENT | LIBRARY | DS (x3 weight) |
+| Intent | Discovery | **Ideate** | UX | Wireframe | Spec | Build | Review |
+|--------|-----------|-----------|-----|-----------|------|-------|--------|
+| **MVP** | LIGHT | QUICK | FAST | FLOW (optional) | LITE (5 sections) | RAPID | FLOW (E2E) |
+| **Epic** | STANDARD | STANDARD | STANDARD | STANDARD | STANDARD (9 sections) | STANDARD (TDD) | STANDARD |
+| **Revamp** | DEEP | ANCHORED | CHALLENGE | BEFORE/AFTER | DELTA (+non-regression) | CAREFUL | DELTA |
+| **Design System** | AUDIT | PATTERNS | PATTERNS | SKIP | COMPONENT | LIBRARY | DS (x3 weight) |
 
 See each skill's "Adaptation par intent" section for detailed behavior per intent.
 
@@ -90,6 +90,14 @@ Spec granularity depends on what you're modeling, not on functional breakdown.
 - **Material ingestion**: Etape 0b — scanne `00 Material/`, convertit les formats non lisibles, extrait et dispatche vers les sous-dossiers Discovery
 - **Templates**: `_template-domain-context.md`, `_template-interview.md`, `_template-insight.md`, `_template-synthesis.md`, `_template-persona.md`
 - **Output**: `01_Product/02 Discovery/` (domain context, personas enrichis, hypotheses, research insights)
+
+### Phase Ideate — `/ideate`
+- **Skill**: `.claude/skills/ideate/SKILL.md`
+- **Action**: Brainstorming creatif avec persistance obligatoire de toutes les idees
+- **Mode**: Capture — zero jugement pendant le brainstorm, structure apres
+- **Rule**: TOUT est ecrit. Idees retenues, ecartees et parquees avec raisonnement. Append-only.
+- **Variants**: `/ideate` (complet), `/ideate quick` (capture rapide), `/ideate review` (relecture parking lot)
+- **Output**: `01_Product/04 Specs/{module}/ideation-log.md`
 
 ### Phase UX Design — `/ux`
 - **Skill**: `.claude/skills/ux-design/SKILL.md`
@@ -164,6 +172,18 @@ Spec granularity depends on what you're modeling, not on functional breakdown.
 - **Action**: Affiche la liste de toutes les commandes disponibles (agents + overrides)
 - **Output**: Deux tableaux (agents et commandes d'override) affiches directement
 
+### Export — `/export`
+- **Skill**: `.claude/skills/export/SKILL.md`
+- **Action**: Exporte la config projet en JSON pour la partager avec un collaborateur
+- **Rule**: Exclut 00 Material/, 02_Build/, .env, memory.md, donnees personnelles
+- **Output**: `project.export.json` a la racine du projet
+
+### Import — `/import`
+- **Skill**: `.claude/skills/import/SKILL.md`
+- **Action**: Importe un project.export.json pour bootstrapper le projet depuis la config d'un collaborateur
+- **Rule**: Confirmation avant chaque ecriture, diff visible si fichier existant
+- **Output**: CLAUDE.md, context.md, modules-registry.md, tokens.md, dossiers modules
+
 ---
 
 ## Project Folder Structure
@@ -177,6 +197,7 @@ Spec granularity depends on what you're modeling, not on functional breakdown.
 │       ├── onboarding/SKILL.md       ← /onboarding
 │       ├── orchestrator/SKILL.md     ← /o
 │       ├── discovery/SKILL.md         ← /discovery
+│       ├── ideate/SKILL.md           ← /ideate
 │       ├── ux-design/SKILL.md        ← /ux
 │       ├── spec/SKILL.md             ← /spec
 │       ├── build/SKILL.md            ← /build
@@ -186,6 +207,7 @@ Spec granularity depends on what you're modeling, not on functional breakdown.
 │       ├── screen-map/SKILL.md       ← /screen-map
 │       ├── health/SKILL.md           ← /health
 │       ├── export/SKILL.md           ← /export
+│       ├── import/SKILL.md           ← /import
 │       └── promote/SKILL.md          ← /promote
 ├── CLAUDE.md                         ← This file
 ├── modules-registry.md               ← Module registry (slugs, pillars, status)

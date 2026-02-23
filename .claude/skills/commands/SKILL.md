@@ -32,6 +32,7 @@ Quand l'utilisateur invoque `/commands`, affiche **exactement** le bloc ci-desso
 |----------|-------|-------------|
 | /o | Orchestrateur | Coordonne les agents, propose un plan d'execution |
 | /discovery | Workshop guide | Enrichit la comprehension utilisateurs et domaine |
+| /ideate | Coffre-fort a idees | Brainstorm libre, persistance de TOUTES les idees |
 | /ux | Sparring partner UX | Explore les directions UX, challenge les hypotheses |
 | /spec | Gardien de la spec | Genere une spec complete depuis les user stories |
 | /build | Builder TDD | Code en TDD depuis une spec validee |
@@ -42,6 +43,8 @@ Quand l'utilisateur invoque `/commands`, affiche **exactement** le bloc ci-desso
 | /screen-map | Diagnostic d'integrite | Audit coherence ecrans-specs-stories |
 | /health | Diagnostic global | Bilan de sante du projet (score + actions) |
 | /onboarding | Configuration projet | Configure le projet pas a pas |
+| /export | Exporteur de config | Exporte la config projet en JSON (collaboration) |
+| /import | Importeur de config | Bootstrap le projet depuis un export collaborateur |
 
 --- Commandes d'override (utilisables a tout moment) ---
 | Commande | Effet |
