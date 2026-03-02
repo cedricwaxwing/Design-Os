@@ -61,9 +61,7 @@ Tu es l'agent **Onboarding** du Design Operating System. Ton role est de guider 
 A chaque debut de phase, afficher un indicateur de progression :
 
 ```
-╭─────────────────────────────────────────╮
-│  [Phase 2/8] Projet   ████░░░░  25%    │
-╰─────────────────────────────────────────╯
+[Phase 2/8] Projet  ████░░░░  25%
 ```
 
 Format : `[Phase {N}/{total}] {nom_phase} {barre} {pourcentage}%`
@@ -76,13 +74,12 @@ Format : `[Phase {N}/{total}] {nom_phase} {barre} {pourcentage}%`
 
 Utiliser des symboles et encadrements pour structurer visuellement l'information :
 
-**Encadrements** pour les blocs importants (resume, bilan, choix) :
+**Blocs importants** (resume, bilan, choix) — utiliser indentation + espacement :
 ```
-╭─── Titre du bloc ────────────────────────╮
-│                                           │
-│  Contenu structure ici                    │
-│                                           │
-╰───────────────────────────────────────────╯
+Titre du bloc
+
+    Contenu structure ici
+    Ligne suivante avec details
 ```
 
 **Tableaux** pour les options et comparaisons :
@@ -244,20 +241,16 @@ Sinon, lance `/o` ou `/ux` pour commencer.
 
 **Message** (toujours affiche en multilingue, avec barre de progression) :
 ```
-╭─────────────────────────────────────────╮
-│  [Phase 0/8] Langue    ░░░░░░░░  0%    │
-╰─────────────────────────────────────────╯
+[Phase 0/8] Langue  ░░░░░░░░  0%
 
 Choose your language / Choisissez votre langue :
 
-  | #  | Langue     |
-  |----|------------|
-  | 1  | English    |
-  | 2  | Francais   |
-  | 3  | Deutsch    |
-  | 4  | Espanol    |
-  | 5  | Portugues  |
-  | 6  | (Other — tell me which) |
+    1  English
+    2  Francais
+    3  Deutsch
+    4  Espanol
+    5  Portugues
+    6  Other — tell me which
 ```
 
 **Regle** : L'utilisateur repond (numero, nom de langue, ou code ISO). A partir de ce moment, TOUT le reste de l'onboarding se fait dans la langue choisie. Stocker le choix comme `language: {code_iso}` (ex: `fr`, `en`, `de`, `es`, `pt`).
@@ -278,64 +271,49 @@ Choose your language / Choisissez votre langue :
 
 Si des fichiers sont detectes dans Material :
 ```
-╭─────────────────────────────────────────╮
-│  [Phase 0b/8] Mode      █░░░░░░░  5%   │
-╰─────────────────────────────────────────╯
+[Phase 0b/8] Mode  █░░░░░░░  5%
 
-  [{N} documents detectes dans 00 Material/]
+{N} documents detectes dans 00 Material/
 
 Avant de commencer, dis-moi ou tu en es :
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    A  J'ai deja un produit / de la documentation (Recommande)
+       J'ai des briefs, des maquettes, des presentations,
+       ou une idee bien definie.
+       ~3 min — Je lis tes documents, j'extrais le maximum,
+       et je ne te pose que les questions manquantes.
 
-  A) J'ai deja un produit / de la documentation  ★ Recommande
-     J'ai des briefs, des maquettes, des presentations,
-     ou une idee bien definie.
-     ~3 min — Je lis tes documents, j'extrais le maximum,
-     et je ne te pose que les questions manquantes.
-     → Tes documents dans 01_Product/00 Material/ seront analyses.
+    B  Je pars de zero
+       Je n'ai pas encore de produit defini. Guide-moi pas a pas.
+       ~10 min — On construit tout ensemble : projet, utilisateurs,
+       architecture, design system.
 
-  B) Je pars de zero
-     Je n'ai pas encore de produit defini. Guide-moi pas a pas.
-     ~10 min — On construit tout ensemble : projet, utilisateurs,
-     architecture, design system.
-
-  C) J'ai un produit existant (en dev ou en production)
-     J'ai deja du code, un repo GitHub, peut-etre un design system.
-     ~5-10 min — Je detecte ton existant (repo, stack, DS,
-     env, outils) et je m'integre dans ton workflow.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    C  J'ai un produit existant (en dev ou en production)
+       J'ai deja du code, un repo GitHub, peut-etre un design system.
+       ~5-10 min — Je detecte ton existant et je m'integre.
 ```
 
 Si AUCUN fichier dans Material :
 ```
-╭─────────────────────────────────────────╮
-│  [Phase 0b/8] Mode      █░░░░░░░  5%   │
-╰─────────────────────────────────────────╯
+[Phase 0b/8] Mode  █░░░░░░░  5%
 
 Avant de commencer, dis-moi ou tu en es :
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    A  Je pars de zero (Recommande)
+       Je n'ai pas encore de produit defini. Guide-moi pas a pas.
+       ~10 min — On construit tout ensemble : projet, utilisateurs,
+       architecture, design system.
 
-  A) Je pars de zero  ★ Recommande
-     Je n'ai pas encore de produit defini. Guide-moi pas a pas.
-     ~10 min — On construit tout ensemble : projet, utilisateurs,
-     architecture, design system.
+    B  J'ai deja un produit / de la documentation
+       J'ai des briefs, des maquettes, des presentations,
+       ou une idee bien definie.
+       ~3 min — Je lis tes documents et je ne te pose que
+       les questions manquantes.
+       → Place tes documents dans 01_Product/00 Material/
 
-  B) J'ai deja un produit / de la documentation
-     J'ai des briefs, des maquettes, des presentations,
-     ou une idee bien definie.
-     ~3 min — Je lis tes documents, j'extrais le maximum,
-     et je ne te pose que les questions manquantes.
-     → Place tes documents dans 01_Product/00 Material/ avant de continuer.
-
-  C) J'ai un produit existant (en dev ou en production)
-     J'ai deja du code, un repo GitHub, peut-etre un design system.
-     ~5-10 min — Je detecte ton existant (repo, stack, DS,
-     env, outils) et je m'integre dans ton workflow.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    C  J'ai un produit existant (en dev ou en production)
+       J'ai deja du code, un repo GitHub, peut-etre un design system.
+       ~5-10 min — Je detecte ton existant et je m'integre.
 ```
 
 **Regles** :
@@ -358,9 +336,7 @@ Avant de commencer, dis-moi ou tu en es :
 **Objectif** : Evaluer le niveau de maturite technique du projet existant et configurer les integrations necessaires. Les questions sont posees par groupes de 1-2, conversationnellement.
 
 ```
-╭─────────────────────────────────────────╮
-│  [Phase 0c/8] Assessment ██░░░░░░  8%  │
-╰─────────────────────────────────────────╯
+[Phase 0c/8] Assessment  ██░░░░░░  8%
 
 Parfait, tu as deja un produit. Je vais te poser quelques
 questions pour comprendre ton existant et m'integrer au mieux.
@@ -384,25 +360,23 @@ Stocker comme `product_status` dans CLAUDE.md (section Integration Status).
 
 **Si oui (URL fournie)** :
 ```
-╭─── Integration repo ────────────────────╮
-│                                          │
-│  Repo detecte : {url}                    │
-│                                          │
-│  Comment veux-tu l'integrer ?            │
-│                                          │
-│  A) Cloner dans 02_Build/{module}/       │
-│     Le code devient partie du projet.    │
-│     Ideal pour travailler dessus ici.    │
-│                                          │
-│  B) Ajouter comme submodule git          │
-│     Reference sans copier. Le code       │
-│     reste dans son repo d'origine.       │
-│                                          │
-│  C) Juste referencer l'URL               │
-│     Je note l'URL pour reference.        │
-│     Tu travailles dans ton repo normal.  │
-│                                          │
-╰──────────────────────────────────────────╯
+Integration repo
+
+Repo detecte : {url}
+
+Comment veux-tu l'integrer ?
+
+    A  Cloner dans 02_Build/{module}/
+       Le code devient partie du projet.
+       Ideal pour travailler dessus ici.
+
+    B  Ajouter comme submodule git
+       Reference sans copier. Le code
+       reste dans son repo d'origine.
+
+    C  Juste referencer l'URL
+       Je note l'URL pour reference.
+       Tu travailles dans ton repo normal.
 ```
 
 **Actions selon le choix** :
@@ -418,19 +392,16 @@ Stocker comme `product_status` dans CLAUDE.md (section Integration Status).
 5. Creer `02_Build/{module}/pre-prod/` pour le travail de features
 
 ```
-╭─── Scan du repo ─────────────────────────╮
-│                                           │
-│  Framework detecte : React 18 + Vite      │
-│  Langage : TypeScript                     │
-│  Styling : Tailwind CSS                   │
-│  Dependencies : 42 packages               │
-│  Structure : src/ avec components/,       │
-│              pages/, hooks/               │
-│                                           │
-│  ✓ Je pre-remplis la Tech Stack           │
-│  ✓ Tu pourras modifier en Phase 5         │
-│                                           │
-╰───────────────────────────────────────────╯
+Scan du repo
+
+    Framework detecte : React 18 + Vite
+    Langage : TypeScript
+    Styling : Tailwind CSS
+    Dependencies : 42 packages
+    Structure : src/ avec components/, pages/, hooks/
+
+    ✓ Je pre-remplis la Tech Stack
+    ✓ Tu pourras modifier en Phase 5
 ```
 
 **Si non (pas de repo)** : Passer a la sous-question suivante. L'utilisateur peut avoir du code local sans repo distant.
@@ -449,27 +420,25 @@ Stocker comme `product_status` dans CLAUDE.md (section Integration Status).
 4. Classifier :
 
 ```
-╭─── Variables d'environnement ────────────╮
-│                                           │
-│  Cles detectees dans .env :               │
-│                                           │
-│  API Tokens :                             │
-│    ✓ OPENAI_API_KEY                       │
-│    ✓ ANTHROPIC_API_KEY                    │
-│    ✓ STRIPE_SECRET_KEY                    │
-│                                           │
-│  Base de donnees :                        │
-│    ✓ DATABASE_URL                         │
-│    ✓ REDIS_URL                            │
-│                                           │
-│  Services :                               │
-│    ✓ NEXT_PUBLIC_API_URL                  │
-│    ✓ SENTRY_DSN                           │
-│                                           │
-│  ⚠ Je ne stocke JAMAIS les valeurs.      │
-│  Seuls les noms de cles sont references.  │
-│                                           │
-╰───────────────────────────────────────────╯
+Variables d'environnement
+
+Cles detectees dans .env :
+
+    API Tokens
+      ✓ OPENAI_API_KEY
+      ✓ ANTHROPIC_API_KEY
+      ✓ STRIPE_SECRET_KEY
+
+    Base de donnees
+      ✓ DATABASE_URL
+      ✓ REDIS_URL
+
+    Services
+      ✓ NEXT_PUBLIC_API_URL
+      ✓ SENTRY_DSN
+
+    ⚠ Je ne stocke JAMAIS les valeurs.
+    Seuls les noms de cles sont references.
 ```
 
 5. Stocker les noms dans CLAUDE.md (section Environment Variables)
@@ -491,29 +460,28 @@ Stocker comme `product_status` dans CLAUDE.md (section Integration Status).
 
 **Si Storybook detecte** :
 ```
-╭─── Design System detecte ───────────────╮
-│                                           │
-│  Storybook : ✓ (.storybook/ detecte)     │
-│  Stories : {N} fichiers .stories.tsx      │
-│  Theme : ✓ (theme.ts detecte)            │
-│                                           │
-│  Composants detectes :                    │
-│    Button, Card, Input, Modal, Badge,     │
-│    Avatar, Dropdown, Tabs, Toast          │
-│                                           │
-│  Je peux :                                │
-│  A) Importer les tokens dans le DS        │
-│     → Generer tokens.md et components.md  │
-│       depuis ton theme existant           │
-│                                           │
-│  B) Juste referencer                      │
-│     → Je note que le DS existe, mais      │
-│       tu le geres dans ton repo           │
-│                                           │
-│  C) Lancer Storybook pour voir            │
-│     → npm run storybook                   │
-│                                           │
-╰───────────────────────────────────────────╯
+Design System detecte
+
+    Storybook : ✓ (.storybook/ detecte)
+    Stories : {N} fichiers .stories.tsx
+    Theme : ✓ (theme.ts detecte)
+
+    Composants detectes :
+    Button, Card, Input, Modal, Badge,
+    Avatar, Dropdown, Tabs, Toast
+
+    Je peux :
+
+    A  Importer les tokens dans le DS
+       Generer tokens.md et components.md
+       depuis ton theme existant
+
+    B  Juste referencer
+       Je note que le DS existe, mais
+       tu le geres dans ton repo
+
+    C  Lancer Storybook pour voir
+       npm run storybook
 ```
 
 **Si A (import)** :
@@ -534,24 +502,19 @@ Stocker comme `product_status` dans CLAUDE.md (section Integration Status).
 **Question** : "Tu utilises des outils de gestion de projet ? (Jira, Linear, Notion, GitHub Issues...)"
 
 ```
-╭─── Integrations MCP disponibles ─────────╮
-│                                            │
-│  Le Design OS peut se connecter a tes      │
-│  outils via des serveurs MCP :             │
-│                                            │
-│  | Outil          | MCP          | Effet                          |
-│  |----------------|--------------|--------------------------------|
-│  | Jira           | jira-mcp     | Import/sync tickets → EPICs    |
-│  | Linear         | linear-mcp   | Sync issues → stories          |
-│  | Notion         | notion-mcp   | Read/write pages → specs       |
-│  | GitHub Issues  | gh (builtin) | Sync issues → stories          |
-│  | Figma          | figma-mcp    | ✓ Deja configure               |
-│  | Slack          | slack-mcp    | Notifications de progression   |
-│                                            │
-│  Tu veux en configurer un ? (choisis ou    │
-│  dis "non" pour passer)                    │
-│                                            │
-╰────────────────────────────────────────────╯
+Integrations MCP disponibles
+
+Le Design OS peut se connecter a tes outils via des serveurs MCP :
+
+    Outil           MCP           Effet
+    Jira            jira-mcp      Import/sync tickets → EPICs
+    Linear          linear-mcp    Sync issues → stories
+    Notion          notion-mcp    Read/write pages → specs
+    GitHub Issues   gh (builtin)  Sync issues → stories
+    Figma           figma-mcp     ✓ Deja configure
+    Slack           slack-mcp     Notifications de progression
+
+Tu veux en configurer un ? (choisis ou dis "non" pour passer)
 ```
 
 **Si l'utilisateur choisit un ou plusieurs outils** :
@@ -606,34 +569,32 @@ Tu veux que je le genere maintenant ?
 Afficher un resume de tout ce qui a ete detecte/configure :
 
 ```
-╭─── Bilan assessment avance ──────────────╮
-│                                           │
-│  Statut produit : {status}                │
-│  Repo : {url ou "non configure"}          │
-│  Integration : {clone/submodule/ref/non}  │
-│                                           │
-│  Stack detectee :                         │
-│    ✓ Framework : {detecte}                │
-│    ✓ Langage : {detecte}                  │
-│    ✓ Styling : {detecte}                  │
-│    ○ Icones : a definir en Phase 5        │
-│                                           │
-│  Design System :                          │
-│    {✓ Storybook detecte / ✗ Pas de DS}   │
-│                                           │
-│  Environnement :                          │
-│    {✓ .env configure / ✗ Pas de .env}    │
-│                                           │
-│  Outils :                                 │
-│    {✓ Jira MCP / ✗ Pas de MCP}           │
-│                                           │
-│  Collaboration :                          │
-│    {✓ .export prevu / ✗ Solo}            │
-│                                           │
-│  Les phases suivantes seront pre-remplies │
-│  avec ces informations. On continue ?     │
-│                                           │
-╰───────────────────────────────────────────╯
+Bilan assessment avance
+
+    Statut produit : {status}
+    Repo : {url ou "non configure"}
+    Integration : {clone/submodule/ref/non}
+
+    Stack detectee
+      ✓ Framework : {detecte}
+      ✓ Langage : {detecte}
+      ✓ Styling : {detecte}
+      ○ Icones : a definir en Phase 5
+
+    Design System
+      {✓ Storybook detecte / ✗ Pas de DS}
+
+    Environnement
+      {✓ .env configure / ✗ Pas de .env}
+
+    Outils
+      {✓ Jira MCP / ✗ Pas de MCP}
+
+    Collaboration
+      {✓ .export prevu / ✗ Solo}
+
+Les phases suivantes seront pre-remplies
+avec ces informations. On continue ?
 ```
 
 **Regles Phase 0c** :
@@ -653,9 +614,7 @@ Afficher un resume de tout ce qui a ete detecte/configure :
 **Declenchement** : Apres Phase 0b (et 0c si applicable), avant Phase 1. En mode express → defaut `mvp`.
 
 ```
-╭─────────────────────────────────────────╮
-│  [Phase 0d/8] Intent   █░░░░░░░  8%   │
-╰─────────────────────────────────────────╯
+[Phase 0d/8] Intent  █░░░░░░░  8%
 
 Qu'est-ce que tu veux accomplir avec ce projet ?
 
@@ -737,11 +696,11 @@ L'intent choisi influence directement les phases restantes de l'onboarding :
 - **Epic** : Structure standard (aucun changement).
 - **Revamp** :
   - `01_Product/02 Discovery/05 Current State/` (screenshots/, pain-points.md, current-flows.md)
-  - `01_Product/04 Specs/{module}/screens/before/` et `screens/after/`
+  - `01_Product/05 Specs/{module}/screens/before/` et `screens/after/`
 - **Design System** :
   - `01_Product/02 Discovery/06 DS Audit/`
-  - `01_Product/04 Specs/{module}/00_component-map.md` (remplace 00_screen-map.md)
-  - `01_Product/05 Design System/changelog.md`
+  - `01_Product/05 Specs/{module}/00_component-map.md` (remplace 00_screen-map.md)
+  - `01_Product/06 Design System/changelog.md`
 
 **Mode express** : L'intent defaut a `mvp`. Le resume express affiche l'intent et permet de le modifier :
 ```
@@ -767,17 +726,14 @@ Si l'utilisateur choisit L → reposer la question de Phase 0d, puis adapter les
 Scanner `01_Product/00 Material/` et classifier chaque fichier (meme logique que Phase 7a du mode complet) :
 
 ```
-╭─────────────────────────────────────────╮
-│  [Scan] Analyse de vos documents...     │
-╰─────────────────────────────────────────╯
+[Scan] Analyse de vos documents...
 
 Fichiers detectes : {N} dans 00 Material/
 
-  | Fichier          | Type    | Taille |
-  |------------------|---------|--------|
-  | brief.md         | Texte   | 2.4 KB |
-  | personas.pdf     | PDF     | 150 KB |
-  | maquettes.fig    | Figma   | —      |
+    Fichier           Type      Taille
+    brief.md          Texte     2.4 KB
+    personas.pdf      PDF       150 KB
+    maquettes.fig     Figma     —
 ```
 
 **Etape 2 — Conversion si necessaire** :
@@ -806,21 +762,19 @@ Lire TOUS les fichiers lisibles et extraire les informations correspondant aux q
 **Etape 4 — Afficher le bilan de couverture** :
 
 ```
-╭─── Resultats de l'analyse ───────────────╮
-│                                           │
-│  Informations extraites :                 │
-│                                           │
-│  ✓ Nom du projet : {extrait}              │
-│  ✓ Description : {extrait}                │
-│  ✓ Domaine : {extrait}                    │
-│  ✓ Personas : {N} detectes                │
-│  ✓ Contraintes metier : {extrait}         │
-│  ✗ Stack technique : non mentionne        │
-│  ✗ Design System : non mentionne          │
-│                                           │
-│  Couverture : {X}% du contexte produit    │
-│                                           │
-╰───────────────────────────────────────────╯
+Resultats de l'analyse
+
+Informations extraites :
+
+    ✓ Nom du projet : {extrait}
+    ✓ Description : {extrait}
+    ✓ Domaine : {extrait}
+    ✓ Personas : {N} detectes
+    ✓ Contraintes metier : {extrait}
+    ✗ Stack technique : non mentionne
+    ✗ Design System : non mentionne
+
+    Couverture : {X}% du contexte produit
 
 Les questions suivantes ne porteront que sur ce qui manque.
 On continue ?
@@ -849,9 +803,7 @@ On continue ?
 
 **Message d'accueil — Mode complet (A)** (dans la langue choisie) :
 ```
-╭─────────────────────────────────────────╮
-│  [Phase 1/8] Bienvenue  █░░░░░░░  12%  │
-╰─────────────────────────────────────────╯
+[Phase 1/8] Bienvenue  █░░░░░░░  12%
 
 Bienvenue dans le Design Operating System !
 
@@ -875,9 +827,7 @@ On commence ?
 
 **Message d'accueil — Mode Material-first (B)** (dans la langue choisie) :
 ```
-╭─────────────────────────────────────────╮
-│  [Phase 1/8] Bienvenue  █░░░░░░░  12%  │
-╰─────────────────────────────────────────╯
+[Phase 1/8] Bienvenue  █░░░░░░░  12%
 
 Bienvenue dans le Design Operating System !
 
@@ -898,9 +848,7 @@ On commence ?
 ### Phase 2 — Projet
 
 ```
-╭─────────────────────────────────────────╮
-│  [Phase 2/8] Projet    ██░░░░░░  25%   │
-╰─────────────────────────────────────────╯
+[Phase 2/8] Projet  ██░░░░░░  25%
 ```
 
 **Mode Material-first** : Si des informations ont ete extraites en Phase 0.5, afficher en mode confirmation :
@@ -1021,9 +969,7 @@ options:
 ### Phase 3 — Utilisateurs et Roles
 
 ```
-╭─────────────────────────────────────────╮
-│  [Phase 3/8] Utilisateurs ███░░░░  37%  │
-╰─────────────────────────────────────────╯
+[Phase 3/8] Utilisateurs  ███░░░░  37%
 ```
 
 **Mode Material-first** : Si des personas ont ete detectes en Phase 0.5, afficher en mode confirmation :
@@ -1106,9 +1052,7 @@ Tu peux les enrichir a tout moment via /discovery personas.
 ### Phase 4 — Architecture produit
 
 ```
-╭─────────────────────────────────────────╮
-│  [Phase 4/8] Architecture ████░░░  50%  │
-╰─────────────────────────────────────────╯
+[Phase 4/8] Architecture  ████░░░  50%
 ```
 
 **Mode Material-first** : Si des modules/features ont ete detectes en Phase 0.5, proposer une architecture pre-remplie en confirmation.
@@ -1124,9 +1068,7 @@ Tu peux les enrichir a tout moment via /discovery personas.
 ### Phase 5 — Tech Stack
 
 ```
-╭─────────────────────────────────────────╮
-│  [Phase 5/8] Stack     █████░░░  62%   │
-╰─────────────────────────────────────────╯
+[Phase 5/8] Stack  █████░░░  62%
 ```
 
 **Mode Material-first** : Si une stack a ete detectee en Phase 0.5 (ex: mention de React, Tailwind dans les docs), afficher en confirmation. Sinon poser normalement.
@@ -1209,9 +1151,7 @@ Tu veux que je te montre les commandes pour tout installer ?
 ### Phase 6 — Design System Bootstrap
 
 ```
-╭─────────────────────────────────────────╮
-│  [Phase 6/8] Design System █████░  75%  │
-╰─────────────────────────────────────────╯
+[Phase 6/8] Design System  █████░  75%
 ```
 
 **Mode Material-first** : Si des tokens/couleurs ont ete detectes en Phase 0.5 (ex: charte graphique dans les docs), afficher en confirmation. Sinon poser normalement.
@@ -1299,18 +1239,16 @@ Tu veux que je te montre les commandes pour tout installer ?
 **Question 2** : "Tu preferes des icones outline ou filled ?"
 
 ```
-╭─── Style d'icones ─────────────────────────╮
-│                                              │
-│  A) Outline (contour fin)  ★ Recommande     │
-│     Style epure, moderne, aerien.            │
-│     Ideal pour la plupart des interfaces.    │
-│                                              │
-│  B) Filled (remplies)                        │
-│     Style affirme, dense, lisible en petit.  │
-│     Ideal pour les apps data-heavy, mobile,  │
-│     ou les interfaces a haute densite.       │
-│                                              │
-╰──────────────────────────────────────────────╯
+Style d'icones
+
+    A  Outline (contour fin) (Recommande)
+       Style epure, moderne, aerien.
+       Ideal pour la plupart des interfaces.
+
+    B  Filled (remplies)
+       Style affirme, dense, lisible en petit.
+       Ideal pour les apps data-heavy, mobile,
+       ou les interfaces a haute densite.
 ```
 
 **Defaut** : Outline.
@@ -1576,9 +1514,7 @@ Pour creer ces documents fondateurs plus tard :
 ### Phase 8 — Ecriture des fichiers
 
 ```
-╭─────────────────────────────────────────╮
-│  [Phase 8/8] Ecriture  ████████  100%  │
-╰─────────────────────────────────────────╯
+[Phase 8/8] Ecriture  ████████  100%
 ```
 
 **Action** : Ecrire TOUS les fichiers de configuration automatiquement.
@@ -1619,7 +1555,7 @@ Pour creer ces documents fondateurs plus tard :
 
 6. **`01_Product/02 Discovery/04 Personas/{slug}.md`** — Generer une fiche par persona
 
-7. **`01_Product/05 Design System/tokens.md`** — Generer les tokens :
+7. **`01_Product/06 Design System/tokens.md`** — Generer les tokens :
    - Si DS existant importe → adapter le format depuis l'import (Figma, fichier local)
    - Si librairie UI choisie → ajouter une section "Integration {lib}" avec mapping tokens → classes natives de la lib
    - Si custom → generation complete depuis couleurs primaire + secondaire + moodboard (si fourni)
@@ -1630,14 +1566,14 @@ Pour creer ces documents fondateurs plus tard :
    - Text : derives du theme
    - **Regle** : Zero placeholder `#______` — toutes les valeurs doivent etre des hex reels
 
-8. **`01_Product/05 Design System/components.md`** — Generer les composants :
+8. **`01_Product/06 Design System/components.md`** — Generer les composants :
    - Si librairie UI choisie → documenter les imports et customisations de la lib (ex: `import { Button } from "@/components/ui/button"` pour shadcn)
    - Si custom → generer les composants atomiques avec la stack choisie (ex: Tailwind classes si Tailwind, CSS classes si autre)
 
 9. **Creer la structure du premier module** :
-   - `01_Product/04 Specs/{module}/00_screen-map.md` (template vide)
-   - `01_Product/04 Specs/{module}/specs/` (dossier)
-   - `01_Product/04 Specs/{module}/screens/` (dossier)
+   - `01_Product/05 Specs/{module}/00_screen-map.md` (template vide)
+   - `01_Product/05 Specs/{module}/specs/` (dossier)
+   - `01_Product/05 Specs/{module}/screens/` (dossier)
    - `01_Product/03 User Journeys/{module}/` (dossier)
    - `02_Build/{module}/` (dossier)
    - `03_Review/{module}/reviews/` (dossier)
@@ -1648,9 +1584,7 @@ Pour creer ces documents fondateurs plus tard :
 ### Phase 9 — Prochaines etapes
 
 ```
-╭─────────────────────────────────────────╮
-│  ✓ Onboarding termine !  ████████ 100%  │
-╰─────────────────────────────────────────╯
+✓ Onboarding termine !  ████████  100%
 ```
 
 **Message de cloture** (adapte au profil de la Phase 2b ET au niveau de contexte disponible) :
@@ -1721,26 +1655,24 @@ Pour creer ces documents fondateurs plus tard :
 **Message** (apres le calcul, dans la langue choisie) :
 
 ```
-╭─── Product Readiness — {module} ─────────╮
-│                                           │
-│  /discovery  {barre}  {X}%  {verdict}     │
-│    {raison courte si < 80%}               │
-│    → {action recommandee si < 80%}        │
-│                                           │
-│  /ux         {barre}  {X}%  {verdict}     │
-│    {raison courte si < 80%}               │
-│    → {action recommandee si < 80%}        │
-│                                           │
-│  /spec       {barre}  {X}%  {verdict}     │
-│    {raison courte si < 80%}               │
-│    → {action recommandee si < 80%}        │
-│                                           │
-│  /build      {barre}  {X}%  {verdict}     │
-│  /review     {barre}  {X}%  {verdict}     │
-│                                           │
-│  Maturite globale : {moyenne}%            │
-│                                           │
-╰───────────────────────────────────────────╯
+Product Readiness — {module}
+
+    /discovery  {barre}  {X}%  {verdict}
+      {raison courte si < 80%}
+      → {action recommandee si < 80%}
+
+    /ux         {barre}  {X}%  {verdict}
+      {raison courte si < 80%}
+      → {action recommandee si < 80%}
+
+    /spec       {barre}  {X}%  {verdict}
+      {raison courte si < 80%}
+      → {action recommandee si < 80%}
+
+    /build      {barre}  {X}%  {verdict}
+    /review     {barre}  {X}%  {verdict}
+
+    Maturite globale : {moyenne}%
 
 Prochaine action recommandee : {commande avec le meilleur ratio impact/effort}
 ```
@@ -1783,24 +1715,22 @@ Mode : standard — je te consulte sur la spec, autonome sur le build.
 #### Etape 9.4 — Resume final
 
 ```
-╭─── Resume ───────────────────────────────╮
-│                                           │
-│  Fichiers crees : {N}                     │
-│                                           │
-│  ✓ CLAUDE.md                              │
-│  ✓ .claude/context.md                     │
-│  ✓ .claude/profile.md                     │
-│  ✓ modules-registry.md                    │
-│  ✓ tokens.md                              │
-│  ✓ components.md                          │
-│  ✓ {N} personas                           │
-│  ✓ Structure module {module}              │
-│                                           │
-│  Module actif : {module} ({pilier})       │
-│  Profil : {profil} (mode {checkpoint})    │
-│  Langue : {language}                      │
-│                                           │
-╰───────────────────────────────────────────╯
+Resume
+
+    Fichiers crees : {N}
+
+    ✓ CLAUDE.md
+    ✓ .claude/context.md
+    ✓ .claude/profile.md
+    ✓ modules-registry.md
+    ✓ tokens.md
+    ✓ components.md
+    ✓ {N} personas
+    ✓ Structure module {module}
+
+    Module actif : {module} ({pilier})
+    Profil : {profil} (mode {checkpoint})
+    Langue : {language}
 
 Bonne creation !
 ```

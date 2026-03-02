@@ -253,6 +253,8 @@ Tu veux qu'on commence par quelle zone ?
 
 4. **Acteurs ecosystem** — "Qui d'autre intervient dans cet ecosystem ? (partenaires, regulateurs, fournisseurs, concurrents directs/indirects)"
 
+**Versioning** : Pour chaque fichier mis a jour (domain context, personas, insights, synthesis), appliquer le protocole V1-V2-V3 (voir CLAUDE.md > Versioning Protocol) avant d'ecraser le contenu existant.
+
 **Output** : Ecrire ou mettre a jour `01_Product/02 Discovery/01 Domain Context/domain-context.md`
 
 ```markdown
@@ -477,27 +479,26 @@ Exemples :
 Apres chaque enrichissement, si des contradictions sont detectees :
 
 ```
-╭─── Contradictions detectees ─────────────╮
-│                                           │
-│  ⚠ {N} contradiction(s) trouvee(s)       │
-│                                           │
-│  1. {fichier A} vs {fichier B}            │
-│     "{contenu A}" ≠ "{contenu B}"         │
-│     → Quelle version est correcte ?       │
-│                                           │
-│  2. {fichier C} vs {fichier D}            │
-│     "{contenu C}" ≠ "{contenu D}"         │
-│     → Quelle version est correcte ?       │
-│                                           │
-╰───────────────────────────────────────────╯
+Contradictions detectees
+
+    ⚠ {N} contradiction(s) trouvee(s)
+
+    1. {fichier A} vs {fichier B}
+       "{contenu A}" ≠ "{contenu B}"
+       → Quelle version est correcte ?
+
+    2. {fichier C} vs {fichier D}
+       "{contenu C}" ≠ "{contenu D}"
+       → Quelle version est correcte ?
 
 Ces contradictions impactent le Product Readiness (poids ×0.25
 tant qu'elles ne sont pas resolues).
 
 Pour chaque contradiction, tu peux :
-  A) Garder la version terrain (interview/observation)
-  B) Garder la version existante
-  C) Reformuler pour integrer les deux perspectives
+
+    A  Garder la version terrain (interview/observation)
+    B  Garder la version existante
+    C  Reformuler pour integrer les deux perspectives
 ```
 
 **Resolution** :

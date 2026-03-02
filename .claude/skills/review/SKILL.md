@@ -123,10 +123,10 @@ Si la review concerne un composant UI visible (pas un hook, pas un util) :
 
 ### Etape 1 — Collecte
 
-1. Lis la spec dans `01_Product/04 Specs/{module}/specs/X.Y-nom.spec.md`
+1. Lis la spec dans `01_Product/05 Specs/{module}/specs/X.Y-nom.spec.md`
 2. Lis le code dans `02_Build/{module}/src/`
 3. Lis les tests dans `02_Build/{module}/tests/`
-4. Lis le design system dans `01_Product/05 Design System/`
+4. Lis le design system dans `01_Product/06 Design System/`
 
 ### Etape 2 — Scoring des acceptance criteria
 
@@ -180,7 +180,7 @@ Pour CHAQUE critere de la section 2 :
 
 **Activation** : Uniquement si `profile: designer` dans `.claude/profile.md`. Pour les autres profils, cette section est desactivee (voir matrice de differentiation).
 
-**Prerequis** : Un ecran SVG de reference doit exister dans `01_Product/04 Specs/{module}/screens/`. Si aucun SVG n'existe, signaler comme ATTENTION et skipper cette section.
+**Prerequis** : Un ecran SVG de reference doit exister dans `01_Product/05 Specs/{module}/screens/`. Si aucun SVG n'existe, signaler comme ATTENTION et skipper cette section.
 
 | # | Check | Critere PASSE | Critere ECHOUE |
 |---|-------|---------------|----------------|
@@ -195,6 +195,8 @@ Pour CHAQUE critere de la section 2 :
 **Regle** : Ces checks s'ajoutent aux checks standard. Ils ne les remplacent pas. Pour le profil designer, le score final est calcule avec les sections 3b + 3c ponderees x2 ET la section 3d incluse.
 
 ### Etape 4 — Rapport
+
+**Versioning** : Appliquer le protocole V1-V2-V3 (voir CLAUDE.md > Versioning Protocol) avant d'ecrire ou mettre a jour une review existante.
 
 Ecris le rapport dans `03_Review/{module}/reviews/review-X.Y-nom.md`
 
@@ -214,7 +216,7 @@ Apres avoir termine, mettre a jour `.claude/readiness.json` pour que le Design O
 ```markdown
 # Review — [X.Y] [Nom]
 
-**Spec source** : 01_Product/04 Specs/{module}/specs/X.Y-nom.spec.md
+**Spec source** : 01_Product/05 Specs/{module}/specs/X.Y-nom.spec.md
 **Code** : 02_Build/{module}/src/...
 **Tests** : 02_Build/{module}/tests/...
 **Date** : [date]
@@ -297,19 +299,17 @@ IMPL      →                           /build → /review
 **Message de routing** (affiche a l'utilisateur) :
 
 ```
-╭─── NO-GO — Triage ────────────────────────╮
-│                                             │
-│  Score : {X}/{Y}                            │
-│  Ecarts : {N} total                         │
-│    IMPL: {n}  SPEC: {n}  DESIGN: {n}       │
-│    DISCOVERY: {n}                           │
-│                                             │
-│  Type dominant : {type}                     │
-│  → Routing : {/agent}                       │
-│                                             │
-│  {justification courte du routing}          │
-│                                             │
-╰─────────────────────────────────────────────╯
+NO-GO — Triage
+
+    Score : {X}/{Y}
+    Ecarts : {N} total
+      IMPL: {n}  SPEC: {n}  DESIGN: {n}
+      DISCOVERY: {n}
+
+    Type dominant : {type}
+    → Routing : {/agent}
+
+    {justification courte du routing}
 ```
 
 **Impact sur le readiness** : Un NO-GO avec des gaps DISCOVERY ou DESIGN fait potentiellement baisser le Product Readiness :

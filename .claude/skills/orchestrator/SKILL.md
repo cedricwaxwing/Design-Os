@@ -132,21 +132,19 @@ Pour chaque agent, verifier les signaux ci-dessous. Chaque signal a un poids (%)
 #### Affichage du readiness
 
 ```
-╭─── Product Readiness — {module} ─────────╮
-│                                           │
-│  /discovery  {barre}  {X}%  {verdict}     │
-│    {raison courte si < 80%}               │
-│    → {action recommandee si < 80%}        │
-│                                           │
-│  /ux         {barre}  {X}%  {verdict}     │
-│  /spec       {barre}  {X}%  {verdict}     │
-│  /build      {barre}  {X}%  {verdict}     │
-│  /review     {barre}  {X}%  {verdict}     │
-│                                           │
-│  Maturite globale : {moyenne}%            │
-│  Prochaine action : {commande}            │
-│                                           │
-╰───────────────────────────────────────────╯
+Product Readiness — {module}
+
+    /discovery  {barre}  {X}%  {verdict}
+      {raison courte si < 80%}
+      → {action recommandee si < 80%}
+
+    /ux         {barre}  {X}%  {verdict}
+    /spec       {barre}  {X}%  {verdict}
+    /build      {barre}  {X}%  {verdict}
+    /review     {barre}  {X}%  {verdict}
+
+    Maturite globale : {moyenne}%
+    Prochaine action : {commande}
 ```
 
 **Barres** : `████████` 8 segments, chaque segment = 12.5%. Rempli = `█`, vide = `░`.
@@ -162,8 +160,8 @@ Pour chaque agent, verifier les signaux ci-dessous. Chaque signal a un poids (%)
 
 **Si contradictions detectees** : Afficher sous l'agent concerne :
 ```
-│    ⚠ {N} contradiction(s) non resolue(s)  │
-│    → Lance /discovery pour arbitrer        │
+      ⚠ {N} contradiction(s) non resolue(s)
+      → Lance /discovery pour arbitrer
 ```
 
 #### Persistance du readiness
@@ -736,22 +734,30 @@ A chaque invocation, l'orchestrateur :
    - Identifier les dernieres actions sur le module actif
    - Reperer les decisions en cours et les questions ouvertes
    - Eviter de reproposer un plan deja execute
-4. **Charge le screen-map** → `01_Product/04 Specs/{module}/00_screen-map.md`
+4. **Charge le screen-map** → `01_Product/05 Specs/{module}/00_screen-map.md`
 5. **Identifie les specs existantes** → evite les doublons
 6. **Resout les chemins** → remplace `{module}` par le slug actif
-7. **Charge le Design System** → `01_Product/05 Design System/` (tokens, components)
+7. **Charge le Design System** → `01_Product/06 Design System/` (tokens, components)
 8. **Lit `skills-registry.md`** → identifie les skills externes pertinents pour la stack du projet
    - Croiser les conditions d'activation avec la Tech Stack de CLAUDE.md
    - Stocker la liste des skills applicables dans le contexte (pas encore charges)
    - Mentionner les skills disponibles dans le plan propose a l'utilisateur
+
+### Principes de contexte
+
+> Inspire des bonnes pratiques de gestion de contexte LLM.
+
+1. **Scope agressif** — Ne charger que ce qui est necessaire pour la tache en cours. Eviter de lire tous les fichiers "au cas ou".
+2. **Memoire externe** — Deleguer aux fichiers (`memory.md`, `context.md`, specs) ce qui n'a pas besoin d'etre en memoire active. Relire plutot que retenir.
+3. **Simplification progressive** — Le contexte doit se simplifier au fil du flow, pas se complexifier. Si ca devient plus confus, c'est un signal d'alerte.
 
 ### Variables de contexte
 
 ```yaml
 module: {module}                  # depuis .claude/context.md
 profile: {profile}                # depuis .claude/profile.md
-module_path: 01_Product/04 Specs/{module}/
-screens_path: 01_Product/04 Specs/{module}/screens/
+module_path: 01_Product/05 Specs/{module}/
+screens_path: 01_Product/05 Specs/{module}/screens/
 ship_path: 02_Build/{module}/
 checkpoint_mode: {checkpoint}     # derive du profil ou override utilisateur
 memory_file: .claude/memory.md    # journal des sessions
@@ -775,7 +781,7 @@ handoff:
     screen: {screen-name}
     decision: "[resume de la decision]"
     artifacts:
-      - 01_Product/04 Specs/{module}/screens/{screen-file}.svg
+      - 01_Product/05 Specs/{module}/screens/{screen-file}.svg
     constraints:
       - "[contrainte design a respecter]"
     open_questions: []
@@ -791,11 +797,11 @@ handoff:
   to: wireframe
   context:
     module: {module}
-    screen_map: 01_Product/04 Specs/{module}/00_screen-map.md
+    screen_map: 01_Product/05 Specs/{module}/00_screen-map.md
     navigation_architecture: "[sidebar collapsible + topbar + breadcrumb]"
     decision: "Screen Map valide avec N ecrans, navigation decidee"
     artifacts:
-      - 01_Product/04 Specs/{module}/00_screen-map.md
+      - 01_Product/05 Specs/{module}/00_screen-map.md
     constraints:
       - "Sidebar collapsible 240px → 56px"
       - "Topbar 56px avec search et user menu"
@@ -1096,31 +1102,28 @@ flow_state:
 Quand l'utilisateur tape `/status`, afficher un rapport detaille a partir de `flow_state` PLUS le Product Readiness :
 
 ```
-╭─── Status — {module} ────────────────────╮
-│                                           │
-│  Intent : "{intent}"                      │
-│  Mode   : {checkpoint_mode}               │
-│                                           │
-│  Flow :                                   │
-│  [1] {phase_1}  ✓ COMPLETE  "{summary}"   │
-│  [2] {phase_2}  ✓ COMPLETE  "{summary}"   │
-│  [3] {phase_3}  ● ACTIVE    En cours...   │
-│  [4] {phase_4}  ○ PENDING                 │
-│  [5] {phase_5}  ○ PENDING                 │
-│                                           │
-╰───────────────────────────────────────────╯
+Status — {module}
 
-╭─── Product Readiness — {module} ─────────╮
-│                                           │
-│  /discovery  {barre}  {X}%  {verdict}     │
-│  /ux         {barre}  {X}%  {verdict}     │
-│  /spec       {barre}  {X}%  {verdict}     │
-│  /build      {barre}  {X}%  {verdict}     │
-│  /review     {barre}  {X}%  {verdict}     │
-│                                           │
-│  Maturite globale : {moyenne}%            │
-│                                           │
-╰───────────────────────────────────────────╯
+    Intent : "{intent}"
+    Mode   : {checkpoint_mode}
+
+    Flow :
+    [1] {phase_1}  ✓ COMPLETE  "{summary}"
+    [2] {phase_2}  ✓ COMPLETE  "{summary}"
+    [3] {phase_3}  ● ACTIVE    En cours...
+    [4] {phase_4}  ○ PENDING
+    [5] {phase_5}  ○ PENDING
+
+
+Product Readiness — {module}
+
+    /discovery  {barre}  {X}%  {verdict}
+    /ux         {barre}  {X}%  {verdict}
+    /spec       {barre}  {X}%  {verdict}
+    /build      {barre}  {X}%  {verdict}
+    /review     {barre}  {X}%  {verdict}
+
+    Maturite globale : {moyenne}%
 
 Overrides : /stop, /skip, /back, /inject, /variants
 ```
@@ -1270,6 +1273,8 @@ A chaque demarrage de `/o`, apres avoir lu `memory.md` :
 7. **Relire la memoire** — Au demarrage, consulter `.claude/memory.md` pour le contexte des sessions precedentes
 8. **Notifier les transitions** — Afficher une notification de transition entre chaque changement d'agent (voir section "Notification de transition")
 9. **Respecter la langue** — Lire `language` dans `.claude/profile.md`. Toute communication avec l'utilisateur (notifications, checkpoints, rapports) se fait dans cette langue. Si `language` n'est pas renseigne, s'adapter a la langue du dernier message de l'utilisateur.
+10. **Appliquer le versioning** — Tous les agents qui ecrivent des fichiers dans `01_Product/`, `02_Build/`, `03_Review/`, `04_Lab/` DOIVENT appliquer le protocole V1-V2-V3 defini dans CLAUDE.md > Versioning Protocol. L'orchestrateur verifie que les agents le respectent.
+11. **Simplifier progressivement** — Au fil du flow, le contexte et les options doivent se reduire, pas exploser. Si ca se complexifie, faire un pas en arriere.
 
 ### Jamais
 
@@ -1277,6 +1282,13 @@ A chaque demarrage de `/o`, apres avoir lu `memory.md` :
 2. **Sauter un checkpoint** sans demande explicite (`/skip`)
 3. **Perdre le contexte** entre les etapes
 4. **Forcer un flow** — l'utilisateur peut toujours sortir du rail
+
+### Anti-patterns a eviter
+
+1. **Re-essayer la meme approche** — Si une approche a echoue, changer de strategie. Ne pas boucler sur le meme pattern.
+2. **Narration de processus** — Ne pas "pad" avec du texte explicatif sur ce qu'on va faire. Faire, puis montrer le resultat.
+3. **Transitions bavardes** — Les notifications de transition sont informatives, pas des occasions de discussion. Court et factuel.
+4. **Complexification** — Si le plan devient plus complexe au fil du temps, c'est un signal de recul. Simplifier.
 
 ---
 

@@ -196,7 +196,7 @@ Opportunity (besoin utilisateur)
 - Le solution tree explore les APIs de composants : props, slots, composition patterns
 - La validation lean verifie : reutilisabilite, coherence API, nommage, theming
 - Questions adaptees : "Ce composant accepte-t-il les memes props que les equivalents du DS ?"
-- Si `01_Product/04 Specs/{module}/00_component-map.md` existe, l'utiliser au lieu de `00_screen-map.md`
+- Si `01_Product/05 Specs/{module}/00_component-map.md` existe, l'utiliser au lieu de `00_screen-map.md`
 
 ---
 
@@ -209,7 +209,7 @@ Tous les chemins ci-dessous utilisent `{module}` — remplace par le slug du mod
 
 Si le fichier `context.md` n'existe pas, demande a l'utilisateur : "Sur quel module travaille-t-on ?"
 
-**Sous-etape ideation** : Chercher `01_Product/04 Specs/{module}/ideation-log.md`.
+**Sous-etape ideation** : Chercher `01_Product/04 Ideation/{module}/ideation-log.md`.
 Si le fichier existe :
 1. Lire les idees `RETENUE` → point de depart des solution trees
 2. Lire les idees `ECARTEE` → ne PAS re-explorer (rappeler la raison)
@@ -231,9 +231,9 @@ Avant de challenger quoi que ce soit, lis et comprends :
 | Research | `01_Product/02 Discovery/03 Research Insights/` | Insights terrain (templates: `_template-insight.md`, `_template-synthesis.md`) |
 | Interviews | `01_Product/02 Discovery/02 User Interviews/` | Comptes-rendus d'entretiens (template: `_template-interview.md`) |
 | User flows existants | `01_Product/03 User Journeys/{module}/` | Parcours deja definis |
-| Specs existantes | `01_Product/04 Specs/{module}/` | Ce qui est deja specifie |
-| Design system | `01_Product/05 Design System/` | Contraintes visuelles et composants disponibles |
-| Ideation log | `01_Product/04 Specs/{module}/ideation-log.md` | Idees brainstormees, decisions et raisonnements |
+| Specs existantes | `01_Product/05 Specs/{module}/` | Ce qui est deja specifie |
+| Design system | `01_Product/06 Design System/` | Contraintes visuelles et composants disponibles |
+| Ideation log | `01_Product/04 Ideation/{module}/ideation-log.md` | Idees brainstormees, decisions et raisonnements |
 
 **Regle** : Ne jamais challenger dans le vide. Toujours ancrer dans le contexte projet.
 
@@ -372,7 +372,9 @@ Pour chaque hypothese FAIBLE ou MOYEN, explorer des alternatives :
 
 **Demander validation du Screen Map a l'utilisateur AVANT de passer a l'etape 3.6.**
 
-**Persistance obligatoire** : Le Screen Map DOIT etre ecrit dans `01_Product/04 Specs/{module}/00_screen-map.md`. Ce fichier est la source de verite que `/spec` et `/wireframe` consultent.
+**Persistance obligatoire** : Le Screen Map DOIT etre ecrit dans `01_Product/05 Specs/{module}/00_screen-map.md`. Ce fichier est la source de verite que `/spec` et `/wireframe` consultent.
+
+**Versioning** : Avant d'ecrire le Screen Map, appliquer le protocole V1-V2-V3 (voir CLAUDE.md > Versioning Protocol). Cela garantit que les versions precedentes du Screen Map sont archivees dans `_archive/` et tracees dans `_changelog.jsonl`.
 
 ### Etape 3.6 — Architecture de navigation
 
@@ -647,7 +649,7 @@ Apres avoir termine, mettre a jour `.claude/readiness.json` pour que le Design O
 
 ## Lois UX — Reference de decision
 
-> Reference complete des 30 lois : `01_Product/05 Design System/ux-laws.md`
+> Reference complete des 30 lois : `01_Product/06 Design System/ux-laws.md`
 
 ### Lois par etape du workflow
 
@@ -748,7 +750,7 @@ Les personas et roles sont definis dans la section "Target Users" du fichier `CL
 Les hypotheses de design sont **VALIDEES** quand :
 
 - [ ] Le **Screen Map** est produit et valide par l'utilisateur
-- [ ] Le **Screen Map est persiste** dans `01_Product/04 Specs/{module}/00_screen-map.md`
+- [ ] Le **Screen Map est persiste** dans `01_Product/05 Specs/{module}/00_screen-map.md`
 - [ ] L'**architecture de navigation** est documentee dans le Screen Map (section "Navigation Architecture")
 - [ ] Chaque ecran clef a un objectif principal unique identifie
 - [ ] Les CTAs et elements d'interaction sont listes avec leur priorite

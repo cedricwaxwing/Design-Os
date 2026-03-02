@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import {
   ProjectContext, DesignOsNode, FileInfo, FileType, CommandInfo,
-  GraphEdge, GraphData, ContentSignals, SectionDetail, HistoryEntry,
+  GraphEdge, GraphData, ContentSignals, SectionDetail, HistoryEntry, MemoryEntry,
   RecommendedAction, emptySignals, aggregateSignals, DocStatus,
   FlowNode, FlowEdge, FlowGraph,
   GateCondition, MaturityTag, deriveMaturity,
@@ -319,6 +319,51 @@ export function parseHistory(root: string): HistoryEntry[] {
   }
 
   return entries.slice(-20); // last 20 entries
+}
+
+/** Parse full memory.md entry blocks for the Activity Log feed. */
+export function parseMemoryEntries(root: string): MemoryEntry[] {
+  const memoryPath = path.join(root, '.claude', 'memory.md');
+  if (!fs.existsSync(memoryPath)) { return []; }
+
+  const content = fs.readFileSync(memoryPath, 'utf-8');
+  const entries: MemoryEntry[] = [];
+
+  // Split on ## [date] headers — format: ## [YYYY-MM-DD HH:MM] module — /agent
+  const headerRe = /^##\s+\[(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2})\]\s+(\S+)\s+[—–-]\s+(\S+)/gm;
+  let match: RegExpExecArray | null;
+  const headers: { index: number; date: string; module: string; agent: string; fullMatch: string }[] = [];
+
+  while ((match = headerRe.exec(content)) !== null) {
+    headers.push({
+      index: match.index,
+      date: match[1],
+      module: match[2],
+      agent: match[3],
+      fullMatch: match[0],
+    });
+  }
+
+  for (let i = 0; i < headers.length; i++) {
+    const h = headers[i];
+    const start = h.index + h.fullMatch.length;
+    const end = i + 1 < headers.length ? headers[i + 1].index : content.length;
+    const blockContent = content.slice(start, end).trim();
+    const title = `[${h.date}] ${h.module} — ${h.agent}`;
+    // Simple hash: date + module + agent
+    const id = `${h.date}-${h.module}-${h.agent}`.replace(/[^a-zA-Z0-9-]/g, '_');
+
+    entries.push({
+      id,
+      date: h.date,
+      module: h.module,
+      agent: h.agent,
+      title,
+      content: blockContent,
+    });
+  }
+
+  return entries;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1550,8 +1595,10 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
   });
 
   // --- Lab ---
-  const labBase = mod ? path.join(root, '04_Lab', mod) : path.join(root, '04_Lab');
+  // Lab always scans the full 04_Lab folder to show all subfolders as children
+  const labBase = path.join(root, '04_Lab');
   const labFiles = listFilesRecursive(labBase);
+  const labChildren = buildChildrenFromSubfolders(labBase, 'lab', 'lab', readinessData);
 
   nodes.push({
     id: 'lab',
@@ -1565,6 +1612,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
     commands: skillMap['lab'] || [],
     dependsOn: [],
     unlocks: ['discovery', 'ux', 'spec'],
+    children: labChildren.length > 0 ? labChildren : undefined,
     status: countReal(labFiles) > 0 ? 'active' : 'empty',
     gates: [], maturity: 'VIDE' as MaturityTag,
   });
@@ -1601,6 +1649,54 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
 // ═══════════════════════════════════════════════════════
 // HELPERS
 // ═══════════════════════════════════════════════════════
+
+/**
+ * Scan a directory for immediate subfolders and create child nodes for each.
+ * Used to cluster files by subfolder in Navigator view.
+ */
+function buildChildrenFromSubfolders(
+  baseDir: string,
+  parentId: string,
+  parentPhase: Phase,
+  readinessData: ReadinessData | null
+): DesignOsNode[] {
+  if (!fs.existsSync(baseDir)) { return []; }
+
+  const entries = fs.readdirSync(baseDir, { withFileTypes: true });
+  const subfolders = entries.filter(entry =>
+    entry.isDirectory() &&
+    !entry.name.startsWith('.') &&
+    !entry.name.startsWith('_')
+  );
+
+  const children: DesignOsNode[] = [];
+  for (const folder of subfolders) {
+    const folderPath = path.join(baseDir, folder.name);
+    const files = listFilesRecursive(folderPath);
+    const childId = `${parentId}-${folder.name}`;
+    const childScore = getNodeChildren(readinessData, parentId)[childId]?.score ?? 0;
+
+    children.push(makeChildNode(
+      childId,
+      formatFolderLabel(folder.name),
+      parentPhase,
+      files,
+      childScore
+    ));
+  }
+
+  return children;
+}
+
+/** Format folder name into a human-readable label (e.g., "ai-prototyper" → "AI Prototyper") */
+function formatFolderLabel(folderName: string): string {
+  return folderName
+    .replace(/[-_]/g, ' ')
+    .replace(/\b\w/g, c => c.toUpperCase())
+    .replace(/\bAi\b/g, 'AI')
+    .replace(/\bUx\b/g, 'UX')
+    .replace(/\bUi\b/g, 'UI');
+}
 
 function makeChildNode(id: string, label: string, phase: Phase, files: FileInfo[], readinessScore: number): DesignOsNode {
   return {

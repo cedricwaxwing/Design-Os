@@ -1,0 +1,44 @@
+/* Graph Panel Styles */
+
+.graph-panel {
+  flex: 1;
+  position: relative;
+  overflow: auto;
+  background: var(--bg);
+  cursor: default;
+}
+
+.graph-panel.panning {
+  cursor: grabbing;
+}
+
+.graph-container {
+  position: relative;
+  min-width: 100%;
+  min-height: 100%;
+  padding: var(--space-xl);
+}
+
+/* Global readiness indicator */
+.global-readiness {
+  position: absolute;
+  top: var(--space-lg);
+  right: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-xs);
+}
+
+.global-readiness-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.global-readiness-score {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--accent);
+}

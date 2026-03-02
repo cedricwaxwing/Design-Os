@@ -165,7 +165,7 @@ L'agent genere une spec complete en 9 sections :
 9. **Hors perimetre** — Ce que cette page ne fait PAS
 
 ```
-Spec generee : 01_Product/04 Specs/bookroom/specs/1.1-dashboard-reservations.spec.md
+Spec generee : 01_Product/05 Specs/bookroom/specs/1.1-dashboard-reservations.spec.md
 Statut : VALIDEE
 9/9 sections remplies, 0 TBD.
 

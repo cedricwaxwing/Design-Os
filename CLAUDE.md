@@ -97,7 +97,7 @@ Spec granularity depends on what you're modeling, not on functional breakdown.
 - **Mode**: Capture — zero jugement pendant le brainstorm, structure apres
 - **Rule**: TOUT est ecrit. Idees retenues, ecartees et parquees avec raisonnement. Append-only.
 - **Variants**: `/ideate` (complet), `/ideate quick` (capture rapide), `/ideate review` (relecture parking lot)
-- **Output**: `01_Product/04 Specs/{module}/ideation-log.md`
+- **Output**: `01_Product/04 Ideation/{module}/ideation-log.md`
 
 ### Phase UX Design — `/ux`
 - **Skill**: `.claude/skills/ux-design/SKILL.md`
@@ -112,12 +112,12 @@ Spec granularity depends on what you're modeling, not on functional breakdown.
 - **Action**: Generer des wireframes low-fidelity en board (tous les ecrans juxtaposes avec navigation et fleches)
 - **Mode**: Exploration — noir/blanc/gris, layout-focused, iteration rapide
 - **Rule**: Integre les decisions de navigation de /ux Step 3.6. Pas de couleurs, pas de polish, labels uniquement.
-- **Output**: `01_Product/04 Specs/{module}/wireframes/` (boards SVG ou HTML)
+- **Output**: `01_Product/05 Specs/{module}/wireframes/` (boards SVG ou HTML)
 
 ### Phase Spec — `/spec`
 - **Skill**: `.claude/skills/spec/SKILL.md`
 - **Action**: Generate a complete spec from a source file (looks for EPICs, stories, SVGs)
-- **Template**: `01_Product/04 Specs/_templates/component-spec.md` or `page-spec.md`
+- **Template**: `01_Product/05 Specs/_templates/component-spec.md` or `page-spec.md`
 - **Modes**: VALIDEE (9 sections, zero TBD) or DRAFT (3 sections min, TBD allowed for exploration)
 - **Rule**: `/build` only accepts specs with status VALIDEE. DRAFT specs can be promoted.
 - **Output**: Spec in the active module's spec folder
@@ -133,7 +133,7 @@ Spec granularity depends on what you're modeling, not on functional breakdown.
 - **Skill**: `.claude/skills/build/SKILL.md`
 - **Action**: Code in TDD from validated spec (tests first, code second)
 - **Stack**: Defined in Tech Stack section below
-- **Design System**: `01_Product/05 Design System/` (tokens, components, patterns, states)
+- **Design System**: `01_Product/06 Design System/` (tokens, components, patterns, states)
 - **Rule**: Handle all 4 states (empty, loading, error, success) + edge cases. Complete flows (zero dead-ends). UI rigor (spacing, hierarchy, interactive states).
 - **Output**: `02_Build/{module}/src/` + `02_Build/{module}/tests/`
 
@@ -216,33 +216,46 @@ Spec granularity depends on what you're modeling, not on functional breakdown.
 ├── 01_Product/                       ← Everything before code
 │   ├── 00 Material/                  ← Raw sources (cross-module)
 │   ├── 01 Strategy/                  ← Vision, brief, roadmap (cross-module)
+│   │   ├── _archive/                 ← Versions precedentes (protocole V1-V2-V3)
+│   │   └── _changelog.jsonl          ← Historique des modifications
 │   ├── 02 Discovery/                 ← User understanding & domain (cross-module)
 │   │   ├── 01 Domain Context/        ← Template: _template-domain-context.md
 │   │   ├── 02 User Interviews/       ← Template: _template-interview.md + transcripts/
 │   │   ├── 03 Research Insights/     ← Templates: _template-insight.md, _template-synthesis.md
 │   │   └── 04 Personas/              ← Template: _template-persona.md
 │   ├── 03 User Journeys/             ← Templates: _template-journey.svg, _template-flow.md
-│   ├── 04 Specs/                     ← Validated specs per module
+│   ├── 04 Ideation/                  ← Brainstorm logs per module (/ideate)
+│   │   └── {module}/
+│   │       └── ideation-log.md       ← Append-only, genere par /ideate
+│   ├── 05 Specs/                     ← Validated specs per module
 │   │   ├── _templates/               ← Spec templates (cross-module)
 │   │   └── {module}/                 ← Specs per module
 │   │       ├── 00_screen-map.md
 │   │       ├── specs/
 │   │       ├── screens/
-│   │       └── wireframes/           ← Low-fidelity wireframe boards (/wireframe)
-│   └── 05 Design System/             ← Tokens, components, patterns, states, UX laws (cross-module)
+│   │       ├── wireframes/           ← Low-fidelity wireframe boards (/wireframe)
+│   │       ├── _archive/             ← Versions precedentes (protocole V1-V2-V3)
+│   │       └── _changelog.jsonl      ← Historique des modifications
+│   └── 06 Design System/             ← Tokens, components, patterns, states, UX laws (cross-module)
+│       ├── _archive/                 ← Versions precedentes (protocole V1-V2-V3)
+│       └── _changelog.jsonl          ← Historique des modifications
 │
 ├── 02_Build/                         ← Source code per module
 │   └── {module}/
 │       ├── pre-prod/                 ← Feature staging (advanced mode only)
 │       │   └── {feature}/
 │       ├── src/                      ← Production code
-│       └── tests/                    ← Production tests
+│       ├── tests/                    ← Production tests
+│       └── _changelog.jsonl          ← Historique des modifications (changelog only, git couvre le code)
 │
 ├── 03_Review/                        ← Conformity reviews per module + _template-review.md
 │   └── {module}/
+│       ├── _archive/                 ← Versions precedentes (protocole V1-V2-V3)
+│       └── _changelog.jsonl          ← Historique des modifications
 │
 └── 04_Lab/                           ← Sandbox (outside cycle)
     └── {module}/
+        └── _changelog.jsonl          ← Historique des prototypes (changelog only)
 ```
 
 **Convention `{module}`**: Throughout this tree, `{module}` is the slug of the active module defined in `.claude/context.md`. See `modules-registry.md` for the full list.
@@ -303,7 +316,7 @@ Spec granularity depends on what you're modeling, not on functional breakdown.
 <!-- END GENERATED -->
 
 ### Design System
-- **Source of truth**: `01_Product/05 Design System/`
+- **Source of truth**: `01_Product/06 Design System/`
 - **Primary color**: `{primary_color}`
 - **Secondary color**: `{secondary_color}`
 - **Theme**: {dark/light}
@@ -366,6 +379,59 @@ Spec granularity depends on what you're modeling, not on functional breakdown.
 | DS engagement | Createur (tokens, patterns) | Lecteur (vision) | Lecteur (coherence) | Consommateur (imports) |
 | Artifact format | SVG + HTML | Markdown | Markdown | TSX |
 | Checkpoint granularity | Chaque decision design | Decisions strategiques | Entre chaque phase | Sur spec, autonome sur build |
+
+---
+
+## Versioning Protocol
+
+> Chaque document vivant du projet est versionne. Les skills DOIVENT suivre le protocole V1-V2-V3 avant d'ecraser un fichier existant.
+
+### Protocole V1-V2-V3
+
+| Etape | Action | Detail |
+|-------|--------|--------|
+| V1 — LIRE | Lire le fichier cible | Extraire `VERSION: N` de l'en-tete (defaut: 0 si absent) |
+| V2 — ARCHIVER | Copier dans `_archive/` | Nommage: `{nom}__v{N}__{YYYY-MM-DD}.{ext}`. Ajouter ligne dans `_changelog.jsonl`. Si > 10 versions, supprimer la plus ancienne. |
+| V3 — ECRIRE | Ecrire le nouveau contenu | En-tete avec version N+1. |
+
+**Cas creation** (fichier n'existe pas) : Sauter V2, ecrire en v1, logger `"action":"create"` dans le changelog.
+
+### En-tete de version
+
+**Format standard** (une ligne HTML comment, invisible au rendu) :
+```markdown
+<!-- VERSION: {N} | {YYYY-MM-DD} | {/skill} | {raison courte} -->
+```
+
+**Format specs** (compatible avec le header existant des templates spec) :
+```markdown
+> Version : {N}
+> Statut : {statut}
+> Derniere modification : {YYYY-MM-DD}
+> Modifie par : {/skill}
+> Raison : {raison courte}
+```
+
+### Changelog (JSONL)
+
+Chaque repertoire contenant des documents vivants a un `_changelog.jsonl` (JSON Lines, append-only) :
+```jsonl
+{"file":"nom.md","version":1,"date":"YYYY-MM-DD","skill":"/skill","action":"create","reason":"...","prev":null}
+{"file":"nom.md","version":2,"date":"YYYY-MM-DD","skill":"/skill","action":"update","reason":"...","prev":"_archive/nom__v1__YYYY-MM-DD.md"}
+```
+
+### Repertoires versionnes
+
+Tous les sous-dossiers de `01_Product/`, `02_Build/`, `03_Review/`, `04_Lab/`.
+**Exception** pour `02_Build/` et `04_Lab/` : `_changelog.jsonl` uniquement (pas d'archive fichier — git couvre le code source).
+
+### Exclusions (PAS de versioning)
+
+`context.md`, `profile.md`, `memory.md`, `readiness.json`, `ideation-log.md`, `00 Material/`, `_templates/`, `modules-registry.md`.
+
+### Retention
+
+10 versions archivees maximum par fichier. Au-dela, supprimer la plus ancienne.
 
 ---
 

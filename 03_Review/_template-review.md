@@ -1,6 +1,6 @@
 # Review — [X.Y] [Nom du composant/page]
 
-**Spec source** : `01_Product/04 Specs/{module}/specs/X.Y-nom.spec.md`
+**Spec source** : `01_Product/05 Specs/{module}/specs/X.Y-nom.spec.md`
 **Code** : `02_Build/{module}/src/...`
 **Tests** : `02_Build/{module}/tests/...`
 **Date** : [YYYY-MM-DD]

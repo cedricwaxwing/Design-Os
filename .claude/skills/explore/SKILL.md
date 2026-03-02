@@ -164,7 +164,7 @@ Si le fichier n'existe pas, demande a l'utilisateur : "Sur quel module travaille
 
 ### Etape 2 — Lire le contexte
 
-1. Lis le Design System dans `01_Product/05 Design System/` (tokens, components, patterns)
+1. Lis le Design System dans `01_Product/06 Design System/` (tokens, components, patterns)
 2. Si un user flow existe dans `01_Product/03 User Journeys/{module}/`, lis-le
 3. Si un persona est concerne, lis sa fiche dans `01_Product/02 Discovery/04 Personas/`
 
@@ -205,7 +205,7 @@ Ajoute une route temporaire dans le router (si c'est une page) :
 
 ## Lois UX essentielles (meme en prototype)
 
-> Reference complete : `01_Product/05 Design System/ux-laws.md`
+> Reference complete : `01_Product/06 Design System/ux-laws.md`
 
 Meme un prototype jetable doit respecter ces 5 lois minimales pour etre evaluable :
 

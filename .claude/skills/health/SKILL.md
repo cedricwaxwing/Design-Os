@@ -147,23 +147,23 @@ Executer chaque check et collecter les resultats. Chaque check produit un verdic
 | `.claude/context.md` existe | Glob | OK si existe, CRITIQUE sinon |
 | `.claude/profile.md` rempli | Lire, verifier que `profile:` n'est pas vide | OK si rempli, ATTENTION sinon |
 | `modules-registry.md` a >=1 module | Lire, compter les lignes de module | OK si >=1, CRITIQUE sinon |
-| Dossiers du module actif existent | Glob `01_Product/04 Specs/{module}/`, `02_Build/{module}/` | OK si existent, ATTENTION sinon |
+| Dossiers du module actif existent | Glob `01_Product/05 Specs/{module}/`, `02_Build/{module}/` | OK si existent, ATTENTION sinon |
 
 #### 2.2 — Design System
 
 | Check | Comment | Verdict |
 |-------|---------|---------|
-| `tokens.md` sans `#______` | Grep `#______` dans `01_Product/05 Design System/tokens.md` | OK si 0 match, CRITIQUE sinon |
+| `tokens.md` sans `#______` | Grep `#______` dans `01_Product/06 Design System/tokens.md` | OK si 0 match, CRITIQUE sinon |
 | `tokens.md` a une couleur primaire | Grep `primary` avec une valeur hex | OK si presente, CRITIQUE sinon |
-| `components.md` existe | Glob `01_Product/05 Design System/components.md` | OK si existe, ATTENTION sinon |
+| `components.md` existe | Glob `01_Product/06 Design System/components.md` | OK si existe, ATTENTION sinon |
 | Couleurs semantiques presentes | Grep `success`, `warning`, `error`, `info` dans tokens | OK si 4/4, ATTENTION sinon |
 
 #### 2.3 — Specs
 
 | Check | Comment | Verdict |
 |-------|---------|---------|
-| Screen Map existe | Glob `01_Product/04 Specs/{module}/00_screen-map.md` | OK si existe, ATTENTION sinon |
-| Nombre de specs | Glob `01_Product/04 Specs/{module}/specs/*.spec.md` | Info (afficher le compte) |
+| Screen Map existe | Glob `01_Product/05 Specs/{module}/00_screen-map.md` | OK si existe, ATTENTION sinon |
+| Nombre de specs | Glob `01_Product/05 Specs/{module}/specs/*.spec.md` | Info (afficher le compte) |
 | Specs sans TBD | Grep `TBD` dans chaque spec | OK si 0, ATTENTION avec la liste sinon |
 | Specs en DRAFT | Grep `DRAFT` dans le header des specs | ATTENTION avec la liste (pas critique — normal en cours de travail) |
 | Specs VALIDEE | Grep `VALIDEE` dans le header des specs | Info (afficher le compte) |
@@ -207,7 +207,7 @@ Executer chaque check et collecter les resultats. Chaque check produit un verdic
 
 | Check | Comment | Verdict |
 |-------|---------|---------|
-| Ideation log existe | Glob `01_Product/04 Specs/{module}/ideation-log.md` | Info si present, Info "pas de log d'ideation" sinon |
+| Ideation log existe | Glob `01_Product/04 Ideation/{module}/ideation-log.md` | Info si present, Info "pas de log d'ideation" sinon |
 | Idees non evaluees (tag IDEE) | Grep `IDEE` dans ideation-log.md, compter | ATTENTION si > 5 → Action : lancer `/ideate review` |
 | Parking lot non-vide | Compter les lignes du Parking Lot (hors header) | Info → proposer `/ideate review` si > 0 |
 | Ratio idees evaluees | (RETENUE + ECARTEE + PARQUEE) / Total | Info (afficher le ratio) |
@@ -241,15 +241,14 @@ Calculer le score de maturite par agent en utilisant la meme logique que l'orche
 
 ```
 --- Product Readiness ---
-╭──────────────────────────────────────────╮
-│  /discovery  {barre}  {X}%  {verdict}    │
-│  /ux         {barre}  {X}%  {verdict}    │
-│  /spec       {barre}  {X}%  {verdict}    │
-│  /build      {barre}  {X}%  {verdict}    │
-│  /review     {barre}  {X}%  {verdict}    │
-│                                          │
-│  Maturite globale : {moyenne}%           │
-╰──────────────────────────────────────────╯
+
+    /discovery  {barre}  {X}%  {verdict}
+    /ux         {barre}  {X}%  {verdict}
+    /spec       {barre}  {X}%  {verdict}
+    /build      {barre}  {X}%  {verdict}
+    /review     {barre}  {X}%  {verdict}
+
+    Maturite globale : {moyenne}%
 
 Contradictions : {N} non resolue(s) → Action : /discovery pour arbitrer
 Hypotheses : {N} contenu(s) marque(s) [HYPOTHESE] → valider avec des donnees terrain
@@ -258,6 +257,14 @@ Hypotheses : {N} contenu(s) marque(s) [HYPOTHESE] → valider avec des donnees t
 **Barres** : `████████` 8 segments, chaque segment = 12.5%. Rempli = `█`, vide = `░`.
 
 **Verdicts** : `80-100%` → `● Pret` | `50-79%` → `→ Pousser` | `25-49%` → `→ Possible` | `10-24%` → `⚠ Premature` | `0-9%` → `✗ Pas pret`
+
+#### 2.10 — Versioning
+
+| Check | Methode | Severite |
+|-------|---------|----------|
+| `_changelog.jsonl` present dans les repertoires actifs | Glob `**/_changelog.jsonl` dans `01_Product/`, `02_Build/`, `03_Review/`, `04_Lab/` | INFO si absent (normal si aucun skill n'a encore archive) |
+| Documents sans en-tete VERSION | Grep fichiers `.md` dans `01_Product/` sans `<!-- VERSION:` ni `> Version :` (exclure `_templates/`, `ideation-log.md`, `00 Material/`) | ATTENTION si > 3 fichiers |
+| Archive > 10 versions pour un fichier | Compter les fichiers par prefixe dans `_archive/` | INFO → proposer nettoyage si depasse |
 
 ### Etape 3 — Score global
 
@@ -335,16 +342,21 @@ Idees totales : {n} (RETENUE: {n}, ECARTEE: {n}, PARQUEE: {n}, EXPLOREE: {n}, ID
 Parking lot : {n} idees en attente
 {Si IDEE > 5} → Action : lancer /ideate review
 
+--- Versioning ---
+Changelogs detectes : {n} _changelog.jsonl dans le projet
+Documents sans en-tete VERSION : {n} fichiers
+Archives : {n} fichiers dans _archive/ ({n} repertoires)
+{Si documents sans version > 3} → Action : les skills doivent appliquer le protocole V1-V2-V3
+
 --- Product Readiness ---
-╭──────────────────────────────────────────╮
-│  /discovery  {barre}  {X}%  {verdict}    │
-│  /ux         {barre}  {X}%  {verdict}    │
-│  /spec       {barre}  {X}%  {verdict}    │
-│  /build      {barre}  {X}%  {verdict}    │
-│  /review     {barre}  {X}%  {verdict}    │
-│                                          │
-│  Maturite globale : {moyenne}%           │
-╰──────────────────────────────────────────╯
+
+    /discovery  {barre}  {X}%  {verdict}
+    /ux         {barre}  {X}%  {verdict}
+    /spec       {barre}  {X}%  {verdict}
+    /build      {barre}  {X}%  {verdict}
+    /review     {barre}  {X}%  {verdict}
+
+    Maturite globale : {moyenne}%
 
 Contradictions : {N} non resolue(s) → /discovery pour arbitrer
 Hypotheses : {N} contenu(s) [HYPOTHESE] → valider avec des donnees terrain

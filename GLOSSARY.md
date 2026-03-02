@@ -40,7 +40,7 @@ Un element d'interface reutilisable : bouton, carte, formulaire, modal. Un ecran
 ## D
 
 ### Design System (DS)
-L'ensemble des regles visuelles de ton produit : couleurs, typographie, espacements, composants. C'est la "charte graphique" numerique. Stocke dans `01_Product/05 Design System/`.
+L'ensemble des regles visuelles de ton produit : couleurs, typographie, espacements, composants. C'est la "charte graphique" numerique. Stocke dans `01_Product/06 Design System/`.
 
 ### Design Tokens
 Voir **Tokens**.
@@ -165,7 +165,7 @@ Phase ou le code est compare a la spec pour verifier la conformite. L'agent `/re
 ## S
 
 ### Screen Map
-Document central qui mappe N user stories → M ecrans. Evite de creer un ecran par story (anti-pattern). Stocke dans `01_Product/04 Specs/{module}/00_screen-map.md`.
+Document central qui mappe N user stories → M ecrans. Evite de creer un ecran par story (anti-pattern). Stocke dans `01_Product/05 Specs/{module}/00_screen-map.md`.
 
 ### Skeleton (Squelette)
 Version grise/animee d'un ecran affichee pendant le chargement des donnees. Donne l'impression que le contenu arrive (au lieu d'un spinner).
@@ -184,7 +184,7 @@ Document detaille qui decrit exactement ce qu'un ecran ou composant doit faire. 
 Methode de developpement ou tu ecris les **tests d'abord**, puis le code pour les faire passer. Le Design OS impose le TDD dans la phase `/build`.
 
 ### Tokens
-Valeurs nommees du Design System. Au lieu d'ecrire `#3B82F6` partout, tu ecris `primary`. Au lieu de `16px`, tu ecris `space-4`. Les tokens sont dans `01_Product/05 Design System/tokens.md`.
+Valeurs nommees du Design System. Au lieu d'ecrire `#3B82F6` partout, tu ecris `primary`. Au lieu de `16px`, tu ecris `space-4`. Les tokens sont dans `01_Product/06 Design System/tokens.md`.
 
 ### Triage
 Classification des ecarts trouves en review. 4 types :

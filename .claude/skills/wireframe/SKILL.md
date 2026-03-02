@@ -160,11 +160,11 @@ Lis `.claude/profile.md` pour adapter le niveau de detail des outputs et la comm
 
 | Source | Chemin | Obligatoire | Pourquoi |
 |--------|--------|-------------|----------|
-| Screen Map | `01_Product/04 Specs/{module}/00_screen-map.md` | OUI | Liste des ecrans a wireframer |
-| Navigation Architecture | `01_Product/04 Specs/{module}/00_screen-map.md` (section "Navigation Architecture") | Recommande | Decisions de navigation de /ux step 3.6 |
-| Design System | `01_Product/05 Design System/tokens.md` | Recommande | Layout tokens (viewport, sidebar width, header height) |
+| Screen Map | `01_Product/05 Specs/{module}/00_screen-map.md` | OUI | Liste des ecrans a wireframer |
+| Navigation Architecture | `01_Product/05 Specs/{module}/00_screen-map.md` (section "Navigation Architecture") | Recommande | Decisions de navigation de /ux step 3.6 |
+| Design System | `01_Product/06 Design System/tokens.md` | Recommande | Layout tokens (viewport, sidebar width, header height) |
 | Personas | `01_Product/02 Discovery/04 Personas/` | Optionnel | Contexte d'usage |
-| Ecrans UI existants | `01_Product/04 Specs/{module}/screens/` | Optionnel | Reference si des ecrans sont deja dessines par /ui |
+| Ecrans UI existants | `01_Product/05 Specs/{module}/screens/` | Optionnel | Reference si des ecrans sont deja dessines par /ui |
 | User Journeys | `01_Product/03 User Journeys/{module}/` | Optionnel | Flow et branchements |
 
 **Si pas de Screen Map** : "Pas de Screen Map. Utilise `/ux` pour en creer un, ou decris-moi les ecrans a wireframer."
@@ -277,9 +277,9 @@ Juxtaposer tous les ecrans sur un canvas unique :
 
 | Type | Chemin |
 |------|--------|
-| Board SVG | `01_Product/04 Specs/{module}/wireframes/board-[flow-name].svg` |
-| Board HTML | `01_Product/04 Specs/{module}/wireframes/board-[flow-name].html` |
-| Wireframe individuel (sur demande) | `01_Product/04 Specs/{module}/wireframes/wf-[screen-name].svg` |
+| Board SVG | `01_Product/05 Specs/{module}/wireframes/board-[flow-name].svg` |
+| Board HTML | `01_Product/05 Specs/{module}/wireframes/board-[flow-name].html` |
+| Wireframe individuel (sur demande) | `01_Product/05 Specs/{module}/wireframes/wf-[screen-name].svg` |
 
 ### Etape 7 — Iteration rapide
 
@@ -651,7 +651,7 @@ Pour le format HTML, generer un fichier auto-contenu avec navigation par scroll.
 
 ## Lois UX essentielles (meme en wireframe)
 
-> Reference complete : `01_Product/05 Design System/ux-laws.md`
+> Reference complete : `01_Product/06 Design System/ux-laws.md`
 
 Un wireframe n'est pas un dessin libre. Meme en low-fidelity, respecter :
 
@@ -703,7 +703,7 @@ Un wireframe n'est pas un dessin libre. Meme en low-fidelity, respecter :
 - [ ] Les CTAs sont places avec priorite visuelle (bold = P0, normal = P1, texte = P2)
 - [ ] Aucune couleur (sauf exception Revamp)
 - [ ] Les zones de contenu portent des labels descriptifs
-- [ ] Le fichier est sauvegarde dans `01_Product/04 Specs/{module}/wireframes/`
+- [ ] Le fichier est sauvegarde dans `01_Product/05 Specs/{module}/wireframes/`
 - [ ] Le format a ete choisi par l'utilisateur (SVG ou HTML)
 
 ### Message de sortie

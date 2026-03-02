@@ -73,9 +73,9 @@ Tu es l'agent **Export** du Design Operating System. Ton role est de serialiser 
 | Context actif | `.claude/context.md` | `context` |
 | Profil projet | `.claude/profile.md` (language, integration_mode, guidance_mode UNIQUEMENT) | `profile` |
 | Registre modules | `modules-registry.md` | `moduleRegistry` |
-| Tokens DS | `01_Product/05 Design System/tokens.md` | `designTokens` |
-| Index specs | `01_Product/04 Specs/{module}/specs/*.spec.md` (noms + statuts) | `specIndex` |
-| Screen Map | `01_Product/04 Specs/{module}/00_screen-map.md` | `screenMap` |
+| Tokens DS | `01_Product/06 Design System/tokens.md` | `designTokens` |
+| Index specs | `01_Product/05 Specs/{module}/specs/*.spec.md` (noms + statuts) | `specIndex` |
+| Screen Map | `01_Product/05 Specs/{module}/00_screen-map.md` | `screenMap` |
 
 ### Exclus (JAMAIS exporte)
 
@@ -239,12 +239,12 @@ Structure de haut niveau :
 4. **`modules-registry.md`** — Parser le tableau markdown :
    - Chaque ligne → objet dans `moduleRegistry[]`
 
-5. **`01_Product/05 Design System/tokens.md`** — Lire le contenu brut :
+5. **`01_Product/06 Design System/tokens.md`** — Lire le contenu brut :
    - Si existe → `designTokens` = contenu complet
    - Si n'existe pas → `designTokens` = null
 
 6. **Specs par module** — Pour chaque module dans `moduleRegistry` :
-   - Glob `01_Product/04 Specs/{slug}/specs/*.spec.md`
+   - Glob `01_Product/05 Specs/{slug}/specs/*.spec.md`
    - Pour chaque spec : lire les 10 premieres lignes, extraire :
      - `filename` = nom du fichier
      - `status` = Grep `VALIDEE` ou `DRAFT` dans le header
@@ -252,7 +252,7 @@ Structure de haut niveau :
    - Stocker dans `specIndex[slug]`
 
 7. **Screen Map par module** — Pour chaque module dans `moduleRegistry` :
-   - Lire `01_Product/04 Specs/{slug}/00_screen-map.md`
+   - Lire `01_Product/05 Specs/{slug}/00_screen-map.md`
    - Si existe → `screenMap[slug]` = contenu brut
    - Si n'existe pas → ne pas inclure la cle
 
@@ -263,28 +263,27 @@ Structure de haut niveau :
 Afficher :
 
 ```
-╭─── Export Preview ─────────────────────────╮
-│                                            │
-│  Projet : {name}                           │
-│  Modules : {N} ({liste slugs})             │
-│  Specs : {N total} ({N VALIDEE}, {N DRAFT})│
-│  Tokens : {present/absent}                 │
-│  Screen Maps : {N}/{N total modules}       │
-│                                            │
-│  Taille estimee : ~{N} Ko                  │
-│                                            │
-│  Sections incluses :                       │
-│    ✓ Metadata projet                       │
-│    ✓ Context actif                         │
-│    ✓ Profil projet (sans donnees perso)    │
-│    ✓ Registre modules                      │
-│    {✓/✗} Design tokens                     │
-│    {✓/✗} Index des specs                   │
-│    {✓/✗} Screen map(s)                     │
-│                                            │
-│  Fichier : ./project.export.json           │
-│                                            │
-╰────────────────────────────────────────────╯
+Export Preview
+
+    Projet : {name}
+    Modules : {N} ({liste slugs})
+    Specs : {N total} ({N VALIDEE}, {N DRAFT})
+    Tokens : {present/absent}
+    Screen Maps : {N}/{N total modules}
+
+    Taille estimee : ~{N} Ko
+
+    Sections incluses :
+      ✓ Metadata projet
+      ✓ Context actif
+      ✓ Profil projet (sans donnees perso)
+      ✓ Registre modules
+      {✓/✗} Design tokens
+      {✓/✗} Index des specs
+      {✓/✗} Screen map(s)
+
+    Fichier : ./project.export.json
+```
 
 Generer le fichier ? (o/n)
 ```

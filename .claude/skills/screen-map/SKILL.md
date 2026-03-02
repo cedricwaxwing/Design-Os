@@ -52,9 +52,9 @@ Lis `.claude/context.md` pour identifier le **module actif**.
 
 ### Etape 1 — Collecte
 
-1. **Screen Map** : `01_Product/04 Specs/{module}/00_screen-map.md`
-2. **Specs** : `01_Product/04 Specs/{module}/specs/*.spec.md`
-3. **Index** : `01_Product/04 Specs/{module}/specs/_index.md` (si existant)
+1. **Screen Map** : `01_Product/05 Specs/{module}/00_screen-map.md`
+2. **Specs** : `01_Product/05 Specs/{module}/specs/*.spec.md`
+3. **Index** : `01_Product/05 Specs/{module}/specs/_index.md` (si existant)
 
 Si pas de Screen Map → "Pas de Screen Map. Utilise `/ux` pour en creer un."
 

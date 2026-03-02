@@ -35,6 +35,15 @@ export interface HistoryEntry {
   action: string;
 }
 
+export interface MemoryEntry {
+  id: string;       // unique hash for deduplication
+  date: string;     // "2026-02-22 10:00"
+  module: string;   // "ai-prototyper"
+  agent: string;    // "/o"
+  title: string;    // "[2026-02-22 10:00] ai-prototyper — /o"
+  content: string;  // full markdown block
+}
+
 export type DocStatus = 'DRAFT' | 'VALIDEE' | 'EN COURS' | 'LIVREE' | undefined;
 
 // ── Flow graph types (User Journey) ──

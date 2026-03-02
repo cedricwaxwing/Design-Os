@@ -14,7 +14,7 @@
 
 ## Comment ca fonctionne
 
-1. **Prerequis** : Du code dans `02_Build/{module}/` et une spec dans `01_Product/04 Specs/{module}/specs/`
+1. **Prerequis** : Du code dans `02_Build/{module}/` et une spec dans `01_Product/05 Specs/{module}/specs/`
 2. **Commande** : `/review` compare le code a la spec
 3. **Sortie** : Un rapport de conformite avec score X/Y
 4. **Verdict** : GO (100%) ou NO-GO avec la liste des ecarts types

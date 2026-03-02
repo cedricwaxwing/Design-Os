@@ -1,0 +1,48 @@
+/* Edges SVG Styles */
+
+.edges-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.edge-line {
+  fill: none;
+  transition: stroke-width var(--transition-slow), stroke var(--transition-slow), opacity var(--transition-slow);
+}
+
+/* Animated dashes for active flows */
+.edge-line.animated {
+  stroke-dasharray: 4 16;
+  animation: edgeFlow 1.5s linear infinite;
+}
+
+/* Dependency edges (dashed) */
+.edge-line.dependency {
+  stroke-dasharray: 6 4;
+}
+
+.edge-line.dependency.animated {
+  stroke-dasharray: 6 4 2 4;
+  animation: edgeFlow 2s linear infinite;
+}
+
+/* NO-GO edges */
+.edge-line.nogo {
+  stroke-dasharray: 4 3;
+}
+
+@keyframes edgeFlow {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+/* NO-GO label */
+.nogo-label {
+  font-size: 9px;
+  fill: var(--error);
+  font-weight: 600;
+}

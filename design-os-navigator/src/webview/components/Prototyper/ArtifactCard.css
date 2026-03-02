@@ -1,0 +1,424 @@
+/* Artifact Card Styles */
+
+.artifact-card {
+  position: relative;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.artifact-card:hover {
+  border-color: var(--accent);
+}
+
+.artifact-card.selected {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+
+.artifact-card.pinned {
+  border-left: 3px solid var(--warning);
+}
+
+.artifact-card.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* Pin indicator */
+.pin-indicator {
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--space-xs);
+  font-size: 10px;
+}
+
+/* Loading overlay */
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  border-radius: var(--radius-md);
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Header */
+.artifact-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xs);
+}
+
+.artifact-type-icon {
+  font-size: var(--font-size-md);
+}
+
+.artifact-title {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Meta */
+.artifact-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+  color: var(--text-dim);
+  margin-bottom: var(--space-sm);
+}
+
+.artifact-skill {
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+/* Preview */
+.artifact-preview {
+  height: 80px;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* SVG thumbnail — rendered as <img> data URI */
+.svg-thumbnail-img {
+  max-width: 100%;
+  max-height: 80px;
+  display: block;
+}
+
+/* HTML thumbnail */
+.html-thumbnail {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: var(--space-xs) var(--space-sm);
+  gap: 4px;
+}
+
+.html-badge {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  padding: 1px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+
+.html-snippet {
+  font-size: 9px;
+  color: var(--text-dim);
+  line-height: 1.3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+/* Doc thumbnail */
+.doc-thumbnail {
+  align-items: flex-start;
+  padding: var(--space-xs) var(--space-sm);
+}
+
+.doc-preview-text {
+  font-size: 9px;
+  color: var(--text-dim);
+  font-family: var(--font-family);
+  white-space: pre-wrap;
+  overflow: hidden;
+  line-height: 1.3;
+  max-height: 100%;
+  margin: 0;
+}
+
+/* Actions */
+.artifact-actions {
+  position: absolute;
+  bottom: var(--space-sm);
+  right: var(--space-sm);
+  display: flex;
+  gap: 2px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+}
+
+.artifact-actions .action-btn {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  transition: background var(--transition-fast);
+}
+
+.artifact-actions .action-btn:hover {
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+}
+
+.artifact-actions .action-btn.delete:hover {
+  background: color-mix(in srgb, var(--error) 20%, transparent);
+}
+
+/* ════════════════════════════════════════
+   FEED MODE (mode="feed")
+   ════════════════════════════════════════ */
+
+.artifact-card-feed {
+  background: var(--surface);
+  border: 2px solid #f38ba8;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.2s;
+  position: relative;
+  min-height: 200px;
+}
+
+.artifact-card-feed:hover {
+  border-color: var(--accent);
+}
+
+.artifact-card-feed.pinned {
+  border-color: #f9e2af;
+  box-shadow: 0 0 0 1px #f9e2af;
+}
+
+.artifact-card-feed.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Feed loading overlay */
+.feed-loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(30, 30, 46, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  z-index: 10;
+}
+
+.feed-loading-text {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Feed header */
+.feed-header {
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--surface) 70%, var(--bg));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+
+.feed-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.feed-pin { font-size: 12px; flex-shrink: 0; }
+
+.feed-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Feed badge */
+.feed-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+}
+
+.feed-badge-doc  { background: var(--mauve); color: var(--bg); }
+.feed-badge-svg  { background: #fab387; color: var(--bg); }
+.feed-badge-html { background: #06b6d4; color: var(--bg); }
+.feed-badge-server { background: #a6e3a1; color: var(--bg); }
+
+/* Feed action buttons */
+.feed-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.feed-action-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.feed-action-btn:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.feed-menu-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.feed-menu-btn:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+/* Feed dropdowns */
+.feed-dropdown-wrapper { position: relative; }
+
+.feed-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px;
+  min-width: 180px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 50;
+}
+
+.feed-dropdown-right { left: auto; right: 0; }
+
+.feed-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 5px;
+  font-size: 12px;
+  color: var(--text-dim);
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  transition: all 0.1s;
+}
+
+.feed-dropdown-item:hover {
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+  color: var(--text);
+}
+
+.feed-dropdown-item.feed-danger:hover {
+  background: rgba(243, 139, 168, 0.1);
+  color: #f38ba8;
+}
+
+.feed-dropdown-icon { width: 16px; text-align: center; flex-shrink: 0; }
+.feed-dropdown-divider { height: 1px; background: var(--border); margin: 4px 8px; }
+
+/* Feed content area */
+.feed-content { background: var(--bg); position: relative; }
+.feed-content:empty { display: none; }
+
+.feed-render-svg {
+  padding: 16px;
+  background: #1e1e2e;
+  min-height: 300px;
+  overflow: auto;
+}
+
+.feed-render-svg svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.feed-render-svg-img { max-width: 100%; height: auto; }
+
+.feed-render-html {
+  width: 100%;
+  height: 280px;
+  border: none;
+  background: #ffffff;
+}
+
+.feed-render-doc {
+  padding: 20px 24px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-dim);
+  min-height: 60px;
+}
+
+.feed-render-doc pre {
+  margin: 0;
+  font-family: inherit;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}

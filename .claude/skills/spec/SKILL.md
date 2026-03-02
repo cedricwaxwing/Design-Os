@@ -148,7 +148,7 @@ Si le fichier `context.md` n'existe pas, demande a l'utilisateur : "Sur quel mod
 
 ### Etape 0 — Verifier le Screen Map (OBLIGATOIRE pour specs multi-stories)
 
-**Step 0.1** — Lire `01_Product/04 Specs/{module}/00_screen-map.md`.
+**Step 0.1** — Lire `01_Product/05 Specs/{module}/00_screen-map.md`.
 
 **Step 0.2** — Verifier la story dans le Screen Map :
 
@@ -172,7 +172,7 @@ Apres avoir ecrit la spec, TOUJOURS mettre a jour le Screen Map.
 
 NE PAS rechallenger les choix de design — les prendre comme input acquis.
 
-**Ideation context** : Chercher `01_Product/04 Specs/{module}/ideation-log.md`.
+**Ideation context** : Chercher `01_Product/04 Ideation/{module}/ideation-log.md`.
 Si existe :
 1. Idees `RETENUE` → contexte pour Section 1 (User Story) — comprendre le raisonnement derriere les choix
 2. Idees `ECARTEE` → documenter en Section 9 (Hors perimetre) avec la raison d'ecartement
@@ -194,8 +194,8 @@ Verifier si des ecrans SVG existent dans `screens/`. Les lire pour enrichir la s
 
 | Type de spec | Template |
 |-------------|----------|
-| Composant UI | `01_Product/04 Specs/_templates/component-spec.md` |
-| Page complete | `01_Product/04 Specs/_templates/page-spec.md` |
+| Composant UI | `01_Product/05 Specs/_templates/component-spec.md` |
+| Page complete | `01_Product/05 Specs/_templates/page-spec.md` |
 
 ### Etape 3 — Remplir les 9 sections
 
@@ -222,8 +222,8 @@ Verifier si des ecrans SVG existent dans `screens/`. Les lire pour enrichir la s
 - Endpoints API
 
 #### Section 6 — Design System
-- Tokens du `01_Product/05 Design System/tokens.md`
-- Composants du `01_Product/05 Design System/components.md`
+- Tokens du `01_Product/06 Design System/tokens.md`
+- Composants du `01_Product/06 Design System/components.md`
 - Responsive sur 3 breakpoints
 
 #### Section 7 — Dependances
@@ -251,7 +251,7 @@ Avant de declarer VALIDEE :
 
 ### Etape 4b — Verification UX de la spec
 
-> Reference : `01_Product/05 Design System/ux-laws.md`
+> Reference : `01_Product/06 Design System/ux-laws.md`
 
 | Section spec | Loi UX | Verification |
 |-------------|--------|--------------|
@@ -263,7 +263,12 @@ Avant de declarer VALIDEE :
 
 ### Etape 5 — Ecriture
 
-Ecris la spec dans : `01_Product/04 Specs/{module}/specs/X.Y-nom.spec.md`
+**Versioning** : Appliquer le protocole V1-V2-V3 (voir CLAUDE.md > Versioning Protocol) :
+1. V1 — Lire la spec existante (si elle existe), extraire le numero de version
+2. V2 — Archiver la version precedente dans `_archive/`, logger dans `_changelog.jsonl`
+3. V3 — Ecrire la nouvelle spec avec version incrementee dans l'en-tete (format 5 champs)
+
+Ecris la spec dans : `01_Product/05 Specs/{module}/specs/X.Y-nom.spec.md`
 
 ### Etape 6 — Persistance du readiness
 

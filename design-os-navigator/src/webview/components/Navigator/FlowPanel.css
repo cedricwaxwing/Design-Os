@@ -1,0 +1,191 @@
+/* ── Flow Graph Area ── */
+
+.flow-graph-area {
+  flex: 1;
+  min-width: 0;
+  overflow: auto;
+  padding: 20px;
+  position: relative;
+}
+
+/* ── Flow Container ── */
+
+.flow-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  min-width: fit-content;
+  padding-bottom: 40px;
+}
+
+/* ── Connector (CSS dashed line) ── */
+
+.flow-connector {
+  width: 2px;
+  height: 16px;
+  border-left: 2px dashed var(--border-light);
+  margin: 0 auto;
+}
+
+.flow-connector.active {
+  border-left-color: var(--success);
+}
+
+/* ── Branch Row ── */
+
+.flow-branch-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  justify-content: center;
+  position: relative;
+}
+
+.flow-branch-row::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  width: 70%;
+  transform: translateX(-50%);
+  border-top: 2px dashed var(--border-light);
+  z-index: 0;
+}
+
+/* ── Flow Node Card ── */
+
+.flow-node {
+  width: var(--node-width);
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+  z-index: 1;
+  border-left: 3px solid transparent;
+}
+
+.flow-node:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.flow-node.selected {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface-elevated));
+}
+
+.flow-node.has-alert {
+  border-left-color: var(--peach);
+}
+
+/* Node Top Row */
+.flow-node-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.flow-node-icon {
+  font-size: var(--font-size-md);
+  flex-shrink: 0;
+  color: var(--text-dim);
+}
+
+.flow-node-name {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.flow-node-alert {
+  width: 20px;
+  height: 20px;
+  background: var(--peach);
+  color: var(--surface);
+  border-radius: 50%;
+  font-size: 9px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Node Bottom Row */
+.flow-node-bottom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Maturity Tag */
+.flow-node-tag {
+  font-size: 9px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.flow-node-tag.vide {
+  background: color-mix(in srgb, var(--text-muted) 15%, transparent);
+  color: var(--text-muted);
+}
+
+.flow-node-tag.amorce {
+  background: color-mix(in srgb, var(--peach) 15%, transparent);
+  color: var(--peach);
+}
+
+.flow-node-tag.en-cours {
+  background: color-mix(in srgb, var(--success) 15%, transparent);
+  color: var(--success);
+}
+
+.flow-node-tag.complet {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+}
+
+.flow-node-tag.valide {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+}
+
+/* Gate Dots */
+.flow-node-gates {
+  display: flex;
+  gap: 3px;
+  flex: 1;
+}
+
+.flow-gate-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.flow-gate-dot.met {
+  background: var(--success);
+}
+
+.flow-gate-dot.unmet {
+  background: var(--border-light);
+}
+
+/* File Count */
+.flow-node-files {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}

@@ -122,7 +122,7 @@ Chaque idee recoit un tag qui trace son cycle de vie :
 
 1. Lire `.claude/context.md` → module actif, intent
 2. Lire `.claude/profile.md` → guidance_mode (wizard/hybrid/freeform), profil
-3. Chercher `01_Product/04 Specs/{module}/ideation-log.md`
+3. Chercher `01_Product/04 Ideation/{module}/ideation-log.md`
 
 **Si ideation-log.md existe** :
 ```
@@ -250,7 +250,7 @@ Pour chaque idee taguee `PARQUEE` : "A quelle condition on la reprend ?"
 
 ### Etape 4 — Ecriture (persistance)
 
-**Action** : Ecrire dans `01_Product/04 Specs/{module}/ideation-log.md`.
+**Action** : Ecrire dans `01_Product/04 Ideation/{module}/ideation-log.md`.
 
 **Si le fichier n'existe pas** → le creer avec le template complet (voir section Template).
 
@@ -431,7 +431,7 @@ Quand le fichier est cree pour la premiere fois :
 3. **Raisonnement obligatoire** — Les tags RETENUE, ECARTEE et PARQUEE exigent un raisonnement. Sans raison, l'idee reste en EXPLOREE.
 4. **Zero jugement en phase libre** — Pendant l'Etape 2, l'agent ne filtre pas, ne critique pas, ne priorise pas. Il accumule.
 5. **Parking lot vivant** — A chaque nouvelle session, les idees PARQUEE sont revues. Si la condition de reprise est remplie, proposer de changer le tag.
-6. **Un seul fichier par module** — Tout dans `01_Product/04 Specs/{module}/ideation-log.md`. Pas de fragmentation.
+6. **Un seul fichier par module** — Tout dans `01_Product/04 Ideation/{module}/ideation-log.md`. Pas de fragmentation.
 7. **Pas de code** — L'ideation ne genere pas de code. C'est le job de /explore ou /build.
 8. **Le contexte nourrit le brainstorm** — Utiliser Discovery, Screen Map, et les pain points comme carburant creatif, pas comme filtre.
 

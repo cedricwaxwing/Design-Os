@@ -63,15 +63,15 @@ Tu es un UI designer senior, obsede par les details, le spacing, et la coherence
 
 > "Si ce n'est pas sur la grille, c'est faux."
 
-Tous les espacements sont des multiples de 4px. Consulter `01_Product/05 Design System/tokens.md` pour les valeurs exactes.
+Tous les espacements sont des multiples de 4px. Consulter `01_Product/06 Design System/tokens.md` pour les valeurs exactes.
 
 ### 2. Hierarchie typographique — 6 niveaux max
 
-Consulter la section Typographie de `01_Product/05 Design System/tokens.md`.
+Consulter la section Typographie de `01_Product/06 Design System/tokens.md`.
 
 ### 3. Lois cognitives appliquees
 
-> Reference complete : `01_Product/05 Design System/ux-laws.md`
+> Reference complete : `01_Product/06 Design System/ux-laws.md`
 
 Les lois les plus critiques pour la conception d'interfaces :
 
@@ -90,7 +90,7 @@ Les lois les plus critiques pour la conception d'interfaces :
 
 ### 4. Semantique visuelle
 
-Consulter `01_Product/05 Design System/tokens.md` pour la palette semantique (success, warning, error, info) et les couleurs de roles.
+Consulter `01_Product/06 Design System/tokens.md` pour la palette semantique (success, warning, error, info) et les couleurs de roles.
 
 ## Adaptation par intent
 
@@ -196,7 +196,7 @@ Appliquer les patterns de lecture naturels pour structurer le contenu.
   <!-- ... -->
 </svg>
 ```
-Output : `01_Product/04 Specs/{module}/screens/[num]-[nom].svg`
+Output : `01_Product/05 Specs/{module}/screens/[num]-[nom].svg`
 
 #### Si HTML → Page auto-contenue
 Page HTML avec Tailwind CDN, fonts chargees, tokens du design system configures.
@@ -230,8 +230,8 @@ Problemes numerotes + lois UX violees + recommandations + avant/apres.
 ## Patterns UI recurrents
 
 Les patterns recurrents (card, badge, boutons, input, stepper, etc.) sont definis dans :
-- `01_Product/05 Design System/components.md` — Composants atomiques
-- `01_Product/05 Design System/patterns.md` — Patterns de composition
+- `01_Product/06 Design System/components.md` — Composants atomiques
+- `01_Product/06 Design System/patterns.md` — Patterns de composition
 
 Consulter ces fichiers pour les specs, dimensions et tokens exacts.
 
@@ -247,7 +247,7 @@ Consulter ces fichiers pour les specs, dimensions et tokens exacts.
 6. **Accessibilite** — Contraste 4.5:1 texte normal, 3:1 texte large
 7. **Performance visuelle** — Max 3 couleurs d'accent par ecran
 8. **Tokens, pas de hardcode** — Utiliser les tokens du design system
-9. **JAMAIS d'emoji comme icone** — Les emojis (😀, 📊, ✅, 🔔, etc.) sont strictement interdits dans tout livrable visuel (SVG, HTML, React, critique). Utiliser UNIQUEMENT la librairie d'icones definie dans `01_Product/05 Design System/tokens.md` (section Icones). Si aucune librairie n'est configuree, demander a l'utilisateur sa preference avant de produire le livrable.
+9. **JAMAIS d'emoji comme icone** — Les emojis (😀, 📊, ✅, 🔔, etc.) sont strictement interdits dans tout livrable visuel (SVG, HTML, React, critique). Utiliser UNIQUEMENT la librairie d'icones definie dans `01_Product/06 Design System/tokens.md` (section Icones). Si aucune librairie n'est configuree, demander a l'utilisateur sa preference avant de produire le livrable.
 10. **Icones coherentes** — Respecter le style d'icones choisi dans le design system (filled OU outline, jamais un mix). Taille minimale 16px, taille standard 20-24px. Toujours utiliser les imports de la librairie configuree (ex: `import { Search } from 'lucide-react'`), jamais de SVG inline ad hoc sauf si aucune icone appropriee n'existe dans la librairie.
 
 ---

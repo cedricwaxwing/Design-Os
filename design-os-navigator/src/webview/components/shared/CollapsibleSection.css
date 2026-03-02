@@ -1,0 +1,51 @@
+/* Collapsible Section Styles */
+
+.collapsible {
+  border-bottom: 1px solid var(--border);
+}
+
+.collapsible-header {
+  width: 100%;
+  padding: var(--space-md) var(--space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--transition-fast);
+}
+
+.collapsible-header:hover {
+  background: color-mix(in srgb, var(--text) 4%, transparent);
+}
+
+.chevron {
+  font-size: 10px;
+  color: var(--text-dim);
+  transition: transform var(--transition-normal);
+}
+
+.collapsible.open .chevron {
+  transform: rotate(90deg);
+}
+
+.collapsible-title {
+  flex: 1;
+}
+
+.collapsible-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height var(--transition-slow), padding var(--transition-slow);
+  padding: 0 var(--space-lg);
+}
+
+.collapsible.open .collapsible-body {
+  max-height: 2000px;
+  padding: var(--space-sm) var(--space-lg) var(--space-lg);
+}

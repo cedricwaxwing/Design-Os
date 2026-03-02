@@ -1,0 +1,337 @@
+/* Design OS Navigator - Design Tokens
+ * Based on Catppuccin Mocha theme
+ * Integrates with VS Code theme variables
+ */
+
+:root {
+  /* Base colors - VS Code integration */
+  --bg: var(--vscode-editor-background, #1e1e2e);
+  --surface: var(--vscode-sideBar-background, #181825);
+  --surface-elevated: var(--vscode-editorWidget-background, #313244);
+  --border: var(--vscode-panel-border, #313244);
+
+  /* Text colors */
+  --text: var(--vscode-editor-foreground, #cdd6f4);
+  --text-dim: var(--vscode-descriptionForeground, #a6adc8);
+  --text-muted: #6c7086;
+
+  /* Accent colors - Catppuccin palette */
+  --accent: var(--vscode-textLink-foreground, #89b4fa);
+  --accent-hover: #b4befe;
+  --mauve: #cba6f7;
+  --peach: #fab387;
+
+  /* Semantic colors */
+  --success: #a6e3a1;
+  --warning: #f9e2af;
+  --error: #f38ba8;
+
+  /* Overlays */
+  --overlay0: #6c7086;
+  --overlay1: #7f849c;
+
+  /* Extended palette (flow compact) */
+  --border-light: #585b70;
+  --text-sub: var(--text-dim);
+  --teal: #94e2d5;
+
+  /* Spacing scale */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+
+  /* Typography */
+  --font-family: var(--vscode-font-family, 'Segoe UI', system-ui, -apple-system, sans-serif);
+  --font-size-xs: 10px;
+  --font-size-sm: 11px;
+  --font-size-base: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+
+  /* Layout */
+  --panel-width: 384px;
+  --panel-min-width: 300px;
+  --panel-max-width: 600px;
+  --header-height: 42px;
+  --node-width: 200px;
+  --side-panel-width: 300px;
+}
+
+/* Reset */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base */
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* App layout */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app-header {
+  height: var(--header-height);
+  padding: 0 var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.app-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* Header tabs */
+.header-tabs {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.header-tab {
+  padding: var(--space-sm) var(--space-md);
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.header-tab:hover {
+  color: var(--text);
+  background: color-mix(in srgb, var(--text) 5%, transparent);
+}
+
+.header-tab.active {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.tab-badge {
+  background: var(--accent);
+  color: var(--bg);
+  font-size: var(--font-size-xs);
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* Launch console button */
+.launch-console-btn {
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.launch-console-btn:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.launch-console-btn .icon {
+  color: var(--mauve);
+}
+
+/* Console launcher dropdown */
+.console-launcher {
+  position: relative;
+}
+
+.console-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  min-width: 160px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+}
+
+.console-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  color: var(--text-dim);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-mono);
+  text-align: left;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.1s;
+}
+
+.console-dropdown-item:hover {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--text);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--overlay0);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--overlay1);
+}
+
+/* Utility classes */
+.text-dim { color: var(--text-dim); }
+.text-muted { color: var(--text-muted); }
+.text-accent { color: var(--accent); }
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+.text-error { color: var(--error); }
+
+.bg-surface { background: var(--surface); }
+.bg-elevated { background: var(--surface-elevated); }
+
+/* ── AI Bar ── */
+
+.ai-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 6px var(--space-md);
+  background: color-mix(in srgb, var(--mauve) 5%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--mauve) 10%, transparent);
+  font-size: var(--font-size-xs);
+  color: var(--text-sub);
+  flex-shrink: 0;
+}
+
+.ai-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--mauve);
+  border-radius: 50%;
+  animation: ai-pulse 2s infinite;
+  flex-shrink: 0;
+}
+
+.ai-label {
+  color: var(--mauve);
+}
+
+@keyframes ai-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ── Readiness Footer ── */
+
+.readiness-footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 6px var(--space-md);
+  border-top: 1px solid var(--border);
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  flex-shrink: 0;
+  background: var(--surface);
+}
+
+.readiness-label {
+  flex-shrink: 0;
+}
+
+.readiness-track {
+  flex: 1;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+}
+
+.readiness-fill {
+  height: 100%;
+  width: var(--readiness-pct, 0%);
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.5s;
+}
+
+.readiness-pct {
+  font-weight: 500;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.readiness-stats {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .app-content {
+    flex-direction: column;
+  }
+}

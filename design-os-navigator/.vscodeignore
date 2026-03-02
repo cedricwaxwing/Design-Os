@@ -1,6 +1,14 @@
 src/**
 node_modules/**
 tsconfig.json
+tsconfig.webview.json
+esbuild.config.mjs
+vite.config.ts
+vitest.config.ts
 .gitignore
+.claude/**
 **/*.ts
+**/*.tsx
+**/*.map
 !out/**
+!webview/dist/**

@@ -12,7 +12,7 @@ export function getWebviewContent(data: GraphData): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Design OS Navigator</title>
+  <title>Design Os</title>
   <style>
     :root {
       --bg: var(--vscode-editor-background, #1e1e2e);
@@ -28,6 +28,12 @@ export function getWebviewContent(data: GraphData): string {
       --node-radius: 12px;
       --transition: 0.2s ease;
       --panel-width: 384px;
+      --surface-elevated: #313244;
+      --text-muted: #6c7086;
+      --accent-hover: #b4befe;
+      --mauve: #cba6f7;
+      --peach: #fab387;
+      --overlay0: #6c7086;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1210,27 +1216,26 @@ export function getWebviewContent(data: GraphData): string {
     .filter-bar {
       display: flex;
       gap: 4px;
-      padding: 0 16px 8px;
+      padding: 8px 16px;
       background: var(--surface);
     }
-    .filter-chip {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-dim);
-      padding: 2px 10px;
-      border-radius: 12px;
-      font-size: 10px;
+    .launch-console-btn {
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      padding: 6px 16px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
       cursor: pointer;
       transition: all var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
     }
-    .filter-chip:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-    .filter-chip.active {
-      background: color-mix(in srgb, var(--accent) 15%, transparent);
-      border-color: var(--accent);
-      color: var(--accent);
+    .launch-console-btn:hover {
+      background: var(--accent-hover);
     }
     .node.filtered-out { opacity: 0.12; pointer-events: none; transition: opacity 0.3s ease; }
     .edge-line.filtered-out { opacity: 0.05 !important; transition: opacity 0.3s ease; }
@@ -1338,6 +1343,306 @@ export function getWebviewContent(data: GraphData): string {
       text-align: center;
     }
 
+    /* ── Header Tabs ── */
+    .header-tabs {
+      display: flex;
+      gap: 2px;
+      background: color-mix(in srgb, var(--text) 6%, transparent);
+      border-radius: 6px;
+      padding: 2px;
+    }
+    .header-tab {
+      padding: 5px 14px;
+      border: none;
+      background: transparent;
+      color: var(--text-dim);
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all var(--transition);
+    }
+    .header-tab.active {
+      background: var(--accent);
+      color: var(--bg);
+    }
+    .header-tab:hover:not(.active) {
+      color: var(--text);
+    }
+
+    /* ── Tab content ── */
+    .tab-content { display: none; flex-direction: column; flex: 1; min-height: 0; }
+    .tab-content.active { display: flex; }
+
+    /* ── Prototyper Tab ── */
+    .proto-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .proto-header-left { display: flex; align-items: center; gap: 10px; }
+    .proto-header-title { font-size: 12px; font-weight: 600; }
+    .proto-artifact-count {
+      background: color-mix(in srgb, var(--accent) 15%, transparent);
+      color: var(--accent);
+      padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 500;
+    }
+    .proto-mode-toggle {
+      display: flex; gap: 2px;
+      background: color-mix(in srgb, var(--text) 6%, transparent);
+      border-radius: 5px; padding: 2px;
+    }
+    .proto-mode-btn {
+      padding: 4px 10px; border: none; background: transparent;
+      color: var(--text-dim); font-size: 10px; font-weight: 500;
+      cursor: pointer; border-radius: 3px; transition: all var(--transition);
+    }
+    .proto-mode-btn.active { background: var(--accent); color: var(--bg); }
+    .proto-mode-btn:hover:not(.active) { color: var(--text); }
+
+    .proto-main { flex: 1; overflow: hidden; position: relative; }
+
+    .proto-feed {
+      height: 100%; overflow-y: auto; padding: 10px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .proto-feed::-webkit-scrollbar { width: 4px; }
+    .proto-feed::-webkit-scrollbar-track { background: transparent; }
+    .proto-feed::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .proto-empty {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; height: 100%; text-align: center; padding: 24px;
+    }
+    .proto-empty-icon { width: 40px; height: 40px; margin-bottom: 12px; color: var(--text-muted); }
+    .proto-empty-title { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+    .proto-empty-desc { font-size: 11px; color: var(--text-dim); line-height: 1.5; }
+
+    .proto-pinned { display: none; margin-bottom: 6px; padding-bottom: 10px; border-bottom: 1px dashed var(--border); }
+    .proto-pinned.visible { display: block; }
+    .proto-section-label {
+      font-size: 9px; font-weight: 600; letter-spacing: 0.06em;
+      color: var(--warning); text-transform: uppercase; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 5px;
+    }
+
+    /* Artifact card */
+    .art-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; overflow: hidden; transition: all var(--transition); position: relative;
+    }
+    .art-card:hover { border-color: var(--accent); }
+    .art-card.pinned { border-color: var(--warning); box-shadow: 0 0 0 1px var(--warning); }
+    .art-card.recent { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+    .art-card.regenerating { opacity: 0.7; pointer-events: none; }
+
+    .art-header {
+      padding: 10px 12px; background: var(--surface-elevated);
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .art-info { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+    .art-pin { color: var(--warning); font-size: 10px; }
+    .art-badge {
+      padding: 3px 6px; border-radius: 4px; font-size: 9px;
+      font-weight: 600; text-transform: uppercase; flex-shrink: 0;
+    }
+    .art-badge.doc { background: var(--mauve); color: var(--bg); }
+    .art-badge.svg { background: var(--peach); color: var(--bg); }
+    .art-badge.html { background: #06b6d4; color: var(--bg); }
+    .art-badge.server { background: var(--success); color: var(--bg); }
+    .art-badge.skill { background: color-mix(in srgb, var(--mauve) 20%, transparent); color: var(--mauve); font-weight: 500; text-transform: none; }
+    .art-title { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .art-actions { display: flex; gap: 4px; flex-shrink: 0; }
+    .art-btn {
+      padding: 4px 8px; border-radius: 5px; font-size: 10px; font-weight: 500;
+      cursor: pointer; border: 1px solid var(--border); background: none;
+      color: var(--text-dim); transition: all var(--transition);
+      display: flex; align-items: center; gap: 3px;
+    }
+    .art-btn:hover { border-color: var(--accent); color: var(--text); }
+    .art-btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+    .art-btn.primary:hover { background: var(--accent-hover); }
+    .art-btn.danger:hover { border-color: var(--error); color: var(--error); }
+    .art-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .art-menu-btn { width: 26px; padding: 4px; justify-content: center; }
+
+    /* Dropdown */
+    .art-dropdown { position: relative; }
+    .art-dropdown-menu {
+      display: none; position: absolute; top: 100%; right: 0; margin-top: 4px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      padding: 4px; min-width: 150px; z-index: 100;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+    .art-dropdown.open .art-dropdown-menu { display: block; }
+    .art-dd-item {
+      padding: 8px 10px; font-size: 11px; cursor: pointer; border-radius: 5px;
+      transition: background var(--transition); display: flex; align-items: center; gap: 8px;
+      color: var(--text-dim); border: none; background: none; width: 100%; text-align: left;
+    }
+    .art-dd-item:hover { background: var(--surface-elevated); color: var(--text); }
+    .art-dd-item.danger:hover { background: rgba(243,139,168,0.1); color: var(--error); }
+    .art-dd-icon { width: 14px; text-align: center; }
+    .art-dd-divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+    /* Content preview */
+    .art-content { background: var(--bg); position: relative; }
+    .art-render-md {
+      padding: 12px 14px; font-size: 11px; line-height: 1.6;
+      color: var(--text-dim); max-height: 150px; overflow: hidden;
+    }
+    .art-render-md::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+      height: 30px; background: linear-gradient(transparent, var(--bg)); pointer-events: none;
+    }
+    .art-render-md h1 { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+    .art-render-md h2 { font-size: 12px; font-weight: 600; color: var(--text); margin: 10px 0 6px; }
+    .art-render-md p { margin-bottom: 8px; }
+    .art-render-md strong { color: var(--text); font-weight: 600; }
+    .art-render-svg { padding: 12px; background: #fff; display: flex; justify-content: center; max-height: 120px; overflow: hidden; }
+    .art-render-svg svg { max-width: 100%; max-height: 100%; }
+    .art-render-html iframe { width: 100%; height: 100px; border: none; background: #fff; }
+    .art-render-server { padding: 12px; display: flex; align-items: center; gap: 12px; }
+    .art-server-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+    .art-server-label { font-size: 11px; font-weight: 500; color: var(--text); }
+    .art-server-link {
+      padding: 6px 10px; background: var(--surface-elevated); border: 1px solid var(--border);
+      border-radius: 5px; font-family: monospace; font-size: 10px; color: var(--accent); text-decoration: none;
+    }
+
+    /* Loading overlay */
+    .art-loading {
+      position: absolute; inset: 0; background: rgba(30,30,46,0.9);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; z-index: 10;
+    }
+    .art-spinner { width: 24px; height: 24px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .art-loading-text { font-size: 10px; color: var(--text-muted); }
+
+    /* Compact mode */
+    .proto-compact .art-card .art-content { display: none; }
+    .proto-compact .art-card { border-radius: 8px; }
+    .proto-compact .art-header { border-bottom: none; padding: 8px 10px; }
+    .proto-compact .art-actions { opacity: 0; transition: opacity var(--transition); }
+    .proto-compact .art-card:hover .art-actions { opacity: 1; }
+    .proto-compact .phase-group { display: block; margin-bottom: 12px; }
+    .phase-group { display: none; }
+    .phase-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+    .phase-icon { width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+    .phase-icon.spec { background: var(--mauve); color: var(--bg); }
+    .phase-icon.design { background: var(--peach); color: var(--bg); }
+    .phase-icon.prototype { background: var(--success); color: var(--bg); }
+    .phase-label { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+    .phase-count { font-size: 9px; color: var(--text-muted); background: var(--surface-elevated); padding: 2px 6px; border-radius: 8px; }
+
+    /* Preview panel */
+    .proto-preview {
+      display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--bg); flex-direction: column; z-index: 50;
+    }
+    .proto-preview.active { display: flex; }
+    .proto-preview-header {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 8px 12px; display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+    }
+    .proto-back-btn {
+      padding: 5px 10px; border-radius: 5px; font-size: 11px; font-weight: 500;
+      cursor: pointer; border: 1px solid var(--border); background: none; color: var(--text-dim);
+      display: flex; align-items: center; gap: 5px; transition: all var(--transition);
+    }
+    .proto-back-btn:hover { border-color: var(--accent); color: var(--text); }
+    .proto-preview-title { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
+    .proto-preview-actions { display: flex; gap: 6px; }
+    .proto-preview-body { flex: 1; overflow: auto; padding: 12px; position: relative; }
+    .proto-preview-body .full-render { width: 100%; height: 100%; }
+    .proto-preview-body .full-render.art-render-md { max-height: none; padding: 16px; background: var(--surface); border-radius: 8px; font-size: 13px; overflow-y: auto; }
+    .proto-preview-body .full-render.art-render-md::after { display: none; }
+    .proto-preview-body .full-render.art-render-svg { max-height: none; padding: 16px; overflow: auto; border-radius: 8px; transform-origin: top center; }
+    .proto-preview-body .full-render.art-render-html iframe { height: 100%; border-radius: 8px; }
+
+    .proto-zoom {
+      position: absolute; bottom: 12px; right: 12px; display: none; gap: 4px;
+      background: var(--surface); padding: 5px; border-radius: 6px;
+      border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .proto-zoom.visible { display: flex; }
+    .proto-zoom-btn {
+      width: 24px; height: 24px; border-radius: 4px; border: 1px solid var(--border);
+      background: var(--bg); color: var(--text); font-size: 12px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: all var(--transition);
+    }
+    .proto-zoom-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .proto-zoom-level { padding: 0 8px; font-size: 10px; color: var(--text-dim); display: flex; align-items: center; min-width: 40px; justify-content: center; }
+
+    /* Proto toast */
+    .proto-toast-container {
+      position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%);
+      z-index: 300; display: flex; flex-direction: column; gap: 6px; pointer-events: none;
+    }
+    .proto-toast {
+      background: var(--surface); border: 1px solid var(--border); padding: 8px 14px;
+      border-radius: 8px; font-size: 11px; color: var(--text);
+      display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      animation: protoToastIn 0.2s ease, protoToastOut 0.2s ease 2.5s forwards;
+      pointer-events: auto;
+    }
+    .proto-toast.success { border-color: var(--success); }
+    .proto-toast.success .proto-toast-icon { color: var(--success); }
+    .proto-toast.error { border-color: var(--error); }
+    .proto-toast.error .proto-toast-icon { color: var(--error); }
+    .proto-toast.warning { border-color: var(--warning); }
+    .proto-toast.warning .proto-toast-icon { color: var(--warning); }
+    @keyframes protoToastIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+    @keyframes protoToastOut { from { opacity:1; transform: translateY(0); } to { opacity:0; transform: translateY(-8px); } }
+
+    /* Proto modal */
+    .proto-modal-backdrop {
+      position: absolute; inset: 0; background: rgba(0,0,0,0.6); z-index: 200;
+      opacity: 0; visibility: hidden; transition: all 0.2s;
+    }
+    .proto-modal-backdrop.open { opacity: 1; visibility: visible; }
+    .proto-modal {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%) scale(0.95);
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 20px; width: 280px; max-width: 90%; z-index: 201;
+      opacity: 0; visibility: hidden; transition: all 0.2s;
+    }
+    .proto-modal.open { opacity: 1; visibility: visible; transform: translate(-50%,-50%) scale(1); }
+    .proto-modal-icon {
+      width: 36px; height: 36px; background: rgba(243,139,168,0.15);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 18px; margin-bottom: 12px;
+    }
+    .proto-modal-icon.prompt { background: rgba(137,180,250,0.15); }
+    .proto-modal-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .proto-modal-message { font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px; }
+    .proto-modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+    .proto-modal-btn {
+      padding: 8px 14px; border-radius: 6px; font-size: 11px; font-weight: 500;
+      border: 1px solid var(--border); background: none; color: var(--text-dim);
+      cursor: pointer; transition: all var(--transition);
+    }
+    .proto-modal-btn:hover { border-color: var(--accent); color: var(--text); }
+    .proto-modal-btn.danger { background: var(--error); border-color: var(--error); color: var(--bg); }
+    .proto-modal-btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+    .proto-prompt-textarea {
+      width: 100%; min-height: 80px; padding: 10px; background: var(--bg);
+      border: 1px solid var(--border); border-radius: 6px; color: var(--text);
+      font-family: inherit; font-size: 11px; line-height: 1.5;
+      resize: vertical; outline: none; margin-bottom: 16px;
+    }
+    .proto-prompt-textarea:focus { border-color: var(--accent); }
+    .proto-prompt-textarea::placeholder { color: var(--text-muted); }
+
     /* ── Responsive ── */
     @media (max-width: 700px) {
       .app { flex-direction: column; }
@@ -1351,28 +1656,111 @@ export function getWebviewContent(data: GraphData): string {
     <div class="main-content">
       <div class="header">
         <div class="header-left">
-          <h1>Design OS Navigator</h1>
-          <span class="module-badge" id="module-badge"></span>
-          <span class="profile-badge" id="profile-badge" style="display:none"></span>
+          <h1>Design Os</h1>
+          <div class="header-tabs">
+            <button class="header-tab active" data-tab="navigator">Navigator</button>
+            <button class="header-tab" data-tab="prototyper">Prototyper</button>
+          </div>
         </div>
-        <span class="readiness-global" id="global-readiness"></span>
-      </div>
-      <div class="filter-bar" id="filter-bar">
-        <button class="filter-chip active" data-filter="all">Tous</button>
-        <button class="filter-chip" data-filter="active">Actifs</button>
-        <button class="filter-chip" data-filter="empty">Vides</button>
-        <button class="filter-chip" data-filter="ready">Prets</button>
-        <button class="filter-chip" data-filter="blocked">Bloques</button>
-      </div>
-      <div class="graph-panel" id="graph-panel">
-        <div class="graph-container" id="graph-container">
-          <svg class="edges-svg" id="edges-svg"></svg>
+        <div class="header-right-badges">
+          <span class="module-badge" id="module-badge" style="display:none;"></span>
+          <span class="profile-badge" id="profile-badge" style="display:none;"></span>
         </div>
-        <div class="zoom-controls" id="zoom-controls">
-          <button class="zoom-btn" id="zoom-out" title="Zoom out">&#8722;</button>
-          <span class="zoom-level" id="zoom-level">100%</span>
-          <button class="zoom-btn" id="zoom-in" title="Zoom in">&#43;</button>
-          <button class="zoom-btn" id="zoom-fit" title="Fit to view">&#8862;</button>
+        <button class="launch-console-btn" id="launchConsoleBtn">&#9654; Lancer Console</button>
+      </div>
+      <div class="context-bar" id="global-readiness" style="padding:4px 16px;font-size:10px;color:var(--text-dim);border-bottom:1px solid var(--border);"></div>
+
+      <!-- Navigator Tab -->
+      <div class="tab-content active" id="navigatorTab">
+        <div class="graph-panel" id="graph-panel">
+          <div class="graph-container" id="graph-container">
+            <svg class="edges-svg" id="edges-svg"></svg>
+          </div>
+          <div class="zoom-controls" id="zoom-controls">
+            <button class="zoom-btn" id="zoom-out" title="Zoom out">&#8722;</button>
+            <span class="zoom-level" id="zoom-level">100%</span>
+            <button class="zoom-btn" id="zoom-in" title="Zoom in">&#43;</button>
+            <button class="zoom-btn" id="zoom-fit" title="Fit to view">&#8862;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prototyper Tab -->
+      <div class="tab-content" id="prototyperTab">
+        <div class="proto-header">
+          <div class="proto-header-left">
+            <span class="proto-header-title">Artefacts</span>
+            <span class="proto-artifact-count" id="protoCount">0</span>
+          </div>
+          <div class="proto-mode-toggle">
+            <button class="proto-mode-btn active" data-pmode="standard">Standard</button>
+            <button class="proto-mode-btn" data-pmode="compact">Compact</button>
+          </div>
+        </div>
+        <div class="proto-main">
+          <div class="proto-feed" id="protoFeed">
+            <div class="proto-pinned" id="protoPinned">
+              <div class="proto-section-label">&#128204; Epingles</div>
+              <div id="protoPinnedList"></div>
+            </div>
+            <div class="proto-empty" id="protoEmpty">
+              <svg class="proto-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <path d="M3 9h18"/><path d="M9 21V9"/>
+              </svg>
+              <div class="proto-empty-title">Aucun artefact</div>
+              <div class="proto-empty-desc">Utilisez la Console pour generer<br>des specs, wireframes ou prototypes.</div>
+            </div>
+            <div id="protoList"></div>
+          </div>
+
+          <!-- Preview panel -->
+          <div class="proto-preview" id="protoPreview">
+            <div class="proto-preview-header">
+              <button class="proto-back-btn" id="protoBackBtn">&#8592; Retour</button>
+              <span class="art-badge" id="protoPreviewBadge">DOC</span>
+              <span class="proto-preview-title" id="protoPreviewTitle">Titre</span>
+              <div class="proto-preview-actions">
+                <button class="art-btn" id="protoPreviewCopyBtn">Copier</button>
+                <button class="art-btn" id="protoPreviewExportBtn">Exporter</button>
+              </div>
+            </div>
+            <div class="proto-preview-body" id="protoPreviewBody"></div>
+            <div class="proto-zoom" id="protoZoom">
+              <button class="proto-zoom-btn" id="protoZoomOut">&#8722;</button>
+              <span class="proto-zoom-level" id="protoZoomLevel">100%</span>
+              <button class="proto-zoom-btn" id="protoZoomIn">&#43;</button>
+              <button class="proto-zoom-btn" id="protoZoomReset" title="Reset">&#8635;</button>
+            </div>
+          </div>
+
+          <!-- Toast -->
+          <div class="proto-toast-container" id="protoToastContainer"></div>
+
+          <!-- Delete Modal -->
+          <div class="proto-modal-backdrop" id="protoDeleteBackdrop"></div>
+          <div class="proto-modal" id="protoDeleteModal">
+            <div class="proto-modal-icon">&#128465;</div>
+            <div class="proto-modal-title">Supprimer cet artefact ?</div>
+            <div class="proto-modal-message">Cette action est irreversible. L'artefact "<span id="protoDeleteName"></span>" sera definitivement supprime.</div>
+            <div class="proto-modal-actions">
+              <button class="proto-modal-btn" id="protoDeleteCancel">Annuler</button>
+              <button class="proto-modal-btn danger" id="protoDeleteConfirm">Supprimer</button>
+            </div>
+          </div>
+
+          <!-- Prompt Modal -->
+          <div class="proto-modal-backdrop" id="protoPromptBackdrop"></div>
+          <div class="proto-modal" id="protoPromptModal">
+            <div class="proto-modal-icon prompt">&#128260;</div>
+            <div class="proto-modal-title">Regenerer avec instructions</div>
+            <div class="proto-modal-message">Decris les modifications souhaitees.</div>
+            <textarea class="proto-prompt-textarea" id="protoPromptTextarea" placeholder="Ex: Rends le plus compact, ajoute une section FAQ..."></textarea>
+            <div class="proto-modal-actions">
+              <button class="proto-modal-btn" id="protoPromptCancel">Annuler</button>
+              <button class="proto-modal-btn primary" id="protoPromptConfirm">Regenerer</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1383,6 +1771,7 @@ export function getWebviewContent(data: GraphData): string {
   <script>
     const vscode = acquireVsCodeApi();
     const data = ${dataJson};
+    try { // DEBUG WRAPPER
 
     // ── Node positions ──
     const positions = {
@@ -2519,38 +2908,13 @@ export function getWebviewContent(data: GraphData): string {
     // ── Init ──
     renderGraph();
 
-    // ── Filter chips ──
-    document.querySelectorAll('.filter-chip').forEach(function(chip) {
-      chip.addEventListener('click', function() {
-        var filter = chip.getAttribute('data-filter');
-        document.querySelectorAll('.filter-chip').forEach(function(c) { c.classList.remove('active'); });
-        chip.classList.add('active');
-
-        document.querySelectorAll('.node').forEach(function(nodeEl) {
-          var nid = nodeEl.dataset.nodeId;
-          var nd = data.nodes.find(function(n) { return n.id === nid; });
-          if (!nd) return;
-          if (filter === 'all' || nd.status === filter) {
-            nodeEl.classList.remove('filtered-out');
-          } else {
-            nodeEl.classList.add('filtered-out');
-          }
-        });
-
-        var svgEl = document.getElementById('edges-svg');
-        svgEl.querySelectorAll('.edge-line').forEach(function(e) {
-          var fromId = e.getAttribute('data-from');
-          var toId = e.getAttribute('data-to');
-          var fromOut = document.querySelector('[data-node-id="' + fromId + '"].filtered-out');
-          var toOut = document.querySelector('[data-node-id="' + toId + '"].filtered-out');
-          if (fromOut || toOut) {
-            e.classList.add('filtered-out');
-          } else {
-            e.classList.remove('filtered-out');
-          }
-        });
+    // ── Launch Console button ──
+    var launchBtn = document.getElementById('launchConsoleBtn');
+    if (launchBtn) {
+      launchBtn.addEventListener('click', function() {
+        vscode.postMessage({ type: 'launchConsole' });
       });
-    });
+    }
 
     // ── Zoom controls ──
     var zoomLevel = 1;
@@ -2620,6 +2984,388 @@ export function getWebviewContent(data: GraphData): string {
         toast.classList.add('hiding');
         setTimeout(function() { toast.remove(); }, 300);
       }, 3000);
+    }
+    // ══════════════════════════════════════════════
+    // ── Header Tab Switching ──
+    // ══════════════════════════════════════════════
+    document.querySelectorAll('.header-tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.header-tab').forEach(function(t) { t.classList.remove('active'); });
+        tab.classList.add('active');
+        var target = tab.getAttribute('data-tab');
+        document.querySelectorAll('.tab-content').forEach(function(tc) { tc.classList.remove('active'); });
+        var el = document.getElementById(target + 'Tab');
+        if (el) el.classList.add('active');
+      });
+    });
+
+    // ══════════════════════════════════════════════
+    // ── Prototyper Logic ──
+    // ══════════════════════════════════════════════
+    (function() {
+      var protoFeed = document.getElementById('protoFeed');
+      var protoList = document.getElementById('protoList');
+      var protoPinned = document.getElementById('protoPinned');
+      var protoPinnedList = document.getElementById('protoPinnedList');
+      var protoEmpty = document.getElementById('protoEmpty');
+      var protoCount = document.getElementById('protoCount');
+      var protoPreview = document.getElementById('protoPreview');
+      var protoPreviewBody = document.getElementById('protoPreviewBody');
+      var protoPreviewBadge = document.getElementById('protoPreviewBadge');
+      var protoPreviewTitle = document.getElementById('protoPreviewTitle');
+      var protoZoom = document.getElementById('protoZoom');
+      var protoZoomLevel = document.getElementById('protoZoomLevel');
+      var protoToastContainer = document.getElementById('protoToastContainer');
+
+      var protoArtifacts = [];
+      var protoCurrentZoom = 100;
+      var protoCurrentPreviewId = null;
+      var protoCurrentMode = 'standard';
+      var protoDeleteTargetId = null;
+      var protoPromptTargetId = null;
+
+      // Mode toggle
+      document.querySelectorAll('.proto-mode-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.proto-mode-btn').forEach(function(b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          protoCurrentMode = btn.getAttribute('data-pmode');
+          protoFeed.classList.toggle('proto-compact', protoCurrentMode === 'compact');
+          protoUpdateUI();
+        });
+      });
+
+      // Back button
+      document.getElementById('protoBackBtn').addEventListener('click', protoClosePreview);
+
+      // Escape key for prototyper
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          if (protoPreview.classList.contains('active')) { protoClosePreview(); }
+          protoCloseModals();
+        }
+      });
+
+      // Zoom
+      document.getElementById('protoZoomIn').addEventListener('click', function() {
+        protoCurrentZoom = Math.min(protoCurrentZoom + 25, 300); protoApplyZoom();
+      });
+      document.getElementById('protoZoomOut').addEventListener('click', function() {
+        protoCurrentZoom = Math.max(protoCurrentZoom - 25, 25); protoApplyZoom();
+      });
+      document.getElementById('protoZoomReset').addEventListener('click', function() {
+        protoCurrentZoom = 100; protoApplyZoom();
+      });
+
+      function protoApplyZoom() {
+        var svg = protoPreviewBody.querySelector('.art-render-svg');
+        if (svg) svg.style.transform = 'scale(' + (protoCurrentZoom / 100) + ')';
+        protoZoomLevel.textContent = protoCurrentZoom + '%';
+      }
+
+      // Delete modal
+      document.getElementById('protoDeleteBackdrop').addEventListener('click', protoCloseModals);
+      document.getElementById('protoDeleteCancel').addEventListener('click', protoCloseModals);
+      document.getElementById('protoDeleteConfirm').addEventListener('click', function() {
+        if (protoDeleteTargetId) vscode.postMessage({ type: 'deleteArtifact', id: protoDeleteTargetId });
+        protoCloseModals();
+      });
+
+      // Prompt modal
+      document.getElementById('protoPromptBackdrop').addEventListener('click', protoCloseModals);
+      document.getElementById('protoPromptCancel').addEventListener('click', protoCloseModals);
+      document.getElementById('protoPromptConfirm').addEventListener('click', function() {
+        var prompt = document.getElementById('protoPromptTextarea').value.trim();
+        if (protoPromptTargetId && prompt) {
+          vscode.postMessage({ type: 'regenerateArtifact', id: protoPromptTargetId, mode: 'prompt', prompt: prompt });
+        }
+        protoCloseModals();
+      });
+
+      function protoCloseModals() {
+        document.querySelectorAll('.proto-modal-backdrop, .proto-modal').forEach(function(el) { el.classList.remove('open'); });
+        protoDeleteTargetId = null;
+        protoPromptTargetId = null;
+      }
+
+      function protoShowDeleteModal(id, title) {
+        protoDeleteTargetId = id;
+        document.getElementById('protoDeleteName').textContent = title;
+        document.getElementById('protoDeleteBackdrop').classList.add('open');
+        document.getElementById('protoDeleteModal').classList.add('open');
+      }
+
+      function protoShowPromptModal(id) {
+        protoPromptTargetId = id;
+        document.getElementById('protoPromptTextarea').value = '';
+        document.getElementById('protoPromptBackdrop').classList.add('open');
+        document.getElementById('protoPromptModal').classList.add('open');
+        document.getElementById('protoPromptTextarea').focus();
+      }
+
+      function protoShowToast(message, type) {
+        type = type || 'success';
+        var t = document.createElement('div');
+        t.className = 'proto-toast ' + type;
+        var icons = { success: '\\u2713', error: '\\u2717', warning: '\\u26A0' };
+        t.innerHTML = '<span class="proto-toast-icon">' + (icons[type] || '') + '</span>' + protoEscapeHtml(message);
+        protoToastContainer.appendChild(t);
+        setTimeout(function() { t.remove(); }, 3000);
+      }
+
+      function protoUpdateUI() {
+        var pinned = protoArtifacts.filter(function(a) { return a.isPinned; });
+        var unpinned = protoArtifacts.filter(function(a) { return !a.isPinned; });
+
+        protoPinned.classList.toggle('visible', pinned.length > 0);
+        protoEmpty.style.display = protoArtifacts.length === 0 ? 'flex' : 'none';
+        protoCount.textContent = protoArtifacts.length;
+
+        if (protoCurrentMode === 'compact') {
+          protoRenderCompact(pinned, unpinned);
+        } else {
+          protoPinnedList.innerHTML = pinned.map(function(a) { return protoRenderCard(a, false); }).join('');
+          protoList.innerHTML = unpinned.map(function(a) { return protoRenderCard(a, false); }).join('');
+        }
+        protoBindCardEvents();
+      }
+
+      function protoRenderCompact(pinned, unpinned) {
+        var all = pinned.concat(unpinned);
+        var byPhase = { spec: [], design: [], prototype: [] };
+        all.forEach(function(a) {
+          var phase = a.phase || (a.type === 'doc' ? 'spec' : a.type === 'svg' ? 'design' : 'prototype');
+          byPhase[phase].push(a);
+        });
+        var html = '';
+        var phaseIcons = { spec: '\\uD83D\\uDCC4', design: '\\uD83C\\uDFA8', prototype: '\\uD83D\\uDE80' };
+        for (var phase in byPhase) {
+          if (byPhase[phase].length === 0) continue;
+          html += '<div class="phase-group"><div class="phase-header">';
+          html += '<div class="phase-icon ' + phase + '">' + (phaseIcons[phase] || '') + '</div>';
+          html += '<span class="phase-label">' + phase + '</span>';
+          html += '<span class="phase-count">' + byPhase[phase].length + '</span></div>';
+          html += byPhase[phase].map(function(a) { return protoRenderCard(a, true); }).join('');
+          html += '</div>';
+        }
+        protoPinnedList.innerHTML = '';
+        protoList.innerHTML = html;
+        protoPinned.classList.remove('visible');
+      }
+
+      function protoRenderCard(artifact, isCompact) {
+        var pinIcon = artifact.isPinned ? '<span class="art-pin">\\uD83D\\uDCCC</span>' : '';
+        var cls = ['art-card'];
+        if (artifact.isPinned) cls.push('pinned');
+        if (isCompact) cls.push('phase-grouped');
+
+        var contentHtml = '';
+        if (!isCompact) {
+          if (artifact.type === 'doc') {
+            contentHtml = '<div class="art-content"><div class="art-render-md">' + protoSimpleMarkdown(artifact.content) + '</div></div>';
+          } else if (artifact.type === 'svg') {
+            contentHtml = '<div class="art-content"><div class="art-render-svg">' + artifact.content + '</div></div>';
+          } else if (artifact.type === 'html') {
+            contentHtml = '<div class="art-content"><iframe class="art-render-html" srcdoc="' + protoEscapeAttr(artifact.content) + '"></iframe></div>';
+          } else if (artifact.type === 'server') {
+            contentHtml = '<div class="art-content"><div class="art-render-server"><div style="display:flex;align-items:center;gap:6px"><div class="art-server-dot"></div><span class="art-server-label">Running</span></div><a href="#" class="art-server-link">localhost:5173</a></div></div>';
+          }
+        }
+
+        var skillBadge = artifact.skill && artifact.skill !== 'initial'
+          ? '<span class="art-badge skill">' + protoEscapeHtml(artifact.skill) + '</span>'
+          : '';
+
+        return '<div class="' + cls.join(' ') + '" data-artid="' + artifact.id + '">' +
+          '<div class="art-header"><div class="art-info">' + pinIcon +
+          '<span class="art-badge ' + artifact.type + '">' + artifact.type.toUpperCase() + '</span>' +
+          skillBadge +
+          '<span class="art-title">' + protoEscapeHtml(artifact.title) + '</span></div>' +
+          '<div class="art-actions">' +
+          '<button class="art-btn art-open-btn">Ouvrir</button>' +
+          '<button class="art-btn art-copy-btn">Copier</button>' +
+          '<div class="art-dropdown art-regen-dd"><button class="art-btn">Regen \\u25BE</button>' +
+          '<div class="art-dropdown-menu">' +
+          '<button class="art-dd-item art-regen-same"><span class="art-dd-icon">\\uD83D\\uDD04</span>Regenerer</button>' +
+          '<button class="art-dd-item art-regen-prompt"><span class="art-dd-icon">\\u270F</span>Avec prompt...</button>' +
+          '<button class="art-dd-item art-regen-variant"><span class="art-dd-icon">\\uD83C\\uDFB2</span>Variante</button></div></div>' +
+          '<button class="art-btn primary art-export-btn">Export</button>' +
+          '<div class="art-dropdown art-menu-dd"><button class="art-btn art-menu-btn">\\u22EF</button>' +
+          '<div class="art-dropdown-menu">' +
+          '<button class="art-dd-item art-pin-btn"><span class="art-dd-icon">' + (artifact.isPinned ? '\\uD83D\\uDCCD' : '\\uD83D\\uDCCC') + '</span>' + (artifact.isPinned ? 'Desepingler' : 'Epingler') + '</button>' +
+          '<div class="art-dd-divider"></div>' +
+          '<button class="art-dd-item danger art-delete-btn"><span class="art-dd-icon">\\uD83D\\uDDD1</span>Supprimer</button></div></div>' +
+          '</div></div>' + contentHtml + '</div>';
+      }
+
+      function protoBindCardEvents() {
+        document.addEventListener('click', function(e) {
+          if (!e.target.closest('.art-dropdown')) {
+            document.querySelectorAll('.art-dropdown.open').forEach(function(d) { d.classList.remove('open'); });
+          }
+        });
+        document.querySelectorAll('.art-dropdown > .art-btn').forEach(function(btn) {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var dd = btn.closest('.art-dropdown');
+            var wasOpen = dd.classList.contains('open');
+            document.querySelectorAll('.art-dropdown.open').forEach(function(d) { d.classList.remove('open'); });
+            if (!wasOpen) dd.classList.add('open');
+          });
+        });
+        document.querySelectorAll('.art-card').forEach(function(card) {
+          var id = card.getAttribute('data-artid');
+          var artifact = protoArtifacts.find(function(a) { return a.id === id; });
+          if (!artifact) return;
+          var openBtn = card.querySelector('.art-open-btn');
+          if (openBtn) openBtn.addEventListener('click', function(e) { e.stopPropagation(); protoOpenPreview(id); });
+          var copyBtn = card.querySelector('.art-copy-btn');
+          if (copyBtn) copyBtn.addEventListener('click', function(e) { e.stopPropagation(); vscode.postMessage({ type: 'copyArtifact', id: id }); });
+          var exportBtn = card.querySelector('.art-export-btn');
+          if (exportBtn) exportBtn.addEventListener('click', function(e) { e.stopPropagation(); vscode.postMessage({ type: 'exportArtifact', id: id }); });
+          var pinBtn = card.querySelector('.art-pin-btn');
+          if (pinBtn) pinBtn.addEventListener('click', function(e) { e.stopPropagation(); vscode.postMessage({ type: 'pinArtifact', id: id }); });
+          var deleteBtn = card.querySelector('.art-delete-btn');
+          if (deleteBtn) deleteBtn.addEventListener('click', function(e) { e.stopPropagation(); protoShowDeleteModal(id, artifact.title); });
+          var regenSame = card.querySelector('.art-regen-same');
+          if (regenSame) regenSame.addEventListener('click', function(e) { e.stopPropagation(); vscode.postMessage({ type: 'regenerateArtifact', id: id, mode: 'same' }); });
+          var regenPrompt = card.querySelector('.art-regen-prompt');
+          if (regenPrompt) regenPrompt.addEventListener('click', function(e) { e.stopPropagation(); protoShowPromptModal(id); });
+          var regenVariant = card.querySelector('.art-regen-variant');
+          if (regenVariant) regenVariant.addEventListener('click', function(e) { e.stopPropagation(); vscode.postMessage({ type: 'regenerateArtifact', id: id, mode: 'variant' }); });
+        });
+      }
+
+      function protoOpenPreview(id) {
+        var artifact = protoArtifacts.find(function(a) { return a.id === id; });
+        if (!artifact) return;
+        protoCurrentPreviewId = id;
+        protoCurrentZoom = 100;
+        protoPreviewBadge.className = 'art-badge ' + artifact.type;
+        protoPreviewBadge.textContent = artifact.type.toUpperCase();
+        protoPreviewTitle.textContent = artifact.title;
+        var html = '';
+        if (artifact.type === 'doc') {
+          html = '<div class="full-render art-render-md">' + protoSimpleMarkdown(artifact.content) + '</div>';
+          protoZoom.classList.remove('visible');
+        } else if (artifact.type === 'svg') {
+          html = '<div class="full-render art-render-svg">' + artifact.content + '</div>';
+          protoZoom.classList.add('visible');
+          protoZoomLevel.textContent = '100%';
+        } else if (artifact.type === 'html') {
+          html = '<iframe class="full-render art-render-html" srcdoc="' + protoEscapeAttr(artifact.content) + '"></iframe>';
+          protoZoom.classList.remove('visible');
+        } else {
+          html = '<div class="full-render art-render-server"><div style="display:flex;align-items:center;gap:6px"><div class="art-server-dot"></div><span class="art-server-label">Running</span></div><a href="#" class="art-server-link">localhost:5173</a></div>';
+          protoZoom.classList.remove('visible');
+        }
+        protoPreviewBody.innerHTML = html;
+        protoFeed.style.display = 'none';
+        protoPreview.classList.add('active');
+      }
+
+      function protoClosePreview() {
+        protoPreview.classList.remove('active');
+        protoFeed.style.display = 'flex';
+        protoCurrentPreviewId = null;
+      }
+
+      // Preview actions
+      document.getElementById('protoPreviewCopyBtn').addEventListener('click', function() {
+        if (protoCurrentPreviewId) vscode.postMessage({ type: 'copyArtifact', id: protoCurrentPreviewId });
+      });
+      document.getElementById('protoPreviewExportBtn').addEventListener('click', function() {
+        if (protoCurrentPreviewId) vscode.postMessage({ type: 'exportArtifact', id: protoCurrentPreviewId });
+      });
+
+      function protoSimpleMarkdown(text) {
+        if (!text) return '';
+        var h = protoEscapeHtml(text);
+        h = h.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+        h = h.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+        h = h.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
+        h = h.replace(/^- (.+)$/gm, '<li>$1</li>');
+        h = h.replace(/\\*\\*(.+?)\\*\\*/g, '<strong>$1</strong>');
+        h = h.replace(/\\n\\n/g, '</p><p>');
+        return '<p>' + h + '</p>';
+      }
+
+      function protoEscapeHtml(text) {
+        var d = document.createElement('div');
+        d.textContent = text || '';
+        return d.innerHTML;
+      }
+
+      function protoEscapeAttr(text) {
+        return (text || '').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
+      // Messages from extension for prototyper
+      window.addEventListener('message', function(event) {
+        var msg = event.data;
+        switch (msg.type) {
+          case 'addArtifact':
+            protoArtifacts.push(msg.artifact);
+            protoUpdateUI();
+            setTimeout(function() {
+              var card = document.querySelector('.art-card[data-artid="' + msg.artifact.id + '"]');
+              if (card) {
+                card.classList.add('recent');
+                setTimeout(function() { card.classList.remove('recent'); }, 2000);
+              }
+            }, 50);
+            break;
+          case 'setArtifacts':
+            protoArtifacts = msg.artifacts;
+            protoUpdateUI();
+            break;
+          case 'removeArtifact':
+            protoArtifacts = protoArtifacts.filter(function(a) { return a.id !== msg.id; });
+            if (protoCurrentPreviewId === msg.id) protoClosePreview();
+            protoUpdateUI();
+            break;
+          case 'updateArtifact':
+            var idx = protoArtifacts.findIndex(function(a) { return a.id === msg.artifact.id; });
+            if (idx !== -1) protoArtifacts[idx] = msg.artifact;
+            protoUpdateUI();
+            break;
+          case 'setLoading':
+            var card = document.querySelector('.art-card[data-artid="' + msg.id + '"]');
+            if (card) {
+              card.classList.toggle('regenerating', msg.loading);
+              if (msg.loading) {
+                var content = card.querySelector('.art-content');
+                if (content && !content.querySelector('.art-loading')) {
+                  content.insertAdjacentHTML('beforeend', '<div class="art-loading"><div class="art-spinner"></div><div class="art-loading-text">Regeneration...</div></div>');
+                }
+              } else {
+                var lo = card.querySelector('.art-loading');
+                if (lo) lo.remove();
+              }
+            }
+            break;
+          case 'protoToast':
+            protoShowToast(msg.message, msg.toastType);
+            break;
+        }
+      });
+
+      protoUpdateUI();
+
+      // Signal extension that webview is ready to receive artifacts
+      vscode.postMessage({ type: 'webviewReady' });
+    })();
+
+    } catch(__debugErr) { // DEBUG WRAPPER END
+      document.body.innerHTML =
+        '<div style="padding:20px;color:#f38ba8;background:#1e1e2e;font-family:monospace;white-space:pre-wrap;overflow:auto;max-height:100vh;">' +
+        '<h2 style="color:#f38ba8;margin:0 0 12px 0;">\\u26A0 Debug Error</h2>' +
+        '<p style="color:#cdd6f4;margin:0 0 8px 0;"><b>Message:</b> ' + __debugErr.message + '</p>' +
+        '<pre style="color:#a6adc8;font-size:11px;margin:0 0 16px 0;">' + __debugErr.stack + '</pre>' +
+        '<h3 style="color:#89b4fa;margin:0 0 8px 0;">Data summary:</h3>' +
+        '<pre style="color:#a6adc8;font-size:11px;">' +
+          JSON.stringify(data ? {nodesCount: data.nodes ? data.nodes.length : 0, edgesCount: data.edges ? data.edges.length : 0, context: data.context, globalReadiness: data.globalReadiness} : 'DATA IS NULL', null, 2) +
+        '</pre></div>';
     }
   </script>
 </body>

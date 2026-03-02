@@ -119,22 +119,21 @@ Le fichier `project.export.json` doit respecter le schema v1.0.0 genere par `/ex
 5. Si validation reussie → afficher le resume :
 
 ```
-╭─── Import Preview ─────────────────────────╮
-│                                            │
-│  Source : project.export.json              │
-│  Exporte le : {exportedAt, format lisible} │
-│  Version : {version}                       │
-│                                            │
-│  Projet : {name}                           │
-│  Domaine : {domain}                        │
-│  Intent : {intent}                         │
-│  Modules : {N} ({liste slugs})             │
-│  Stack : {framework} + {language}          │
-│  Tokens : {present/absent}                 │
-│  Specs : {N total}                         │
-│  Screen Maps : {N}                         │
-│                                            │
-╰────────────────────────────────────────────╯
+Import Preview
+
+    Source : project.export.json
+    Exporte le : {exportedAt, format lisible}
+    Version : {version}
+
+    Projet : {name}
+    Domaine : {domain}
+    Intent : {intent}
+    Modules : {N} ({liste slugs})
+    Stack : {framework} + {language}
+    Tokens : {present/absent}
+    Specs : {N total}
+    Screen Maps : {N}
+```
 
 Cet import va creer/mettre a jour les fichiers suivants :
 
@@ -142,7 +141,7 @@ Cet import va creer/mettre a jour les fichiers suivants :
   2. modules-registry.md
   3. CLAUDE.md (sections generees)
   4. .claude/profile.md (config projet)
-  5. 01_Product/05 Design System/tokens.md {si present}
+  5. 01_Product/06 Design System/tokens.md {si present}
   6. Dossiers modules ({N} modules)
   7. Screen map(s) {si present}
 
@@ -235,7 +234,7 @@ Tous les autres champs restent avec leurs commentaires template (l'utilisateur l
 
 Afficher l'apercu avant ecriture.
 
-#### 3.5 — `01_Product/05 Design System/tokens.md`
+#### 3.5 — `01_Product/06 Design System/tokens.md`
 
 - Si `designTokens` est `null` → SKIP avec message :
   ```
@@ -250,10 +249,10 @@ Afficher l'apercu avant ecriture.
 Pour chaque module dans `moduleRegistry` :
 
 Creer (si n'existent pas) :
-- `01_Product/04 Specs/{slug}/`
-- `01_Product/04 Specs/{slug}/specs/`
-- `01_Product/04 Specs/{slug}/screens/`
-- `01_Product/04 Specs/{slug}/wireframes/`
+- `01_Product/05 Specs/{slug}/`
+- `01_Product/05 Specs/{slug}/specs/`
+- `01_Product/05 Specs/{slug}/screens/`
+- `01_Product/05 Specs/{slug}/wireframes/`
 - `02_Build/{slug}/src/`
 - `02_Build/{slug}/tests/`
 - `03_Review/{slug}/reviews/`
@@ -266,7 +265,7 @@ Afficher la liste des dossiers a creer avant de les creer.
 #### 3.7 — Screen Maps
 
 Pour chaque module ayant un `screenMap` dans l'export :
-- Ecrire `01_Product/04 Specs/{slug}/00_screen-map.md` avec le contenu brut
+- Ecrire `01_Product/05 Specs/{slug}/00_screen-map.md` avec le contenu brut
 - Afficher l'apercu avant ecriture
 
 #### 3.8 — Nettoyage
@@ -283,22 +282,21 @@ Le fichier source project.export.json est toujours dans {emplacement}.
 **Action** : Afficher le resume de ce qui a ete fait.
 
 ```
-╭─── Import termine ─────────────────────────╮
-│                                            │
-│  Projet : {name}                           │
-│  Module actif : {module}                   │
-│  Intent : {intent}                         │
-│                                            │
-│  Fichiers crees/mis a jour :               │
-│    ✓ .claude/context.md                    │
-│    ✓ modules-registry.md                   │
-│    ✓ CLAUDE.md ({X} sections remplies)     │
-│    ✓ .claude/profile.md (config projet)    │
-│    {✓/—} tokens.md                         │
-│    {✓/—} screen-map(s)                     │
-│    ✓ {N} dossiers module(s) crees          │
-│                                            │
-╰────────────────────────────────────────────╯
+Import termine
+
+    Projet : {name}
+    Module actif : {module}
+    Intent : {intent}
+
+    Fichiers crees/mis a jour :
+      ✓ .claude/context.md
+      ✓ modules-registry.md
+      ✓ CLAUDE.md ({X} sections remplies)
+      ✓ .claude/profile.md (config projet)
+      {✓/—} tokens.md
+      {✓/—} screen-map(s)
+      ✓ {N} dossiers module(s) crees
+```
 
 Prochaines etapes :
 

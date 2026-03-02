@@ -1,16 +1,24 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import { parseProject, parseMermaidFlow, layoutFlowNodes } from './parser';
-import { getWebviewContent } from './webview';
+import { parseProject, parseMermaidFlow, layoutFlowNodes, parseMemoryEntries } from './parser';
 import { loadReadiness, saveReadinessSnapshot } from './readiness';
 import { FlowNode, FlowEdge, ConsoleCard } from './types';
+import { GraphData } from './types-legacy';
 import { ConsoleViewProvider } from './console-webview';
+import { Artifact } from './prototyper-webview';
 
 let currentPanel: vscode.WebviewPanel | undefined;
 let extensionContext: vscode.ExtensionContext;
 let consoleProvider: ConsoleViewProvider;
 let claudeTerminal: vscode.Terminal | undefined;
+let prototyperArtifacts: Artifact[] = [];
+let lastActiveSkill: string = '';
+let lastMemoryIds: Set<string> = new Set();
+let knownArtifactPaths: Set<string> = new Set();
+let webviewReady = false;
+let pendingMessages: Record<string, unknown>[] = [];
+let currentGraphData: GraphData | null = null;
 
 export function activate(context: vscode.ExtensionContext) {
   extensionContext = context;
@@ -62,7 +70,7 @@ export function activate(context: vscode.ExtensionContext) {
     100
   );
   statusItem.text = '$(compass) Design OS';
-  statusItem.tooltip = 'Open Design OS Navigator';
+  statusItem.tooltip = 'Open Design Os';
   statusItem.command = 'designOs.openNavigator';
   statusItem.show();
   context.subscriptions.push(statusItem);
@@ -73,6 +81,11 @@ export function activate(context: vscode.ExtensionContext) {
 
   const refresh = (uri: vscode.Uri) => {
     if (!currentPanel) { return; }
+    // Activity Log: sync memory.md entries to Prototyper feed
+    if (uri.fsPath.endsWith('memory.md')) {
+      const root = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+      if (root) { syncMemoryToFeed(root); }
+    }
     // Snapshot readiness history + notify when readiness.json changes
     if (uri.fsPath.endsWith('readiness.json') && !uri.fsPath.endsWith('readiness-history.json')) {
       const root = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
@@ -93,7 +106,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
       }
     }
-    refreshPanel();
+    updateGraphData();
   };
   watcher.onDidChange(refresh);
   watcher.onDidCreate(refresh);
@@ -115,27 +128,43 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 function openNavigator(context: vscode.ExtensionContext) {
-  // If panel exists, reveal it
+  // If panel exists, reveal it and send updated data (no HTML reset)
   if (currentPanel) {
     currentPanel.reveal(vscode.ViewColumn.Beside);
-    refreshPanel();
+    updateGraphData();
     return;
   }
 
   // Create webview panel
   currentPanel = vscode.window.createWebviewPanel(
     'designOsNavigator',
-    'Design OS Navigator',
+    'Design Os',
     vscode.ViewColumn.Beside,
     {
       enableScripts: true,
       retainContextWhenHidden: true,
-      localResourceRoots: [],
+      localResourceRoots: [
+        vscode.Uri.file(path.join(context.extensionPath, 'webview', 'dist')),
+      ],
     }
   );
 
-  // Set initial content
-  refreshPanel();
+  // Set initial HTML content (only once)
+  initializePanel();
+
+  // Activity Log: load existing artifacts and memory entries at startup
+  const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+  if (workspaceRoot) {
+    const contextPath = path.join(workspaceRoot, '.claude', 'context.md');
+    let mod = '';
+    if (fs.existsSync(contextPath)) {
+      const ctxContent = fs.readFileSync(contextPath, 'utf-8');
+      const modMatch = ctxContent.match(/^module:\s*(.+)$/m);
+      if (modMatch) { mod = modMatch[1].trim(); }
+    }
+    loadExistingArtifacts(workspaceRoot, mod);
+    syncMemoryToFeed(workspaceRoot);
+  }
 
   // Handle messages from the webview
   currentPanel.webview.onDidReceiveMessage(
@@ -152,6 +181,12 @@ function openNavigator(context: vscode.ExtensionContext) {
             detail: 'via Navigator',
           });
           break;
+        case 'launchConsole': {
+          const cli = message.cli || 'claude';
+          const { terminal } = getOrCreateClaudeTerminal(cli);
+          terminal.show(false); // false = take focus so the terminal panel becomes visible
+          break;
+        }
         case 'openFile':
           openFile(message.path);
           break;
@@ -164,6 +199,46 @@ function openNavigator(context: vscode.ExtensionContext) {
         case 'saveSectionOrder':
           context.globalState.update('designOs.sectionOrder', message.order);
           break;
+        // ── Prototyper messages ──
+        case 'copyArtifact':
+          handleCopyArtifact(message.id);
+          break;
+        case 'exportArtifact':
+          handleExportArtifact(message.id, message.format);
+          break;
+        case 'deleteArtifact':
+          handleDeleteArtifact(message.id);
+          break;
+        case 'pinArtifact':
+          handlePinArtifact(message.id);
+          break;
+        case 'regenerateArtifact':
+          handleRegenerateArtifact(message.id, message.mode, message.prompt);
+          break;
+        case 'editArtifact':
+          handleEditArtifact(message.id, message.content);
+          break;
+        case 'webviewReady':
+          webviewReady = true;
+          // Send graph data to React app
+          if (currentGraphData) {
+            currentPanel?.webview.postMessage({ type: 'graphData', data: currentGraphData });
+          }
+          // Flush non-artifact buffered messages
+          for (const msg of pendingMessages) {
+            if (msg.type !== 'addArtifact') {
+              currentPanel?.webview.postMessage(msg);
+            }
+          }
+          pendingMessages = [];
+          // Send full artifact list as a single batch
+          if (prototyperArtifacts.length > 0) {
+            currentPanel?.webview.postMessage({
+              type: 'setArtifacts',
+              artifacts: prototyperArtifacts
+            });
+          }
+          break;
       }
     },
     undefined,
@@ -174,13 +249,16 @@ function openNavigator(context: vscode.ExtensionContext) {
   currentPanel.onDidDispose(
     () => {
       currentPanel = undefined;
+      webviewReady = false;
+      pendingMessages = [];
     },
     undefined,
     context.subscriptions
   );
 }
 
-function refreshPanel() {
+/** Set the webview HTML once (called only on panel creation). */
+function initializePanel() {
   if (!currentPanel) { return; }
 
   const workspaceFolders = vscode.workspace.workspaceFolders;
@@ -194,26 +272,353 @@ function refreshPanel() {
   try {
     const data = parseProject(root);
     data.sectionOrder = extensionContext.globalState.get<string[]>('designOs.sectionOrder');
-    currentPanel.webview.html = getWebviewContent(data);
+    currentGraphData = data;
+
+    // Load Vite-built React webview
+    const distPath = path.join(extensionContext.extensionPath, 'webview', 'dist');
+    const htmlPath = path.join(distPath, 'index.html');
+
+    if (!fs.existsSync(htmlPath)) {
+      currentPanel.webview.html = getErrorHtml(
+        'Webview not built. Run: npm run compile:webview'
+      );
+      return;
+    }
+
+    let html = fs.readFileSync(htmlPath, 'utf-8');
+
+    // Convert asset paths to webview URIs
+    const distUri = currentPanel.webview.asWebviewUri(
+      vscode.Uri.file(distPath)
+    );
+    html = html.replace(/src="\/assets\//g, `src="${distUri}/assets/`);
+    html = html.replace(/href="\/assets\//g, `href="${distUri}/assets/`);
+
+    // Remove crossorigin attributes (incompatible with webview URIs)
+    html = html.replace(/ crossorigin/g, '');
+
+    // Update CSP to allow loading from webview URI
+    const cspSource = currentPanel.webview.cspSource;
+    html = html.replace(
+      /content="default-src 'none';[^"]*"/,
+      `content="default-src 'none'; style-src ${cspSource} 'unsafe-inline'; script-src ${cspSource} 'unsafe-inline'; img-src ${cspSource} data: https:; font-src ${cspSource}; frame-src blob: data: 'self';"`
+    );
+
+    // Inject initialData before </head>
+    const dataJson = JSON.stringify(data).replace(/</g, '\\u003c');
+    html = html.replace(
+      '</head>',
+      `<script>window.initialData = ${dataJson};</script>\n</head>`
+    );
+
+    webviewReady = false;
+    pendingMessages = [];
+    currentPanel.webview.html = html;
   } catch (err) {
     currentPanel.webview.html = getErrorHtml(
-      `Error parsing project: ${err instanceof Error ? err.message : String(err)}`
+      `Error loading webview: ${err instanceof Error ? err.message : String(err)}`
     );
   }
 }
 
-function getOrCreateClaudeTerminal(): { terminal: vscode.Terminal; isNew: boolean } {
-  // Reuse existing Design OS terminal if still alive
-  if (claudeTerminal && vscode.window.terminals.includes(claudeTerminal)) {
+/** Send updated graph data via postMessage (no HTML reset, preserves React state). */
+function updateGraphData() {
+  if (!currentPanel) { return; }
+
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+  if (!workspaceFolders || workspaceFolders.length === 0) { return; }
+
+  const root = workspaceFolders[0].uri.fsPath;
+
+  try {
+    const data = parseProject(root);
+    data.sectionOrder = extensionContext.globalState.get<string[]>('designOs.sectionOrder');
+    currentGraphData = data;
+
+    if (webviewReady) {
+      currentPanel.webview.postMessage({ type: 'graphData', data });
+    }
+  } catch (err) {
+    console.error('Failed to update graph data:', err);
+  }
+}
+
+function getOrCreateClaudeTerminal(cli: string = 'claude'): { terminal: vscode.Terminal; isNew: boolean } {
+  const termName = `Design OS (${cli})`;
+  // Reuse existing terminal with same name if still alive
+  if (claudeTerminal && claudeTerminal.name === termName && vscode.window.terminals.includes(claudeTerminal)) {
     return { terminal: claudeTerminal, isNew: false };
   }
-  // Look for any terminal named "Design OS"
-  claudeTerminal = vscode.window.terminals.find(t => t.name === 'Design OS');
-  if (claudeTerminal) { return { terminal: claudeTerminal, isNew: false }; }
-  // Create a new terminal and start Claude
-  claudeTerminal = vscode.window.createTerminal('Design OS');
-  claudeTerminal.sendText('claude', true);
+  // Look for any terminal with this name
+  const found = vscode.window.terminals.find(t => t.name === termName);
+  if (found) {
+    claudeTerminal = found;
+    return { terminal: found, isNew: false };
+  }
+  // Create a new terminal, show it immediately, and start the chosen CLI
+  claudeTerminal = vscode.window.createTerminal({ name: termName, isTransient: false });
+  claudeTerminal.show(false); // false = take focus, so user sees the terminal
+  claudeTerminal.sendText(cli, true);
   return { terminal: claudeTerminal, isNew: true };
+}
+
+// ── Prototyper Handlers ──
+
+function postToPanel(message: Record<string, unknown>) {
+  if (!currentPanel) { return; }
+  if (webviewReady) {
+    currentPanel.webview.postMessage(message);
+  } else {
+    pendingMessages.push(message);
+  }
+}
+
+function handleCopyArtifact(id: string) {
+  const artifact = prototyperArtifacts.find(a => a.id === id);
+  if (artifact) {
+    vscode.env.clipboard.writeText(artifact.content);
+    postToPanel({ type: 'protoToast', message: `"${artifact.title}" copié !`, toastType: 'success' });
+  }
+}
+
+function handleExportArtifact(id: string, format?: string) {
+  const artifact = prototyperArtifacts.find(a => a.id === id);
+  if (!artifact) { return; }
+
+  const ext = format || (artifact.type === 'doc' ? 'md' : artifact.type);
+  const filename = artifact.title.toLowerCase().replace(/[^a-z0-9]/g, '-');
+
+  vscode.window.showSaveDialog({
+    defaultUri: vscode.Uri.file(`${filename}.${ext}`),
+    filters: { [ext.toUpperCase()]: [ext] }
+  }).then(uri => {
+    if (uri) {
+      const fs = require('fs');
+      fs.writeFileSync(uri.fsPath, artifact.content);
+      postToPanel({ type: 'protoToast', message: `Exporté : ${uri.fsPath}`, toastType: 'success' });
+    }
+  });
+}
+
+function handleDeleteArtifact(id: string) {
+  const artifact = prototyperArtifacts.find(a => a.id === id);
+  prototyperArtifacts = prototyperArtifacts.filter(a => a.id !== id);
+  postToPanel({ type: 'removeArtifact', id });
+  if (artifact) {
+    postToPanel({ type: 'protoToast', message: `"${artifact.title}" supprimé`, toastType: 'error' });
+  }
+}
+
+function handlePinArtifact(id: string) {
+  const artifact = prototyperArtifacts.find(a => a.id === id);
+  if (artifact) {
+    artifact.isPinned = !artifact.isPinned;
+    postToPanel({ type: 'updateArtifact', artifact });
+    postToPanel({
+      type: 'protoToast',
+      message: artifact.isPinned ? `"${artifact.title}" épinglé !` : `"${artifact.title}" désépinglé`,
+      toastType: artifact.isPinned ? 'success' : 'warning'
+    });
+  }
+}
+
+function handleRegenerateArtifact(id: string, mode: 'same' | 'prompt' | 'variant', _prompt?: string) {
+  const artifact = prototyperArtifacts.find(a => a.id === id);
+  if (!artifact) { return; }
+
+  postToPanel({ type: 'setLoading', id, loading: true });
+
+  // TODO: Use _prompt when integrating Claude API for actual regeneration
+  setTimeout(() => {
+    postToPanel({ type: 'setLoading', id, loading: false });
+    postToPanel({
+      type: 'protoToast',
+      message: mode === 'variant'
+        ? `Variante de "${artifact.title}" générée !`
+        : `"${artifact.title}" régénéré !`,
+      toastType: 'success'
+    });
+  }, 2000);
+}
+
+function handleEditArtifact(id: string, newContent: string) {
+  const artifact = prototyperArtifacts.find(a => a.id === id);
+  if (artifact) {
+    artifact.content = newContent;
+    postToPanel({ type: 'updateArtifact', artifact });
+    postToPanel({ type: 'protoToast', message: `"${artifact.title}" sauvegardé !`, toastType: 'success' });
+  }
+}
+
+/** Public helper: add an artifact from outside (e.g., from Console command) */
+export function addPrototyperArtifact(artifact: Artifact) {
+  prototyperArtifacts.push(artifact);
+  postToPanel({ type: 'addArtifact', artifact });
+}
+
+// ── Activity Log: hooks bridge → artifacts ──
+
+/** Derive artifact type from file extension. */
+function artifactTypeFromExt(ext: string): 'doc' | 'svg' | 'html' | null {
+  if (ext === '.svg') { return 'svg'; }
+  if (ext === '.html' || ext === '.htm') { return 'html'; }
+  if (ext === '.md' || ext === '.txt') { return 'doc'; }
+  return null;
+}
+
+/** Derive phase from file path. */
+function phaseFromPath(filePath: string): 'spec' | 'design' | 'prototype' {
+  const lower = filePath.toLowerCase();
+  if (lower.includes('specs/') || lower.includes('spec') || lower.includes('discovery') || lower.includes('strategy')) { return 'spec'; }
+  if (lower.includes('screens/') || lower.includes('wireframes/') || lower.includes('design system') || lower.includes('journeys')) { return 'design'; }
+  return 'prototype';
+}
+
+/** Check if a file path is relevant for the activity log. */
+function isRelevantPath(filePath: string): boolean {
+  return filePath.includes('01_Product') || filePath.includes('02_Build') || filePath.includes('04_Lab');
+}
+
+/** Convert a Write/Edit hook event into a Prototyper artifact. */
+function hookEventToArtifact(data: Record<string, unknown>): void {
+  const event = data.hook_event_name as string;
+  if (event !== 'PostToolUse') { return; }
+
+  const tool = (data.tool_name as string) || '';
+  const input = (data.tool_input as Record<string, unknown>) || {};
+
+  // Track active skill
+  if (tool === 'Skill') {
+    lastActiveSkill = '/' + ((input.skill as string) || 'unknown');
+    return;
+  }
+
+  // Only process Write and Edit tools
+  if (tool !== 'Write' && tool !== 'Edit') { return; }
+
+  const filePath = (input.file_path as string) || '';
+  if (!filePath) { return; }
+
+  // Filter by extension
+  const ext = path.extname(filePath).toLowerCase();
+  const artType = artifactTypeFromExt(ext);
+  if (!artType) { return; }
+
+  // Filter by relevant directories
+  if (!isRelevantPath(filePath)) { return; }
+
+  // Deduplicate: don't re-add if already tracked
+  if (knownArtifactPaths.has(filePath)) {
+    // Update existing artifact content
+    const existing = prototyperArtifacts.find(a => a.id === 'file-' + filePath);
+    if (existing) {
+      try {
+        existing.content = fs.readFileSync(filePath, 'utf-8');
+        existing.skill = lastActiveSkill || existing.skill;
+        postToPanel({ type: 'updateArtifact', artifact: existing });
+      } catch { /* file might be gone */ }
+    }
+    return;
+  }
+
+  // Read file content
+  let content = '';
+  try {
+    const stats = fs.statSync(filePath);
+    if (stats.size > 512 * 1024) { return; } // skip files > 512KB
+    content = fs.readFileSync(filePath, 'utf-8');
+  } catch { return; }
+
+  const artifact: Artifact = {
+    id: 'file-' + filePath,
+    title: path.basename(filePath),
+    type: artType,
+    content,
+    isPinned: false,
+    createdAt: Date.now(),
+    phase: phaseFromPath(filePath),
+    skill: lastActiveSkill || 'manual',
+  };
+
+  knownArtifactPaths.add(filePath);
+  addPrototyperArtifact(artifact);
+}
+
+/** Sync memory.md entries into the Prototyper feed. */
+function syncMemoryToFeed(root: string): void {
+  const entries = parseMemoryEntries(root);
+  for (const entry of entries) {
+    if (lastMemoryIds.has(entry.id)) { continue; }
+    lastMemoryIds.add(entry.id);
+
+    const artifact: Artifact = {
+      id: 'memory-' + entry.id,
+      title: entry.title,
+      type: 'doc',
+      content: entry.content,
+      isPinned: false,
+      createdAt: Date.parse(entry.date.replace(' ', 'T') + ':00Z') || Date.now(),
+      phase: 'spec',
+      skill: entry.agent,
+    };
+
+    addPrototyperArtifact(artifact);
+  }
+}
+
+/** Load existing project files as artifacts at startup. */
+function loadExistingArtifacts(root: string, mod: string): void {
+  if (!mod) { return; }
+
+  const dirs = [
+    path.join(root, '01_Product', '04 Specs', mod, 'screens'),
+    path.join(root, '01_Product', '04 Specs', mod, 'wireframes'),
+    path.join(root, '01_Product', '04 Specs', mod, 'specs'),
+    path.join(root, '01_Product', '03 User Journeys'),
+    path.join(root, '02_Build', mod, 'src'),
+    path.join(root, '04_Lab', mod),
+  ];
+
+  for (const dir of dirs) {
+    if (!fs.existsSync(dir)) { continue; }
+    let entries: fs.Dirent[];
+    try { entries = fs.readdirSync(dir, { withFileTypes: true }); }
+    catch { continue; }
+
+    for (const entry of entries) {
+      if (!entry.isFile() || entry.name.startsWith('_') || entry.name.startsWith('.')) { continue; }
+
+      const filePath = path.join(dir, entry.name);
+      const ext = path.extname(entry.name).toLowerCase();
+      const artType = artifactTypeFromExt(ext);
+      if (!artType) { continue; }
+      if (knownArtifactPaths.has(filePath)) { continue; }
+
+      let content = '';
+      try {
+        const stats = fs.statSync(filePath);
+        if (stats.size > 512 * 1024) { continue; }
+        content = fs.readFileSync(filePath, 'utf-8');
+      } catch { continue; }
+
+      // Skip empty files — they render as invisible border lines in the feed
+      if (!content.trim()) { continue; }
+
+      const artifact: Artifact = {
+        id: 'file-' + filePath,
+        title: entry.name,
+        type: artType,
+        content,
+        isPinned: false,
+        createdAt: fs.statSync(filePath).mtimeMs,
+        phase: phaseFromPath(filePath),
+        skill: 'initial',
+      };
+
+      knownArtifactPaths.add(filePath);
+      addPrototyperArtifact(artifact);
+    }
+  }
 }
 
 function runSlashCommand(command: string) {
@@ -536,7 +941,7 @@ function getErrorHtml(message: string): string {
 </head>
 <body>
   <div class="error">
-    <h2>Design OS Navigator</h2>
+    <h2>Design Os</h2>
     <p>${message}</p>
   </div>
 </body>
@@ -589,6 +994,8 @@ function setupHooksBridge(root: string): fs.FSWatcher | null {
         const data = JSON.parse(line);
         const card = hookEventToCard(data);
         if (card) { consoleProvider.addCard(card); }
+        // Activity Log: convert file writes to Prototyper artifacts
+        hookEventToArtifact(data);
         // Sync mode pill from hook event
         const mode = data.permission_mode as string | undefined;
         if (mode && consoleProvider.view) {

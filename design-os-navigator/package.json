@@ -1,8 +1,8 @@
 {
   "name": "design-os-navigator",
-  "displayName": "Design OS Navigator",
+  "displayName": "Design Os",
   "description": "Visual node graph navigator for Design Operating System projects",
-  "version": "0.1.0",
+  "version": "0.4.0",
   "publisher": "design-os",
   "engines": {
     "vscode": "^1.85.0"
@@ -42,14 +42,36 @@
     }
   },
   "scripts": {
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "build": "npm run compile",
-    "package": "vsce package"
+    "compile": "npm run compile:ext && npm run compile:webview",
+    "compile:ext": "node esbuild.config.mjs",
+    "compile:webview": "vite build",
+    "watch": "npm run watch:ext",
+    "watch:ext": "node esbuild.config.mjs --watch",
+    "watch:webview": "vite build --watch",
+    "dev": "concurrently \"npm run watch:ext\" \"npm run watch:webview\"",
+    "build": "npm run compile:ext -- --production && npm run compile:webview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src --ext ts,tsx",
+    "package": "npm run build && vsce package",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.webview.json --noEmit"
   },
   "devDependencies": {
-    "@types/vscode": "^1.85.0",
     "@types/node": "^20.0.0",
-    "typescript": "^5.3.0"
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@types/vscode": "^1.85.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "concurrently": "^8.2.0",
+    "esbuild": "^0.20.0",
+    "typescript": "^5.3.0",
+    "vite": "^5.0.0",
+    "vitest": "^1.2.0",
+    "@vitest/coverage-v8": "^1.2.0"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }

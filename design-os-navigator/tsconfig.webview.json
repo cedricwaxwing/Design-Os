@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/webview/*"],
+      "@components/*": ["src/webview/components/*"],
+      "@hooks/*": ["src/webview/hooks/*"],
+      "@styles/*": ["src/webview/styles/*"],
+      "@types/*": ["src/types/*"]
+    }
+  },
+  "include": ["src/webview/**/*", "src/types/**/*"],
+  "exclude": ["node_modules"]
+}

@@ -23,7 +23,7 @@ Le `{module}` correspond au slug defini dans `.claude/context.md` et `modules-re
 
 ## Comment ca fonctionne
 
-1. **Prerequis** : Une spec validee (statut `VALIDEE`) dans `01_Product/04 Specs/{module}/specs/`
+1. **Prerequis** : Une spec validee (statut `VALIDEE`) dans `01_Product/05 Specs/{module}/specs/`
 2. **Commande** : `/build` lit la spec et genere tests puis code (TDD)
 3. **Sortie** : Fichiers dans `02_Build/{module}/src/` et `02_Build/{module}/tests/`
 

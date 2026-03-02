@@ -93,7 +93,7 @@ Design-OS/
 ## Customization
 
 ### Change the Design System
-Edit files in `01_Product/05 Design System/`:
+Edit files in `01_Product/06 Design System/`:
 - `tokens.md` — Colors, typography, spacing
 - `components.md` — Reusable UI components
 - `patterns.md` — Composition patterns
@@ -120,7 +120,7 @@ The framework includes 30 UX laws (from lawsofux.com) integrated into agent work
 - `/build` — Guide implementation choices
 - `/review` — Score UX conformity
 
-See `01_Product/05 Design System/ux-laws.md` for the full reference.
+See `01_Product/06 Design System/ux-laws.md` for the full reference.
 
 ## License
 

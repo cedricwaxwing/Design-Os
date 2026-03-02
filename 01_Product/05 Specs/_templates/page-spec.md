@@ -1,8 +1,10 @@
 # [Page] — [Nom de la page]
 
-> Version : 1.0
+> Version : 1
 > Statut : DRAFT | VALIDEE | EN COURS | LIVREE
-> Derniere modification : [date]
+> Derniere modification : [YYYY-MM-DD]
+> Modifie par : /spec
+> Raison : Creation initiale
 
 ---
 
