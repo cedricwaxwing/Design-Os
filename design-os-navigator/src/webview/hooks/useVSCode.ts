@@ -99,6 +99,6 @@ export function previewFile(path: string): void {
 /**
  * Open the orchestrator console.
  */
-export function launchConsole(): void {
-  postMessage({ type: 'launchConsole' });
+export function launchConsole(cli: string = 'claude'): void {
+  postMessage({ type: 'launchConsole', cli });
 }

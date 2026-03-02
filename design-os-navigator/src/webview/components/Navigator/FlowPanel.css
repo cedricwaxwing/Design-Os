@@ -26,6 +26,7 @@
   height: 16px;
   border-left: 2px dashed var(--border-light);
   margin: 0 auto;
+  flex-shrink: 0;
 }
 
 .flow-connector.active {
@@ -40,6 +41,7 @@
   gap: 24px;
   justify-content: center;
   position: relative;
+  flex-shrink: 0;
 }
 
 .flow-branch-row::before {
@@ -66,6 +68,7 @@
   position: relative;
   z-index: 1;
   border-left: 3px solid transparent;
+  flex-shrink: 0;
 }
 
 .flow-node:hover {

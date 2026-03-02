@@ -8,14 +8,7 @@ import type { GraphData, DesignOsNode } from '../types-legacy';
 import type { ExtensionMessage } from '../types/messages';
 import type { Artifact } from '../types/artifact';
 
-interface VSCodeAPI {
-  postMessage: (message: unknown) => void;
-  getState: () => unknown;
-  setState: (state: unknown) => void;
-}
-
 interface AppProps {
-  vscode: VSCodeAPI;
   initialData?: unknown;
 }
 
@@ -28,6 +21,7 @@ interface ToastState {
 }
 
 export default function App({ initialData }: AppProps) {
+  // VS Code API is managed by useVSCode.ts (single acquireVsCodeApi call)
   // Graph data
   const [graphData, setGraphData] = useState<GraphData | null>(
     initialData as GraphData | null
@@ -98,6 +92,12 @@ export default function App({ initialData }: AppProps) {
   }, []);
 
   useVSCodeMessage(handleMessage);
+
+  // Signal to extension that React is ready to receive messages
+  // This must be AFTER useVSCodeMessage to ensure listener is setup
+  useEffect(() => {
+    postMessage({ type: 'webviewReady' });
+  }, []);
 
   // Get selected node
   const selectedNode: DesignOsNode | null = selectedNodeId && graphData

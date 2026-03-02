@@ -2,7 +2,7 @@
   "name": "design-os-navigator",
   "displayName": "Design Os",
   "description": "Visual node graph navigator for Design Operating System projects",
-  "version": "0.4.0",
+  "version": "0.6.0",
   "publisher": "design-os",
   "engines": {
     "vscode": "^1.85.0"
@@ -72,6 +72,8 @@
   },
   "dependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-markdown": "^9.0.0",
+    "remark-gfm": "^4.0.0"
   }
 }

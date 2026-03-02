@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import type { Artifact } from '../../../types/artifact';
 import './ArtifactCard.css';
 
@@ -186,12 +188,16 @@ export function ArtifactCard({
           )}
           {artifact.type === 'doc' && (
             <div className="feed-render-doc">
-              <pre>{artifact.content}</pre>
+              <Markdown className="markdown-body" remarkPlugins={[remarkGfm]}>
+                {artifact.content}
+              </Markdown>
             </div>
           )}
           {!['svg', 'html', 'doc'].includes(artifact.type) && artifact.content && (
             <div className="feed-render-doc">
-              <pre>{artifact.content}</pre>
+              <Markdown className="markdown-body" remarkPlugins={[remarkGfm]}>
+                {artifact.content}
+              </Markdown>
             </div>
           )}
         </div>

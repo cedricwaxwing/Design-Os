@@ -170,6 +170,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  flex-shrink: 0;
 }
 
 .rs-pinned-label {
@@ -229,6 +230,7 @@
   flex-direction: column;
   background: var(--bg);
   overflow: hidden;
+  position: relative; /* anchor for .rs-preview-hint absolute positioning */
 }
 
 .rs-preview-header {

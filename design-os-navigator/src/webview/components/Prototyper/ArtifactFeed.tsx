@@ -53,6 +53,7 @@ export function ArtifactFeed({
   const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
   const [previewId, setPreviewId] = useState<string | null>(null);
   const feedRef = useRef<HTMLDivElement>(null);
+  const savedScrollRef = useRef<number>(0);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -71,11 +72,17 @@ export function ArtifactFeed({
     }
   }, [artifacts.length]);
 
-  // Escape key closes inline preview
+  // Escape key closes inline preview and restores scroll
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && previewId) {
         setPreviewId(null);
+        // Restore scroll position after re-render
+        requestAnimationFrame(() => {
+          if (feedRef.current) {
+            feedRef.current.scrollTop = savedScrollRef.current;
+          }
+        });
       }
     };
     document.addEventListener('keydown', handleKey);
@@ -131,7 +138,15 @@ export function ArtifactFeed({
         <div className="rs-preview-mode">
           <div className="rs-preview-header">
             <div className="rs-preview-header-left">
-              <button className="rs-back-btn" onClick={() => setPreviewId(null)}>
+              <button className="rs-back-btn" onClick={() => {
+                setPreviewId(null);
+                // Restore scroll position after re-render
+                requestAnimationFrame(() => {
+                  if (feedRef.current) {
+                    feedRef.current.scrollTop = savedScrollRef.current;
+                  }
+                });
+              }}>
                 ← Retour
               </button>
               <span className={`rs-badge ${previewBadgeClass[previewArtifact.type] || ''}`}>
@@ -187,7 +202,11 @@ export function ArtifactFeed({
         isLoading={loadingIds.has(artifact.id)}
         mode="feed"
         onSelect={() => {}}
-        onOpen={() => setPreviewId(artifact.id)}
+        onOpen={() => {
+          // Save scroll position before opening preview
+          savedScrollRef.current = feedRef.current?.scrollTop ?? 0;
+          setPreviewId(artifact.id);
+        }}
         onCopy={() => onCopy(artifact.id)}
         onDelete={() => { onDelete(artifact.id); setMenuOpenId(null); }}
         onPin={() => { onPin(artifact.id); setMenuOpenId(null); }}

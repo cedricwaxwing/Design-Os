@@ -8,6 +8,7 @@
   padding: var(--space-md);
   cursor: pointer;
   transition: all var(--transition-fast);
+  flex-shrink: 0;
 }
 
 .artifact-card:hover {
@@ -199,12 +200,13 @@
 
 .artifact-card-feed {
   background: var(--surface);
-  border: 2px solid #f38ba8;
+  border: 1px solid var(--border);
   border-radius: 10px;
   overflow: hidden;
   transition: all 0.2s;
   position: relative;
   min-height: 200px;
+  flex-shrink: 0;
 }
 
 .artifact-card-feed:hover {
@@ -408,17 +410,138 @@
   background: #ffffff;
 }
 
+/* ═══════════════════════════════════════
+   DOCUMENT LIGHT MODE (v0.5.0)
+   ═══════════════════════════════════════ */
+
 .feed-render-doc {
-  padding: 20px 24px;
-  font-size: 13px;
-  line-height: 1.7;
-  color: var(--text-dim);
+  padding: 24px 32px;
+  font-size: 14px;
+  line-height: 1.8;
   min-height: 60px;
+  /* Light background for readability */
+  background: #ffffff;
+  color: #1a1a2e;
+  border-radius: 0 0 8px 8px;
 }
 
-.feed-render-doc pre {
+/* Markdown rendered content */
+.feed-render-doc .markdown-body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  color: #1a1a2e;
+}
+
+.feed-render-doc .markdown-body h1,
+.feed-render-doc .markdown-body h2,
+.feed-render-doc .markdown-body h3,
+.feed-render-doc .markdown-body h4 {
+  color: #1a1a2e;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.feed-render-doc .markdown-body h1 { font-size: 1.75em; border-bottom: 1px solid #e5e5e5; padding-bottom: 0.3em; }
+.feed-render-doc .markdown-body h2 { font-size: 1.5em; border-bottom: 1px solid #e5e5e5; padding-bottom: 0.3em; }
+.feed-render-doc .markdown-body h3 { font-size: 1.25em; }
+.feed-render-doc .markdown-body h4 { font-size: 1.1em; }
+
+.feed-render-doc .markdown-body p {
+  margin: 0.8em 0;
+  color: #374151;
+}
+
+.feed-render-doc .markdown-body ul,
+.feed-render-doc .markdown-body ol {
+  margin: 0.8em 0;
+  padding-left: 1.5em;
+  color: #374151;
+}
+
+.feed-render-doc .markdown-body li {
+  margin: 0.4em 0;
+}
+
+.feed-render-doc .markdown-body code {
+  background: #f3f4f6;
+  color: #6366f1;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-family: 'DM Mono', 'SF Mono', Monaco, Consolas, monospace;
+  font-size: 0.9em;
+}
+
+.feed-render-doc .markdown-body pre {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.feed-render-doc .markdown-body pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+.feed-render-doc .markdown-body blockquote {
+  border-left: 4px solid #e8d5b7;
+  margin: 1em 0;
+  padding: 0.5em 1em;
+  background: #faf9f7;
+  color: #4b5563;
+}
+
+.feed-render-doc .markdown-body a {
+  color: #6366f1;
+  text-decoration: none;
+}
+
+.feed-render-doc .markdown-body a:hover {
+  text-decoration: underline;
+}
+
+.feed-render-doc .markdown-body table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+}
+
+.feed-render-doc .markdown-body th,
+.feed-render-doc .markdown-body td {
+  border: 1px solid #e5e5e5;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.feed-render-doc .markdown-body th {
+  background: #f9fafb;
+  font-weight: 600;
+}
+
+.feed-render-doc .markdown-body hr {
+  border: none;
+  border-top: 1px solid #e5e5e5;
+  margin: 1.5em 0;
+}
+
+.feed-render-doc .markdown-body strong {
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.feed-render-doc .markdown-body em {
+  font-style: italic;
+}
+
+/* Fallback pre for non-markdown content */
+.feed-render-doc pre:not(.markdown-body pre) {
   margin: 0;
   font-family: inherit;
   white-space: pre-wrap;
   word-wrap: break-word;
+  color: #374151;
 }

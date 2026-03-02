@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import type { Artifact } from '../../../types/artifact';
 import './PreviewPanel.css';
 
@@ -90,7 +92,11 @@ export function PreviewPanel({ artifact, onClose }: PreviewPanelProps) {
           )}
 
           {artifact.type === 'doc' && (
-            <pre className="doc-preview">{artifact.content}</pre>
+            <div className="doc-preview markdown-body">
+              <Markdown remarkPlugins={[remarkGfm]}>
+                {artifact.content}
+              </Markdown>
+            </div>
           )}
         </div>
       </div>
