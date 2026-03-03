@@ -281,7 +281,7 @@ Juxtaposer tous les ecrans sur un canvas unique :
 | Board HTML | `01_Product/05 Specs/{module}/wireframes/board-[flow-name].html` |
 | Wireframe individuel (sur demande) | `01_Product/05 Specs/{module}/wireframes/wf-[screen-name].svg` |
 
-### Etape 7 — Iteration rapide
+### Etape 7 — Iteration et validation
 
 Apres le premier rendu, proposer :
 
@@ -295,10 +295,12 @@ Board wireframe livre. Tu peux :
 - "Montre une variante avec des tabs au lieu du wizard"
 - "Agrandit la zone [label] sur l'ecran X"
 
-Ou valide pour passer a /spec ou /ui.
+Quand tu es satisfait, dis-le moi pour valider.
 ```
 
 **Regle** : Les iterations modifient le board existant, pas de regeneration from scratch.
+
+**REGLE CRITIQUE** : Ne JAMAIS enchainer automatiquement vers /spec apres un wireframe. Attendre une validation explicite de l'utilisateur. Le wireframe doit etre valide et potentiellement prototype (/explore) avant de passer aux specs.
 
 ---
 
@@ -679,16 +681,25 @@ Un wireframe n'est pas un dessin libre. Meme en low-fidelity, respecter :
 
 ---
 
-## Apres le wireframe
+## Apres le wireframe — VALIDATION OBLIGATOIRE
+
+**REGLE** : Le wireframe DOIT etre valide par l'utilisateur avant de passer a /spec. Ne JAMAIS proposer /spec automatiquement.
 
 | Feedback | Action suivante |
 |----------|----------------|
-| "Les layouts sont bons, on passe a la suite" | → `/spec` pour formaliser, puis `/ui` pour le pixel-perfect |
 | "Change le layout de l'ecran X" | → Modifier le board (Etape 7 iteration) |
 | "Je veux voir ca en haute-fidelite" | → `/ui` sur les ecrans specifiques |
 | "La navigation ne marche pas, on change de pattern" | → Retour `/ux` Step 3.6 pour re-evaluer |
 | "Ajoute un ecran" | → Modifier le board + mettre a jour le Screen Map |
 | "Montre une variante" | → Generer un board alternatif |
+| "Je veux prototyper ca" | → `/explore` pour un mini-proto happy path |
+| "C'est valide, on passe aux specs" | → `/spec` (UNIQUEMENT sur demande explicite) |
+
+**Workflow recommande** :
+1. Wireframe → Iterations → Validation utilisateur
+2. (Optionnel) `/explore` pour un mini-proto
+3. Validation du proto
+4. `/spec` (sur demande explicite uniquement)
 
 ---
 
@@ -708,4 +719,6 @@ Un wireframe n'est pas un dessin libre. Meme en low-fidelity, respecter :
 
 ### Message de sortie
 
-"Board wireframe livre — `wireframes/board-[flow-name].svg|html` — [N] ecrans, pret pour feedback ou /spec"
+"Board wireframe livre — `wireframes/board-[flow-name].svg|html` — [N] ecrans. A valider avant de passer aux specs."
+
+**Important** : Ne JAMAIS mentionner /spec dans le message de sortie. Attendre la validation explicite de l'utilisateur.

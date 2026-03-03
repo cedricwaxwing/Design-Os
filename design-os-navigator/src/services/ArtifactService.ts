@@ -152,9 +152,9 @@ export class ArtifactService {
     if (!mod) return;
 
     const dirs = [
-      path.join(root, '01_Product', '04 Specs', mod, 'screens'),
-      path.join(root, '01_Product', '04 Specs', mod, 'wireframes'),
-      path.join(root, '01_Product', '04 Specs', mod, 'specs'),
+      path.join(root, '01_Product', '05 Specs', mod, 'screens'),
+      path.join(root, '01_Product', '05 Specs', mod, 'wireframes'),
+      path.join(root, '01_Product', '05 Specs', mod, 'specs'),
       path.join(root, '01_Product', '03 User Journeys'),
       path.join(root, '02_Build', mod, 'src'),
       path.join(root, '04_Lab', mod),

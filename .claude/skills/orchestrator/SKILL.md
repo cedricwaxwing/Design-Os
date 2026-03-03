@@ -479,10 +479,16 @@ CHECKPOINT: Validation du plan (allege)
     ▼
 ┌─ /wireframe (mode FLOW, optionnel) ─┐
 │  • Board lineaire happy path        │
-│  • PAS de checkpoint (rapide)       │
+│  • CHECKPOINT: "Wireframe valide ?" │
 └──────────────────────────────────────┘
     │
-    ▼
+    ▼ (validation explicite requise)
+┌─ /explore (optionnel) ─────────────┐
+│  • Mini-proto happy path           │
+│  • CHECKPOINT: "Proto valide ?"    │
+└─────────────────────────────────────┘
+    │
+    ▼ (validation explicite requise)
 ┌─ /spec (mode LITE — 5 sections) ───┐
 │  • Spec allegee par ecran          │
 │  • PAS de checkpoint (execution)   │
@@ -503,7 +509,7 @@ CHECKPOINT: Validation du plan (allege)
 └─────────────────────────────────────┘
 ```
 
-**Checkpoints MVP** : 2 obligatoires (apres discovery, apres UX). Le reste est en execution continue.
+**Checkpoints MVP** : 3 obligatoires (apres discovery, apres UX, apres wireframe). Spec ne demarre qu'apres validation explicite du wireframe (et du proto si utilise).
 
 **Message de plan MVP** :
 ```
@@ -511,13 +517,17 @@ Plan MVP pour "{feature}" :
 
   1. /discovery LIGHT → Contexte minimal + hypotheses cles
   2. /ux FAST → Flow E2E + ecrans du happy path
-  3. /wireframe FLOW (optionnel) → Board wireframe du flow
-  4. /spec LITE → Specs allegees par ecran (5 sections)
-  5. /build RAPID → Code du flow complet
-  6. /review FLOW → Validation du flow E2E
+  3. /wireframe FLOW → Board wireframe du flow
+     ⏸ CHECKPOINT: Validation wireframe obligatoire
+  4. /explore (optionnel) → Mini-proto happy path
+     ⏸ CHECKPOINT: Validation proto si utilise
+  5. /spec LITE → Specs allegees par ecran (5 sections)
+  6. /build RAPID → Code du flow complet
+  7. /review FLOW → Validation du flow E2E
 
-Mode : rapide, 2 checkpoints
+Mode : rapide, checkpoints apres UX et wireframe
 Focus : shipper un flow fonctionnel
+Regle : pas de spec sans validation wireframe/proto
 
 On lance ?
 ```
@@ -548,16 +558,17 @@ CHECKPOINT: Validation du plan
 ┌─ /wireframe (mode BEFORE/AFTER) ────┐
 │  • Wireframe actuel vs propose      │
 │  • Annotations des changements      │
-│  • CHECKPOINT: "Layouts valides ?"  │
+│  • CHECKPOINT OBLIGATOIRE           │
+│  • "Layouts valides ?"              │
 └──────────────────────────────────────┘
     │
-    ▼
+    ▼ (validation explicite requise)
 ┌─ /explore (mode BEFORE/AFTER) [opt] ──┐
 │  • Prototype before/after              │
 │  • CHECKPOINT: "Direction validee ?"   │
 └────────────────────────────────────────┘
     │
-    ▼
+    ▼ (validation explicite requise)
 ┌─ /spec (mode DELTA) ──────────────────┐
 │  • Spec avec "Delta vs existant"      │
 │  • ACs de non-regression              │
@@ -673,10 +684,17 @@ Intent utilisateur
 ┌─ /wireframe (mode exploration) ──┐
 │  • Board des ecrans wireframes  │
 │  • Navigation shell integree   │
-│  • CHECKPOINT si granular      │
+│  • CHECKPOINT OBLIGATOIRE      │
+│  • "Wireframe valide ?"        │
 └──────────────────────────────────┘
     │
-    ▼
+    ▼ (validation explicite requise)
+┌─ /explore (optionnel) ───────────┐
+│  • Mini-proto happy path         │
+│  • CHECKPOINT: "Proto valide ?"  │
+└──────────────────────────────────┘
+    │
+    ▼ (validation explicite requise)
 ┌─ /spec (mode execution) ─────┐
 │  • Genere la spec complete   │
 │  • CHECKPOINT: validation    │
@@ -1275,6 +1293,7 @@ A chaque demarrage de `/o`, apres avoir lu `memory.md` :
 9. **Respecter la langue** — Lire `language` dans `.claude/profile.md`. Toute communication avec l'utilisateur (notifications, checkpoints, rapports) se fait dans cette langue. Si `language` n'est pas renseigne, s'adapter a la langue du dernier message de l'utilisateur.
 10. **Appliquer le versioning** — Tous les agents qui ecrivent des fichiers dans `01_Product/`, `02_Build/`, `03_Review/`, `04_Lab/` DOIVENT appliquer le protocole V1-V2-V3 defini dans CLAUDE.md > Versioning Protocol. L'orchestrateur verifie que les agents le respectent.
 11. **Simplifier progressivement** — Au fil du flow, le contexte et les options doivent se reduire, pas exploser. Si ca se complexifie, faire un pas en arriere.
+12. **Valider avant spec** — JAMAIS enchainer wireframe → spec automatiquement. Le wireframe (et le proto si utilise) DOIT etre valide explicitement par l'utilisateur avant de lancer /spec. C'est un checkpoint obligatoire, meme en mode `minimal`.
 
 ### Jamais
 
@@ -1282,6 +1301,7 @@ A chaque demarrage de `/o`, apres avoir lu `memory.md` :
 2. **Sauter un checkpoint** sans demande explicite (`/skip`)
 3. **Perdre le contexte** entre les etapes
 4. **Forcer un flow** — l'utilisateur peut toujours sortir du rail
+5. **Enchainer wireframe → spec** sans validation explicite — Le wireframe et le proto (si utilise) doivent etre valides AVANT de proposer /spec
 
 ### Anti-patterns a eviter
 

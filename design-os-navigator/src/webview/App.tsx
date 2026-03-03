@@ -186,9 +186,6 @@ export default function App({ initialData }: AppProps) {
               <button type="button" className="console-dropdown-item" onClick={() => launchConsole('claude')}>
                 claude
               </button>
-              <button type="button" className="console-dropdown-item" onClick={() => launchConsole('claude-sanofi')}>
-                claude-sanofi
-              </button>
             </div>
           )}
         </div>

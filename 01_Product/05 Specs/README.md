@@ -1,4 +1,4 @@
-# 04 Specs — Specifications validees
+# 05 Specs — Specifications validees
 
 > Specs generees par `/spec`. Source de verite pour `/build`.
 
@@ -7,7 +7,7 @@
 ## Structure
 
 ```
-04 Specs/
+05 Specs/
 ├── _templates/                    ← Templates de spec (cross-module)
 │   ├── component-spec.md         ← Pour un composant (modal, formulaire, card...)
 │   └── page-spec.md              ← Pour une page complete (dashboard, liste, detail...)

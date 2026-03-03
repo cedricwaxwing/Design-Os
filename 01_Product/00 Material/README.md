@@ -112,7 +112,7 @@ Les agents peuvent extraire automatiquement depuis tes documents :
 | Interviews, verbatims, transcripts | `02 Discovery/02 User Interviews/` | `/discovery` |
 | Benchmarks, surveys, analytics | `02 Discovery/03 Research Insights/` | `/discovery` |
 | Descriptions d'utilisateurs, retours | `02 Discovery/04 Personas/` | `/onboarding` Phase 7, `/discovery` |
-| Moodboards, screenshots, Figma | `04 Specs/{module}/screens/` | `/ui`, `/ux` |
+| Moodboards, screenshots, Figma | `05 Specs/{module}/screens/` | `/ui`, `/ux` |
 
 ## Astuce
 

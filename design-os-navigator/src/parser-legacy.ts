@@ -1438,7 +1438,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
   const uxBase = path.join(root, '01_Product', '03 User Journeys');
   const uxFiles = listFilesRecursive(uxBase);
   const screenMapPath = mod
-    ? path.join(root, '01_Product', '04 Specs', mod, '00_screen-map.md')
+    ? path.join(root, '01_Product', '05 Specs', mod, '00_screen-map.md')
     : '';
   const hasScreenMap = screenMapPath ? fs.existsSync(screenMapPath) : false;
   const screenMapSignals = hasScreenMap
@@ -1477,9 +1477,9 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
   });
 
   // --- Spec ---
-  const specBase = mod ? path.join(root, '01_Product', '04 Specs', mod, 'specs') : '';
+  const specBase = mod ? path.join(root, '01_Product', '05 Specs', mod, 'specs') : '';
   const specFiles = specBase ? listFilesRecursive(specBase) : [];
-  const screenBase = mod ? path.join(root, '01_Product', '04 Specs', mod, 'screens') : '';
+  const screenBase = mod ? path.join(root, '01_Product', '05 Specs', mod, 'screens') : '';
   const screenFiles = screenBase ? listFilesRecursive(screenBase) : [];
   const allSpecFiles = [...specFiles, ...screenFiles];
   const specSections = collectSectionsFromFiles(specFiles);
@@ -1529,7 +1529,7 @@ function buildNodes(root: string, context: ProjectContext, readinessData: Readin
   });
 
   // --- Design System ---
-  const dsBase = path.join(root, '01_Product', '05 Design System');
+  const dsBase = path.join(root, '01_Product', '06 Design System');
   const dsFiles = listFiles(dsBase);
 
   // Extract design system context (token fill rate, component count)

@@ -81,10 +81,11 @@ Design-OS/
 │   ├── 01 Strategy/           ← Vision, brief, roadmap
 │   ├── 02 Discovery/          ← User research, personas
 │   ├── 03 User Journeys/      ← User flows per module
-│   ├── 04 Specs/              ← Validated specs per module
+│   ├── 04 Ideation/           ← Brainstorm logs per module
+│   ├── 05 Specs/              ← Validated specs per module
 │   │   ├── _templates/        ← Spec templates
 │   │   └── {module}/          ← Specs for active module
-│   └── 05 Design System/      ← Tokens, components, patterns, UX laws
+│   └── 06 Design System/      ← Tokens, components, patterns, UX laws
 ├── 02_Build/                  ← Source code per module
 ├── 03_Review/                 ← Conformity reviews per module
 └── 04_Lab/                    ← Sandbox prototypes

@@ -15,6 +15,7 @@ output_preference:    # visual (designer) | textual (founder/pm) | code (dev)
 review_focus:         # visual_conformity (designer) | spec_conformity (pm/dev) | business_value (founder)
 ds_engagement:        # creator (designer) | consumer (dev) | viewer (founder/pm)
 artifact_format:      # svg_html (designer) | markdown (pm/founder) | tsx (dev)
+guidance_mode:        # wizard | hybrid | freeform (default: hybrid)
 ```
 
 ## Agents preferes (auto-set, modifiable)
