@@ -3,7 +3,12 @@
   "displayName": "Design Os",
   "description": "Visual node graph navigator for Design Operating System projects",
   "version": "0.7.0",
-  "publisher": "design-os",
+  "publisher": "MehdiVilquin",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MehdiVilquin/design-os-navigator"
+  },
+  "license": "MIT",
   "engines": {
     "vscode": "^1.85.0"
   },
