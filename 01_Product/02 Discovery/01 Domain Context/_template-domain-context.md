@@ -1,55 +1,55 @@
-# Domain Context — [Nom du domaine]
+# Domain Context — [Domain Name]
 
-> [DRAFT — a valider avec des experts domaine]
+> [DRAFT — to be validated with domain experts]
 
 ---
 
-## Glossaire
+## Glossary
 
-| Terme | Definition | Usage |
-|-------|-----------|-------|
-| [terme] | [definition claire et concise] | [ou/quand c'est utilise dans le produit] |
-| [terme] | [definition] | [usage] |
-| [terme] | [definition] | [usage] |
+| Term | Definition | Usage |
+|------|------------|-------|
+| [term] | [clear and concise definition] | [where/when used in the product] |
+| [term] | [definition] | [usage] |
+| [term] | [definition] | [usage] |
 
-## Regles metier
+## Business Rules
 
-1. [Regle 1 — ex: "Un patient ne peut pas avoir deux consultations actives simultanement"]
-2. [Regle 2 — ex: "Toute modification de dossier doit etre tracee avec horodatage"]
-3. [Regle 3]
+1. [Rule 1 — e.g., "A patient cannot have two active consultations simultaneously"]
+2. [Rule 2 — e.g., "Any file modification must be tracked with timestamp"]
+3. [Rule 3]
 
-## Processus actuel (avant le produit)
+## Current Process (before the product)
 
-### Etapes du processus
+### Process Steps
 
-1. **[Etape 1]** — [qui] fait [quoi] avec [quel outil]
-   - Frequence : [quotidien / hebdomadaire / ponctuel]
-   - Duree estimee : [minutes/heures]
-2. **[Etape 2]** — [qui] fait [quoi] avec [quel outil]
-3. **[Etape 3]** — [qui] fait [quoi] avec [quel outil]
+1. **[Step 1]** — [who] does [what] with [which tool]
+   - Frequency: [daily / weekly / occasional]
+   - Estimated duration: [minutes/hours]
+2. **[Step 2]** — [who] does [what] with [which tool]
+3. **[Step 3]** — [who] does [what] with [which tool]
 
-### Points de friction identifies
+### Identified Friction Points
 
-- [Friction 1] `[HYPOTHESE]` / `[VALIDE — source]`
-- [Friction 2] `[HYPOTHESE]` / `[VALIDE — source]`
-- [Friction 3] `[HYPOTHESE]` / `[VALIDE — source]`
+- [Friction 1] `[HYPOTHESIS]` / `[VALIDATED — source]`
+- [Friction 2] `[HYPOTHESIS]` / `[VALIDATED — source]`
+- [Friction 3] `[HYPOTHESIS]` / `[VALIDATED — source]`
 
-## Contraintes du domaine
+## Domain Constraints
 
-| Contrainte | Type | Impact sur le produit |
-|-----------|------|----------------------|
-| [contrainte] | Reglementaire / Metier / Technique / Culturelle | [impact concret sur le design/code] |
-| [contrainte] | [type] | [impact] |
+| Constraint | Type | Product Impact |
+|------------|------|----------------|
+| [constraint] | Regulatory / Business / Technical / Cultural | [concrete impact on design/code] |
+| [constraint] | [type] | [impact] |
 
 ## Ecosystem
 
-| Acteur | Role | Relation avec le produit |
-|--------|------|-------------------------|
-| [acteur] | [role dans l'ecosystem] | [comment il interagit avec/influence le produit] |
-| [acteur] | [role] | [relation] |
+| Actor | Role | Relationship with product |
+|-------|------|---------------------------|
+| [actor] | [role in ecosystem] | [how they interact with/influence the product] |
+| [actor] | [role] | [relationship] |
 
-## A explorer
+## To Explore
 
-- [ ] [Question ouverte 1 — ex: "Valider la terminologie avec des utilisateurs reels"]
-- [ ] [Question ouverte 2 — ex: "Observer le processus actuel sur le terrain"]
-- [ ] [Question ouverte 3 — ex: "Identifier les contraintes non-evidentes"]
+- [ ] [Open question 1 — e.g., "Validate terminology with real users"]
+- [ ] [Open question 2 — e.g., "Observe current process in the field"]
+- [ ] [Open question 3 — e.g., "Identify non-obvious constraints"]

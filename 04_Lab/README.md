@@ -1,42 +1,42 @@
 # 04 Lab — Sandbox & Prototypes
 
-> Espace de test libre, en dehors du cycle Spec/Build/Review.
+> Free testing space, outside the Spec/Build/Review cycle.
 
 ---
 
-## Quand utiliser le Lab
+## When to use the Lab
 
-| Usage | Agent | Exemple |
+| Usage | Agent | Example |
 |-------|-------|---------|
-| **Prototype rapide** | `/explore` | Valider un layout avant d'investir dans une spec |
-| **POC technique** | Manuel | Tester une integration API, un pattern de composant |
-| **Experimentation visuelle** | `/ui` | Comparer des variantes de layout |
-| **Spike** | Manuel | Explorer une technologie avant de s'engager |
+| **Quick prototype** | `/explore` | Validate a layout before investing in a spec |
+| **Technical POC** | Manual | Test an API integration, a component pattern |
+| **Visual experimentation** | `/ui` | Compare layout variants |
+| **Spike** | Manual | Explore a technology before committing |
 
-## Regles
+## Rules
 
-1. **Tout est jetable** — Ne jamais dependre du Lab pour la production
-2. **Un fichier = une intention** — Nommer clairement : `[nom]-explore.tsx`, `[nom]-poc.tsx`
-3. **Pas de tests ici** — Les tests sont dans `02_Build/{module}/tests/`
-4. **Design system respecte** — Meme en prototype, utiliser les tokens (pas de hardcodes)
+1. **Everything is disposable** — Never depend on the Lab for production
+2. **One file = one intention** — Name clearly: `[name]-explore.tsx`, `[name]-poc.tsx`
+3. **No tests here** — Tests are in `02_Build/{module}/tests/`
+4. **Design system respected** — Even in prototypes, use tokens (no hardcodes)
 
 ## Structure
 
 ```
 04_Lab/
 └── {module}/
-    ├── [nom]-explore.tsx       ← Prototype /explore (happy path)
-    ├── [nom]-poc.tsx           ← POC technique
-    └── [nom]-spike/            ← Spike multi-fichiers
+    ├── [name]-explore.tsx       ← /explore prototype (happy path)
+    ├── [name]-poc.tsx           ← Technical POC
+    └── [name]-spike/            ← Multi-file spike
 ```
 
-## Cycle de vie
+## Lifecycle
 
 ```
-Idee → Lab (prototype) → Feedback
-  ├── "Bonne direction" → /spec → /build (le prototype est remplace)
-  ├── "A modifier" → Iterer dans le Lab
-  └── "Mauvaise approche" → Supprimer, repenser
+Idea → Lab (prototype) → Feedback
+  ├── "Good direction" → /spec → /build (prototype gets replaced)
+  ├── "Needs changes" → Iterate in Lab
+  └── "Wrong approach" → Delete, rethink
 ```
 
-Le Lab n'est PAS une etape du cycle Spec/Build/Review. C'est un espace parallele pour reduire le risque avant d'investir dans une spec complete.
+The Lab is NOT a step in the Spec/Build/Review cycle. It's a parallel space to reduce risk before investing in a complete spec.

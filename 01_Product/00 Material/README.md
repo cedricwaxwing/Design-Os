@@ -1,120 +1,120 @@
-# 00 Material — Sources brutes
+# 00 Material — Raw Sources
 
-> Point d'entree du Design OS. Depose ici tous les documents qui alimentent la strategie et la discovery.
+> Entry point for Design OS. Drop here all documents that feed strategy and discovery.
 
 ---
 
-## Types de documents attendus
+## Expected document types
 
-| Type | Exemples | Utilise par |
-|------|----------|-------------|
-| **Briefs & Notes** | Briefs internes, notes de reunion, comptes-rendus | `/onboarding`, `/ux` |
-| **Recherche marche** | Etudes de marche, analyses concurrentielles, benchmarks | `/ux`, `/spec` |
-| **Captures produit** | Screenshots de produits existants ou concurrents | `/ux`, `/ui` |
-| **Contraintes metier** | Documents reglementaires, normes, contraintes techniques | `/spec`, `/build` |
-| **Retours utilisateurs** | Verbatims, surveys, feedbacks, tickets support | `/ux`, Discovery |
-| **Assets visuels** | Exports Figma, moodboards, wireframes papier scannes | `/ui`, `/ux` |
-| **Donnees** | Exports analytics, metriques d'usage, KPIs actuels | Strategy, `/ux` |
+| Type | Examples | Used by |
+|------|----------|---------|
+| **Briefs & Notes** | Internal briefs, meeting notes, reports | `/onboarding`, `/ux` |
+| **Market research** | Market studies, competitive analyses, benchmarks | `/ux`, `/spec` |
+| **Product captures** | Screenshots of existing or competitor products | `/ux`, `/ui` |
+| **Business constraints** | Regulatory documents, standards, technical constraints | `/spec`, `/build` |
+| **User feedback** | Verbatims, surveys, feedback, support tickets | `/ux`, Discovery |
+| **Visual assets** | Figma exports, moodboards, scanned paper wireframes | `/ui`, `/ux` |
+| **Data** | Analytics exports, usage metrics, current KPIs | Strategy, `/ux` |
 
-## Convention de nommage
+## Naming convention
 
 ```
-[YYYY-MM-DD]-[type]-[nom].[ext]
+[YYYY-MM-DD]-[type]-[name].[ext]
 ```
 
-**Types** : `brief`, `benchmark`, `interview`, `survey`, `analytics`, `regulatory`, `moodboard`, `notes`
+**Types**: `brief`, `benchmark`, `interview`, `survey`, `analytics`, `regulatory`, `moodboard`, `notes`
 
-**Exemples** :
+**Examples**:
 - `2026-02-21-benchmark-competitors.pdf`
 - `2026-01-15-interview-pharmacist-01.md`
 - `2026-02-10-brief-product-v2.docx`
 
-## Comment ces documents sont utilises
+## How these documents are used
 
-Les agents du Design OS consultent ce dossier pour ancrer leurs decisions dans le contexte reel du projet :
+Design OS agents consult this folder to anchor their decisions in real project context:
 
-1. **`/onboarding`** (Phase 7) — Propose d'extraire un draft de brief/vision depuis les documents presents
-2. **`/ux`** — Ancre les hypotheses de design dans les insights terrain
-3. **`/spec`** — Reference les contraintes metier dans la section Dependencies
-4. **`/ui`** — S'inspire des moodboards et benchmarks pour les propositions visuelles
+1. **`/onboarding`** (Phase 7) — Offers to extract a draft brief/vision from present documents
+2. **`/ux`** — Anchors design hypotheses in field insights
+3. **`/spec`** — References business constraints in the Dependencies section
+4. **`/ui`** — Takes inspiration from moodboards and benchmarks for visual proposals
 
-## Formats supportes
+## Supported formats
 
-Les agents du Design OS lisent les fichiers via Claude Code. Voici ce qui est processable :
+Design OS agents read files via Claude Code. Here's what's processable:
 
-| Format | Lisible nativement | Conversion recommandee |
-|--------|-------------------|----------------------|
-| `.md`, `.txt`, `.csv`, `.json` | Oui | — |
-| `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp` | Oui (analyse visuelle) | — |
-| `.svg` | Oui (code SVG) | — |
-| `.pdf` | Non | `pdftotext "fichier.pdf" "fichier.txt"` |
-| `.xlsx`, `.xls` | Non | `xlsx2csv "fichier.xlsx" > "fichier.csv"` |
-| `.docx` | Non | `pandoc "fichier.docx" -o "fichier.md"` |
-| `.pptx` | Non | Exporter les slides en PNG ou noter les points cles en `.md` |
-| Figma | Via MCP Figma | Fournir le lien `figma.com/design/...`, les agents utilisent l'integration MCP |
+| Format | Natively readable | Recommended conversion |
+|--------|-------------------|------------------------|
+| `.md`, `.txt`, `.csv`, `.json` | Yes | — |
+| `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp` | Yes (visual analysis) | — |
+| `.svg` | Yes (SVG code) | — |
+| `.pdf` | No | `pdftotext "file.pdf" "file.txt"` |
+| `.xlsx`, `.xls` | No | `xlsx2csv "file.xlsx" > "file.csv"` |
+| `.docx` | No | `pandoc "file.docx" -o "file.md"` |
+| `.pptx` | No | Export slides as PNG or note key points in `.md` |
+| Figma | Via Figma MCP | Provide `figma.com/design/...` link, agents use MCP integration |
 
-**Regle** : Plus c'est en `.md` et `.csv`, mieux les agents travaillent. Les formats binaires (PDF, Excel, Word) doivent etre convertis pour une extraction optimale.
+**Rule**: The more content is in `.md` and `.csv`, the better agents work. Binary formats (PDF, Excel, Word) should be converted for optimal extraction.
 
-## Preparer ses documents
+## Preparing your documents
 
-### Conversion rapide
+### Quick conversion
 
-Si tu as des documents dans des formats non lisibles, voici les commandes de conversion :
+If you have documents in non-readable formats, here are conversion commands:
 
-**PDF → Texte** :
+**PDF → Text**:
 ```bash
-# Installer (macOS)
+# Install (macOS)
 brew install poppler
-# Convertir
-pdftotext "mon-document.pdf" "mon-document.txt"
-# Ou pour garder la mise en page
-pdftotext -layout "mon-document.pdf" "mon-document.txt"
+# Convert
+pdftotext "my-document.pdf" "my-document.txt"
+# Or to keep layout
+pdftotext -layout "my-document.pdf" "my-document.txt"
 ```
 
-**Excel → CSV** :
+**Excel → CSV**:
 ```bash
-# Installer
+# Install
 pip install xlsx2csv
-# Convertir
-xlsx2csv "mon-fichier.xlsx" > "mon-fichier.csv"
-# Ou pour une feuille specifique
-xlsx2csv -s 2 "mon-fichier.xlsx" > "feuille-2.csv"
+# Convert
+xlsx2csv "my-file.xlsx" > "my-file.csv"
+# Or for a specific sheet
+xlsx2csv -s 2 "my-file.xlsx" > "sheet-2.csv"
 ```
 
-**Word → Markdown** :
+**Word → Markdown**:
 ```bash
-# Installer (macOS)
+# Install (macOS)
 brew install pandoc
-# Convertir
-pandoc "mon-document.docx" -o "mon-document.md"
+# Convert
+pandoc "my-document.docx" -o "my-document.md"
 ```
 
-**PowerPoint** : Pas de conversion CLI simple. Options :
-- Exporter les slides en images PNG depuis PowerPoint
-- Copier-coller les points cles dans un `.md`
+**PowerPoint**: No simple CLI conversion. Options:
+- Export slides as PNG images from PowerPoint
+- Copy-paste key points into a `.md`
 
-### Conversion automatique pendant l'onboarding
+### Automatic conversion during onboarding
 
-Quand tu lances `/onboarding` (Phase 7) ou `/discovery`, les agents :
-1. Scannent le dossier et classifient les fichiers par type
-2. Detectent les outils de conversion installes sur ta machine
-3. Proposent de convertir automatiquement les fichiers non lisibles
-4. Extraient et dispatchent le contenu dans les bons dossiers Discovery
+When you run `/onboarding` (Phase 7) or `/discovery`, agents:
+1. Scan the folder and classify files by type
+2. Detect conversion tools installed on your machine
+3. Offer to automatically convert non-readable files
+4. Extract and dispatch content to appropriate Discovery folders
 
-## Pipeline d'extraction Material → Product
+## Material → Product extraction pipeline
 
-Les agents peuvent extraire automatiquement depuis tes documents :
+Agents can automatically extract from your documents:
 
-| Type de document dans Material | Extrait vers | Agent |
-|-------------------------------|-------------|-------|
-| Briefs, notes strategiques | `01 Strategy/product-brief.md`, `northstar-vision.md` | `/onboarding` Phase 7 |
-| Documents metier, regles | `02 Discovery/01 Domain Context/` | `/onboarding` Phase 7, `/discovery` |
+| Document type in Material | Extracted to | Agent |
+|---------------------------|--------------|-------|
+| Briefs, strategic notes | `01 Strategy/product-brief.md`, `northstar-vision.md` | `/onboarding` Phase 7 |
+| Business documents, rules | `02 Discovery/01 Domain Context/` | `/onboarding` Phase 7, `/discovery` |
 | Interviews, verbatims, transcripts | `02 Discovery/02 User Interviews/` | `/discovery` |
 | Benchmarks, surveys, analytics | `02 Discovery/03 Research Insights/` | `/discovery` |
-| Descriptions d'utilisateurs, retours | `02 Discovery/04 Personas/` | `/onboarding` Phase 7, `/discovery` |
+| User descriptions, feedback | `02 Discovery/04 Personas/` | `/onboarding` Phase 7, `/discovery` |
 | Moodboards, screenshots, Figma | `05 Specs/{module}/screens/` | `/ui`, `/ux` |
 
-## Astuce
+## Tip
 
-Plus ce dossier est riche, plus les agents produisent des outputs contextuels et pertinents.
-Un dossier vide = les agents travaillent sur des assumptions. Un dossier nourri = les agents travaillent sur des faits.
+The richer this folder, the more contextual and relevant agent outputs become.
+An empty folder = agents work on assumptions. A well-fed folder = agents work on facts.

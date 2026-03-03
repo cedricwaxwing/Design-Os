@@ -1,36 +1,36 @@
-# Insight — [Titre de l'insight]
+# Insight — [Insight Title]
 
-**Source** : [interviews / analytics / benchmark / survey / observation]
-**Confiance** : FORT / MOYEN / FAIBLE
-**Date** : [YYYY-MM-DD]
-**Auteur** : [nom]
+**Source**: [interviews / analytics / benchmark / survey / observation]
+**Confidence**: HIGH / MEDIUM / LOW
+**Date**: [YYYY-MM-DD]
+**Author**: [name]
 
 ---
 
-## Constat
+## Finding
 
-[Description factuelle de ce qu'on a observe. Pas d'interpretation, juste les faits.]
+[Factual description of what was observed. No interpretation, just facts.]
 
-## Impact produit
+## Product Impact
 
-[Comment ca influence le design du produit. Quelle decision de design/feature ca impacte.]
+[How this influences product design. Which design/feature decision it impacts.]
 
 ## Evidence
 
-- [Interview X — "verbatim exact"] (lien vers `02 User Interviews/fichier.md`)
-- [Data point Y — chiffre ou metrique]
-- [Benchmark Z — observation chez un concurrent]
+- [Interview X — "exact verbatim"] (link to `02 User Interviews/file.md`)
+- [Data point Y — number or metric]
+- [Benchmark Z — observation from a competitor]
 
-## Recommandation
+## Recommendation
 
-[Action concrete a prendre dans le design ou la strategie produit.]
+[Concrete action to take in design or product strategy.]
 
-## Hypotheses liees
+## Related Hypotheses
 
-- [Reference hypothese — ex: P1, U2] (lien vers `hypotheses.md`)
+- [Hypothesis reference — e.g., P1, U2] (link to `hypotheses.md`)
 
-## Statut
+## Status
 
-- [ ] Presente a l'equipe
-- [ ] Integree dans les specs
-- [ ] Validee par des donnees supplementaires
+- [ ] Presented to team
+- [ ] Integrated into specs
+- [ ] Validated with additional data

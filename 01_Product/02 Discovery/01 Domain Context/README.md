@@ -1,38 +1,38 @@
-# 01 Domain Context — Contexte metier
+# 01 Domain Context — Business Context
 
-> Regles, terminologie et processus du domaine metier.
+> Business rules, terminology, and domain processes.
 
 ---
 
-## Quoi mettre ici
+## What to put here
 
-| Type | Exemples |
+| Type | Examples |
 |------|----------|
-| **Glossaire** | Termes metier specifiques, acronymes, definitions |
-| **Regles metier** | Contraintes reglementaires, regles de validation, workflows metier |
-| **Processus existants** | Comment les utilisateurs travaillent aujourd'hui (avant le produit) |
-| **Carte du domaine** | Entites, relations, flux de donnees |
+| **Glossary** | Domain-specific terms, acronyms, definitions |
+| **Business rules** | Regulatory constraints, validation rules, business workflows |
+| **Existing processes** | How users work today (before the product) |
+| **Domain map** | Entities, relationships, data flows |
 
-## Format recommande
+## Recommended format
 
 ```markdown
-# Domaine — [Nom du domaine]
+# Domain — [Domain Name]
 
-## Glossaire
-| Terme | Definition |
-|-------|-----------|
-| [terme] | [definition] |
+## Glossary
+| Term | Definition |
+|------|------------|
+| [term] | [definition] |
 
-## Regles metier
-1. [Regle 1 — ex: "Un study ne peut pas etre publie sans validation du PI"]
-2. [Regle 2]
+## Business Rules
+1. [Rule 1 — e.g., "A study cannot be published without PI validation"]
+2. [Rule 2]
 
-## Processus actuel
-[Description ou diagramme du processus existant]
+## Current Process
+[Description or diagram of the existing process]
 ```
 
-## Impact sur les agents
+## Impact on agents
 
-- **`/spec`** — Reference les regles metier dans la section Dependencies
-- **`/ux`** — Verifie que les parcours respectent les processus metier
-- **`/build`** — Implemente les validations metier dans le code
+- **`/spec`** — References business rules in the Dependencies section
+- **`/ux`** — Verifies that journeys respect business processes
+- **`/build`** — Implements business validations in code

@@ -1,50 +1,50 @@
-# Interview — [Prenom / Role]
+# Interview — [First Name / Role]
 
-**Date** : [YYYY-MM-DD]
-**Duree** : [minutes]
-**Persona** : [reference persona — ex: Marie, pharmacienne]
-**Contexte** : [ou et comment l'entretien a eu lieu — ex: visio 30min, en pharmacie, etc.]
-**Interviewer** : [nom]
+**Date**: [YYYY-MM-DD]
+**Duration**: [minutes]
+**Persona**: [persona reference — e.g., Marie, pharmacist]
+**Context**: [where and how the interview took place — e.g., 30min video call, in pharmacy, etc.]
+**Interviewer**: [name]
 
 ---
 
-## Points cles
+## Key Points
 
-1. [Insight principal — la chose la plus importante apprise]
-2. [Insight secondaire]
-3. [Insight complementaire]
+1. [Main insight — the most important thing learned]
+2. [Secondary insight]
+3. [Complementary insight]
 
-## Verbatims marquants
+## Notable Verbatims
 
-> "[Citation directe de l'utilisateur, mot pour mot]"
-> — A propos de [sujet]
+> "[Direct user quote, word for word]"
+> — About [topic]
 
-> "[Autre citation marquante]"
-> — A propos de [sujet]
+> "[Another notable quote]"
+> — About [topic]
 
-## Pain points identifies
+## Identified Pain Points
 
-| # | Pain point | Severite | Frequence |
-|---|-----------|----------|-----------|
-| 1 | [Frustration concrete] | FORT / MOYEN / FAIBLE | Quotidien / Hebdo / Ponctuel |
-| 2 | [Frustration concrete] | [severite] | [frequence] |
+| # | Pain Point | Severity | Frequency |
+|---|------------|----------|-----------|
+| 1 | [Concrete frustration] | HIGH / MEDIUM / LOW | Daily / Weekly / Occasional |
+| 2 | [Concrete frustration] | [severity] | [frequency] |
 
-## Besoins exprimes
+## Expressed Needs
 
-- [Besoin 1 — ce que l'utilisateur veut pouvoir faire]
-- [Besoin 2]
+- [Need 1 — what the user wants to be able to do]
+- [Need 2]
 
-## Suggestions spontanees
+## Spontaneous Suggestions
 
-- [Suggestion 1 — idee proposee par l'utilisateur lui-meme]
+- [Suggestion 1 — idea proposed by the user themselves]
 
-## Workflow observe
+## Observed Workflow
 
-[Si l'entretien incluait une observation — decrire ce que l'utilisateur fait concretement]
+[If the interview included observation — describe what the user actually does]
 
-1. [Action 1] → [Outil utilise]
-2. [Action 2] → [Outil utilise]
+1. [Action 1] → [Tool used]
+2. [Action 2] → [Tool used]
 
-## Notes internes
+## Internal Notes
 
-[Observations non-verbales, impressions, elements de contexte importants pour l'analyse]
+[Non-verbal observations, impressions, important context elements for analysis]

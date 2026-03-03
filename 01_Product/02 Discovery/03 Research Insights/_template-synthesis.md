@@ -1,46 +1,46 @@
-# Synthese — [Theme ou scope de la synthese]
+# Synthesis — [Theme or scope of synthesis]
 
-**Scope** : [ex: "Synthese des 5 interviews pharmaciens", "Benchmark gestion de stock"]
-**Periode** : [YYYY-MM-DD] → [YYYY-MM-DD]
-**Sources** : [N] interviews, [N] benchmarks, [N] surveys
-**Date de synthese** : [YYYY-MM-DD]
-**Auteur** : [nom]
+**Scope**: [e.g., "Synthesis of 5 pharmacist interviews", "Inventory management benchmark"]
+**Period**: [YYYY-MM-DD] → [YYYY-MM-DD]
+**Sources**: [N] interviews, [N] benchmarks, [N] surveys
+**Synthesis date**: [YYYY-MM-DD]
+**Author**: [name]
 
 ---
 
-## Methode
+## Method
 
-[Comment la synthese a ete realisee — affinity mapping, analyse thematique, etc.]
+[How the synthesis was conducted — affinity mapping, thematic analysis, etc.]
 
-## Patterns identifies
+## Identified Patterns
 
-| # | Pattern | Frequence | Confiance | Sources |
-|---|---------|-----------|-----------|---------|
-| 1 | [Pattern commun observe] | [X/N sources] | FORT / MOYEN / FAIBLE | [refs] |
-| 2 | [Pattern] | [frequence] | [confiance] | [refs] |
+| # | Pattern | Frequency | Confidence | Sources |
+|---|---------|-----------|------------|---------|
+| 1 | [Common pattern observed] | [X/N sources] | HIGH / MEDIUM / LOW | [refs] |
+| 2 | [Pattern] | [frequency] | [confidence] | [refs] |
 
 ## Jobs-to-be-Done
 
-| # | Job | Contexte | Critere de succes |
-|---|-----|----------|-------------------|
-| 1 | Quand [situation], je veux [action], pour [objectif] | [contexte d'usage] | [comment l'utilisateur sait que c'est reussi] |
-| 2 | Quand [...], je veux [...], pour [...] | [contexte] | [critere] |
+| # | Job | Context | Success Criteria |
+|---|-----|---------|------------------|
+| 1 | When [situation], I want to [action], so that [goal] | [usage context] | [how user knows it succeeded] |
+| 2 | When [...], I want to [...], so that [...] | [context] | [criteria] |
 
 ## Opportunities
 
-| # | Opportunite | Impact | Effort | Priorite |
-|---|------------|--------|--------|----------|
-| 1 | [Opportunite identifiee] | FORT / MOYEN / FAIBLE | FORT / MOYEN / FAIBLE | [score] |
-| 2 | [Opportunite] | [impact] | [effort] | [score] |
+| # | Opportunity | Impact | Effort | Priority |
+|---|-------------|--------|--------|----------|
+| 1 | [Identified opportunity] | HIGH / MEDIUM / LOW | HIGH / MEDIUM / LOW | [score] |
+| 2 | [Opportunity] | [impact] | [effort] | [score] |
 
 ## Contradictions / Tensions
 
-[Elements contradictoires trouves entre sources — important pour identifier les nuances]
+[Contradictory elements found between sources — important for identifying nuances]
 
-- [Tension 1 : Source A dit X, Source B dit Y]
+- [Tension 1: Source A says X, Source B says Y]
 
-## Prochaines etapes
+## Next Steps
 
-- [ ] [Action 1 — ex: Valider le pattern 1 avec 3 interviews supplementaires]
-- [ ] [Action 2 — ex: Explorer l'opportunite 1 avec /ux]
+- [ ] [Action 1 — e.g., Validate pattern 1 with 3 additional interviews]
+- [ ] [Action 2 — e.g., Explore opportunity 1 with /ux]
 - [ ] [Action 3]

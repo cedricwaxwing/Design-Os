@@ -1,59 +1,59 @@
-# 02 Discovery — Comprendre les utilisateurs et le domaine
+# 02 Discovery — Understanding Users and Domain
 
-> Tout ce qui concerne la recherche utilisateur et la comprehension du domaine.
+> Everything related to user research and domain understanding.
 
 ---
 
-## Sous-dossiers
+## Subfolders
 
-| Dossier | Contenu | Quand le remplir |
-|---------|---------|------------------|
-| `01 Domain Context/` | Regles metier, terminologie, processus existants | Au demarrage du projet |
-| `02 User Interviews/` | Comptes-rendus d'entretiens, verbatims | Pendant la phase Discovery |
-| `03 Research Insights/` | Syntheses, patterns identifies, hypotheses | Apres les interviews |
-| `04 Personas/` | Fiches personas (template fourni) | Pendant l'onboarding ou Discovery |
+| Folder | Content | When to fill |
+|--------|---------|--------------|
+| `01 Domain Context/` | Business rules, terminology, existing processes | At project start |
+| `02 User Interviews/` | Interview reports, verbatims | During Discovery phase |
+| `03 Research Insights/` | Syntheses, identified patterns, hypotheses | After interviews |
+| `04 Personas/` | Persona cards (template provided) | During onboarding or Discovery |
 
-## Comment alimenter la Discovery
+## How to Feed Discovery
 
-### Option 1 — Pipeline Material (recommande si tu as des documents)
-Place tes documents dans `00 Material/`, puis :
-- **`/onboarding`** (Phase 7) scanne, convertit et extrait automatiquement
-- **`/discovery`** (Etape 0b) detecte le material non exploite et propose l'ingestion
+### Option 1 — Material Pipeline (recommended if you have documents)
+Place your documents in `00 Material/`, then:
+- **`/onboarding`** (Phase 7) scans, converts, and extracts automatically
+- **`/discovery`** (Step 0b) detects unexploited material and offers ingestion
 
-| Type de document dans Material | Extrait vers |
-|-------------------------------|-------------|
-| Documents metier, regles, processus | `01 Domain Context/` |
+| Document type in Material | Extracted to |
+|---------------------------|--------------|
+| Business documents, rules, processes | `01 Domain Context/` |
 | Interviews, verbatims, transcripts | `02 User Interviews/` |
 | Benchmarks, surveys, analytics | `03 Research Insights/` |
-| Descriptions d'utilisateurs, retours | `04 Personas/` |
+| User descriptions, feedback | `04 Personas/` |
 
-### Option 2 — Avec les agents (recommande si tu pars de zero)
-- **`/discovery`** — Workshop guide complet pour construire le contexte par la conversation
-- **`/discovery personas`** — Approfondir les personas existants
-- **`/discovery hypotheses`** — Cartographier et prioriser les hypotheses
+### Option 2 — With agents (recommended if starting from scratch)
+- **`/discovery`** — Complete guided workshop to build context through conversation
+- **`/discovery personas`** — Deepen existing personas
+- **`/discovery hypotheses`** — Map and prioritize hypotheses
 
-### Option 3 — Manuellement
-Cree les fichiers directement dans les sous-dossiers ci-dessous. Chaque sous-dossier contient un template (`_template-*.md`) pour guider la structure.
+### Option 3 — Manually
+Create files directly in the subfolders below. Each subfolder contains a template (`_template-*.md`) to guide the structure.
 
-## Templates disponibles
+## Available Templates
 
-| Sous-dossier | Template | Contenu |
-|-------------|----------|---------|
-| `01 Domain Context/` | `_template-domain-context.md` | Glossaire, regles metier, processus, contraintes, ecosystem |
-| `02 User Interviews/` | `_template-interview.md` | Metadata, points cles, verbatims, pain points, besoins |
-| `03 Research Insights/` | `_template-insight.md` | Constat, impact produit, evidence, recommandation |
-| `03 Research Insights/` | `_template-synthesis.md` | Patterns, JTBD, opportunities (synthese cross-interviews) |
-| `04 Personas/` | `_template-persona.md` | Profil, journee type, frustrations, objectifs, outils |
+| Subfolder | Template | Content |
+|-----------|----------|---------|
+| `01 Domain Context/` | `_template-domain-context.md` | Glossary, business rules, processes, constraints, ecosystem |
+| `02 User Interviews/` | `_template-interview.md` | Metadata, key points, verbatims, pain points, needs |
+| `03 Research Insights/` | `_template-insight.md` | Finding, product impact, evidence, recommendation |
+| `03 Research Insights/` | `_template-synthesis.md` | Patterns, JTBD, opportunities (cross-interview synthesis) |
+| `04 Personas/` | `_template-persona.md` | Profile, typical day, frustrations, goals, tools |
 
-## Impact sur les agents
+## Impact on Agents
 
-Les agents consultent cette section pour :
-- **`/ux`** — Ancrer les hypotheses de design dans des insights reels
-- **`/spec`** — Reference les contraintes metier dans les dependances
-- **`/onboarding`** — Genere les personas et le brief produit
-- **`/discovery`** — Enrichit et structure le contenu de recherche
-- **`/review`** — Identifie les gaps de type DISCOVERY
+Agents consult this section for:
+- **`/ux`** — Anchor design hypotheses in real insights
+- **`/spec`** — Reference business constraints in dependencies
+- **`/onboarding`** — Generate personas and product brief
+- **`/discovery`** — Enrich and structure research content
+- **`/review`** — Identify DISCOVERY-type gaps
 
-## Astuce
+## Tip
 
-Plus la Discovery est riche, meilleurs sont les outputs des agents. Un dossier vide = les agents travaillent sur des assumptions.
+The richer the Discovery, the better the agent outputs. An empty folder = agents work on assumptions.
