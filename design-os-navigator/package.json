@@ -2,7 +2,7 @@
   "name": "design-os-navigator",
   "displayName": "Design Os",
   "description": "Visual node graph navigator for Design Operating System projects",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "publisher": "MehdiVilquin",
   "repository": {
     "type": "git",
