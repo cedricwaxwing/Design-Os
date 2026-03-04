@@ -10,7 +10,7 @@ import { sectionHasContent, hasValideeStatus } from '../conditions/contentCondit
 export const strategyGates: GateDefinition[] = [
   {
     id: 'strat-brief',
-    label: 'Product brief rempli',
+    label: 'Product brief completed',
     command: '/onboarding',
     condition: (ctx) => {
       const briefPath = '01_Product/01 Strategy/product-brief.md';
@@ -20,7 +20,7 @@ export const strategyGates: GateDefinition[] = [
   },
   {
     id: 'strat-vision',
-    label: 'Vision North Star definie',
+    label: 'North Star vision defined',
     command: '/onboarding',
     condition: (ctx) => {
       const visionPath = '01_Product/01 Strategy/northstar-vision.md';
@@ -31,7 +31,7 @@ export const strategyGates: GateDefinition[] = [
   },
   {
     id: 'strat-personas',
-    label: 'Personas references',
+    label: 'Personas referenced',
     command: '/onboarding',
     condition: (ctx) => {
       // Check if personas exist in discovery
@@ -40,7 +40,7 @@ export const strategyGates: GateDefinition[] = [
   },
   {
     id: 'strat-roadmap',
-    label: 'Roadmap definie',
+    label: 'Roadmap defined',
     command: '/onboarding',
     condition: (ctx) => {
       const roadmapPath = '01_Product/01 Strategy/roadmap.md';
@@ -50,7 +50,7 @@ export const strategyGates: GateDefinition[] = [
   },
   {
     id: 'strat-validated',
-    label: 'Brief valide (status VALIDEE)',
+    label: 'Brief validated (status VALIDATED)',
     command: '/onboarding',
     condition: (ctx) => {
       const briefPath = '01_Product/01 Strategy/product-brief.md';

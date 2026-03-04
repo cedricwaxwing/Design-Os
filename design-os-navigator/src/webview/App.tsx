@@ -179,7 +179,7 @@ export default function App({ initialData }: AppProps) {
         </div>
         <div className="console-launcher" ref={consoleLauncherRef}>
           <button type="button" className="launch-console-btn" onClick={() => setConsoleMenuOpen(!consoleMenuOpen)}>
-            <span className="icon">◆</span> Lancer la console ▾
+            <span className="icon">◆</span> Launch console ▾
           </button>
           {consoleMenuOpen && (
             <div className="console-dropdown">
@@ -244,7 +244,7 @@ export default function App({ initialData }: AppProps) {
             </div>
             <span className="readiness-pct">{Math.round(graphData.globalReadiness)}%</span>
             <span className="readiness-stats">
-              {graphData.nodes.length} nodes · {graphData.nodes.reduce((s, n) => s + n.fileCount, 0)} fichiers
+              {graphData.nodes.length} nodes · {graphData.nodes.reduce((s, n) => s + n.fileCount, 0)} files
             </span>
           </div>
         </>

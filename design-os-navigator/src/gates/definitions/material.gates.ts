@@ -9,7 +9,7 @@ import { hasRealFiles, countRealFiles } from '../conditions/fileConditions';
 export const materialGates: GateDefinition[] = [
   {
     id: 'mat-exists',
-    label: 'Material existe',
+    label: 'Material exists',
     command: '/discovery',
     condition: (ctx) => {
       return hasRealFiles(ctx.materialFiles);
@@ -17,7 +17,7 @@ export const materialGates: GateDefinition[] = [
   },
   {
     id: 'mat-processed',
-    label: 'Material traite (dispatche)',
+    label: 'Material processed (dispatched)',
     command: '/discovery',
     condition: (ctx) => {
       // Material is processed when we have discovery files derived from it
@@ -27,7 +27,7 @@ export const materialGates: GateDefinition[] = [
   },
   {
     id: 'mat-no-new',
-    label: 'Pas de nouveau material non traite',
+    label: 'No new unprocessed material',
     command: '/discovery',
     condition: (ctx) => {
       // No new unprocessed material

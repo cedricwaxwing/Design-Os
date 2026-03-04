@@ -10,7 +10,7 @@ import { noHypotheses, hasHypotheses } from '../conditions/contentConditions';
 export const discoveryGates: GateDefinition[] = [
   {
     id: 'disc-domain',
-    label: 'Contexte domaine documente',
+    label: 'Domain context documented',
     command: '/discovery',
     condition: (ctx) => {
       return hasRealFiles(ctx.domainFiles);
@@ -18,7 +18,7 @@ export const discoveryGates: GateDefinition[] = [
   },
   {
     id: 'disc-personas',
-    label: '1+ persona defini',
+    label: '1+ persona defined',
     command: '/discovery personas',
     condition: (ctx) => {
       return countRealFiles(ctx.personaFiles) >= 1;
@@ -26,7 +26,7 @@ export const discoveryGates: GateDefinition[] = [
   },
   {
     id: 'disc-interviews',
-    label: 'Interviews documentes',
+    label: 'Interviews documented',
     command: '/discovery',
     condition: (ctx) => {
       return hasRealFiles(ctx.interviewFiles);
@@ -34,7 +34,7 @@ export const discoveryGates: GateDefinition[] = [
   },
   {
     id: 'disc-insights',
-    label: 'Insights synthetises',
+    label: 'Insights synthesized',
     command: '/discovery',
     condition: (ctx) => {
       return hasRealFiles(ctx.insightFiles);
@@ -42,7 +42,7 @@ export const discoveryGates: GateDefinition[] = [
   },
   {
     id: 'disc-no-hypothesis',
-    label: 'Hypotheses validees (0 restantes)',
+    label: 'Hypotheses validated (0 remaining)',
     command: '/discovery hypotheses',
     condition: (ctx) => {
       const realFiles = ctx.allDiscoveryFiles.filter(f => !f.isScaffold);

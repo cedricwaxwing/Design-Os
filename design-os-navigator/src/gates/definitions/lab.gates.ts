@@ -9,7 +9,7 @@ import { hasRealFiles, countRealFiles } from '../conditions/fileConditions';
 export const labGates: GateDefinition[] = [
   {
     id: 'lab-exists',
-    label: 'Prototypes existent',
+    label: 'Prototypes exist',
     command: '/explore',
     condition: (ctx) => {
       return hasRealFiles(ctx.labFiles);
@@ -17,7 +17,7 @@ export const labGates: GateDefinition[] = [
   },
   {
     id: 'lab-active',
-    label: 'Experimentation active',
+    label: 'Active experimentation',
     command: '/explore',
     condition: (ctx) => {
       // Lab is active if we have recent lab files

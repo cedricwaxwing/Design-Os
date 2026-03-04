@@ -10,7 +10,7 @@ import { sectionsFilled, avgCompleteness, hasValideeStatus } from '../conditions
 export const specGates: GateDefinition[] = [
   {
     id: 'spec-exists',
-    label: '1+ spec existe',
+    label: '1+ spec exists',
     command: '/spec',
     condition: (ctx) => {
       return hasRealFiles(ctx.specFiles);
@@ -18,7 +18,7 @@ export const specGates: GateDefinition[] = [
   },
   {
     id: 'spec-deep',
-    label: 'Spec avec 5+ sections remplies',
+    label: 'Spec with 5+ sections filled',
     command: '/spec',
     condition: (ctx) => {
       return sectionsFilled(ctx.specFiles, 5);
@@ -26,7 +26,7 @@ export const specGates: GateDefinition[] = [
   },
   {
     id: 'spec-validated',
-    label: 'Spec validee (status VALIDEE)',
+    label: 'Spec validated (status VALIDATED)',
     command: '/spec',
     condition: (ctx) => {
       const realSpecs = ctx.specFiles.filter(f => !f.isScaffold);
@@ -35,7 +35,7 @@ export const specGates: GateDefinition[] = [
   },
   {
     id: 'spec-complete',
-    label: 'Specs completes (80%+)',
+    label: 'Specs complete (80%+)',
     command: '/spec',
     condition: (ctx) => {
       return avgCompleteness(ctx.specFiles, 0.8);

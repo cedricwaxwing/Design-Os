@@ -10,7 +10,7 @@ import { hasGoVerdict } from '../conditions/contentConditions';
 export const buildGates: GateDefinition[] = [
   {
     id: 'build-src',
-    label: 'Code source existe',
+    label: 'Source code exists',
     command: '/build',
     condition: (ctx) => {
       return hasRealFiles(ctx.srcFiles);
@@ -18,7 +18,7 @@ export const buildGates: GateDefinition[] = [
   },
   {
     id: 'build-tests',
-    label: 'Tests existent',
+    label: 'Tests exist',
     command: '/build',
     condition: (ctx) => {
       return hasRealFiles(ctx.testFiles);
@@ -26,7 +26,7 @@ export const buildGates: GateDefinition[] = [
   },
   {
     id: 'build-coverage',
-    label: 'Specs couvertes par du code',
+    label: 'Specs covered by code',
     command: '/build',
     condition: (ctx) => {
       // Check if we have at least as many src files as specs
@@ -37,7 +37,7 @@ export const buildGates: GateDefinition[] = [
   },
   {
     id: 'build-review-go',
-    label: 'Review GO obtenu',
+    label: 'Review GO obtained',
     command: '/review',
     condition: (ctx) => {
       // Check if any review file has GO verdict

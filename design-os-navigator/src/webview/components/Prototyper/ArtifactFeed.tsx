@@ -110,7 +110,7 @@ export function ArtifactFeed({
 
   const formatTime = (ts: number) => {
     const date = new Date(ts);
-    return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   };
 
   const typeIcon: Record<string, string> = {
@@ -147,7 +147,7 @@ export function ArtifactFeed({
                   }
                 });
               }}>
-                ← Retour
+                ← Back
               </button>
               <span className={`rs-badge ${previewBadgeClass[previewArtifact.type] || ''}`}>
                 {previewArtifact.type.toUpperCase()}
@@ -156,7 +156,7 @@ export function ArtifactFeed({
             </div>
             <div className="rs-preview-actions">
               <button className="rs-action-btn" onClick={() => onCopy(previewArtifact.id)}>
-                📋 Copier
+                📋 Copy
               </button>
             </div>
           </div>
@@ -185,7 +185,7 @@ export function ArtifactFeed({
               </div>
             )}
           </div>
-          <div className="rs-preview-hint">Echap pour revenir au feed</div>
+          <div className="rs-preview-hint">Press Escape to return to feed</div>
         </div>
       );
     }
@@ -229,14 +229,14 @@ export function ArtifactFeed({
         {filteredArtifacts.length === 0 ? (
           <div className="empty-state">
             <span className="empty-icon">◇</span>
-            <p>Aucun artefact</p>
-            <p className="empty-hint">Les fichiers crees par les skills apparaitront ici</p>
+            <p>No artifacts</p>
+            <p className="empty-hint">Files created by skills will appear here</p>
           </div>
         ) : (
           <>
             {pinnedArtifacts.length > 0 && (
               <div className="rs-pinned-section">
-                <div className="rs-pinned-label">📌 Epingles</div>
+                <div className="rs-pinned-label">📌 Pinned</div>
                 {pinnedArtifacts.map(renderFeedCard)}
               </div>
             )}
@@ -253,8 +253,8 @@ export function ArtifactFeed({
       {filteredArtifacts.length === 0 ? (
         <div className="empty-state">
           <span className="empty-icon">◇</span>
-          <p>Aucun artefact</p>
-          <p className="empty-hint">Les fichiers crees par les skills apparaitront ici</p>
+          <p>No artifacts</p>
+          <p className="empty-hint">Files created by skills will appear here</p>
         </div>
       ) : (
         filteredArtifacts.map(artifact => (
@@ -288,8 +288,8 @@ export function ArtifactFeed({
           {filteredArtifacts.length === 0 ? (
             <div className="empty-state">
               <span className="empty-icon">◇</span>
-              <p>Aucun artefact</p>
-              <p className="empty-hint">Les fichiers crees par les skills apparaitront ici</p>
+              <p>No artifacts</p>
+              <p className="empty-hint">Files created by skills will appear here</p>
             </div>
           ) : (
             filteredArtifacts.map(artifact => (
@@ -327,7 +327,7 @@ export function ArtifactFeed({
             className={`filter-tab ${!filterType ? 'active' : ''}`}
             onClick={() => setFilterType(null)}
           >
-            Tous ({totalNonEmpty})
+            All ({totalNonEmpty})
           </button>
           <button
             className={`filter-tab ${filterType === 'doc' ? 'active' : ''}`}
@@ -360,14 +360,14 @@ export function ArtifactFeed({
           <button
             className={`action-pill disabled`}
             disabled
-            title="Bientôt disponible"
+            title="Coming soon"
           >
             Variants
           </button>
           <button
             className={`action-pill disabled`}
             disabled
-            title="Bientôt disponible"
+            title="Coming soon"
           >
             Compare
           </button>
@@ -378,14 +378,14 @@ export function ArtifactFeed({
           <button
             className={`view-mode-btn ${viewMode === 'realsize' ? 'active' : ''}`}
             onClick={() => setViewMode('realsize')}
-            title="Taille réelle"
+            title="Real size"
           >
             ▢
           </button>
           <button
             className={`view-mode-btn ${viewMode === 'cards' ? 'active' : ''}`}
             onClick={() => setViewMode('cards')}
-            title="Cartes"
+            title="Cards"
           >
             ▦
           </button>

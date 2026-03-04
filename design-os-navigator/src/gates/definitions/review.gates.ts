@@ -10,7 +10,7 @@ import { hasGoVerdict } from '../conditions/contentConditions';
 export const reviewGates: GateDefinition[] = [
   {
     id: 'review-exists',
-    label: 'Review existe',
+    label: 'Review exists',
     command: '/review',
     condition: (ctx) => {
       return hasRealFiles(ctx.reviewFiles);
@@ -18,7 +18,7 @@ export const reviewGates: GateDefinition[] = [
   },
   {
     id: 'review-complete',
-    label: 'Review complete',
+    label: 'Review completed',
     command: '/review',
     condition: (ctx) => {
       const realReviews = ctx.reviewFiles.filter(f => !f.isScaffold);
@@ -28,7 +28,7 @@ export const reviewGates: GateDefinition[] = [
   },
   {
     id: 'review-go',
-    label: 'Verdict GO',
+    label: 'GO verdict',
     command: '/review',
     condition: (ctx) => {
       return ctx.reviewFiles.some(f => {

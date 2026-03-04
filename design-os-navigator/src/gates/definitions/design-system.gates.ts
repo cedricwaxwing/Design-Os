@@ -9,7 +9,7 @@ import { hasRealFiles, countRealFiles } from '../conditions/fileConditions';
 export const designSystemGates: GateDefinition[] = [
   {
     id: 'ds-tokens',
-    label: 'Tokens definis',
+    label: 'Tokens defined',
     command: '/onboarding',
     condition: (ctx) => {
       const hasTokens = ctx.dsContext.tokensDefined === true ||
@@ -19,7 +19,7 @@ export const designSystemGates: GateDefinition[] = [
   },
   {
     id: 'ds-components',
-    label: 'Composants documentes',
+    label: 'Components documented',
     command: '/onboarding',
     condition: (ctx) => {
       const components = ctx.dsContext.components as unknown[];
@@ -28,7 +28,7 @@ export const designSystemGates: GateDefinition[] = [
   },
   {
     id: 'ds-patterns',
-    label: 'Patterns definis',
+    label: 'Patterns defined',
     command: '/onboarding',
     condition: (ctx) => {
       const patterns = ctx.dsContext.patterns as unknown[];
@@ -37,7 +37,7 @@ export const designSystemGates: GateDefinition[] = [
   },
   {
     id: 'ds-states',
-    label: 'Etats UI documentes',
+    label: 'UI states documented',
     command: '/onboarding',
     condition: (ctx) => {
       const states = ctx.dsContext.states as unknown[];

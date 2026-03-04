@@ -82,7 +82,7 @@ export function ArtifactCard({
 
   const formatTime = (ts: number) => {
     const date = new Date(ts);
-    return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   };
 
   const badgeClass: Record<string, string> = {
@@ -102,7 +102,7 @@ export function ArtifactCard({
         {isLoading && (
           <div className="feed-loading-overlay">
             <span className="spinner" />
-            <span className="feed-loading-text">Generation...</span>
+            <span className="feed-loading-text">Generating...</span>
           </div>
         )}
 
@@ -117,28 +117,28 @@ export function ArtifactCard({
           </div>
           <div className="feed-actions" onClick={e => e.stopPropagation()}>
             <button className="feed-action-btn" onClick={onOpen}>
-              ↗ Ouvrir
+              ↗ Open
             </button>
             <button className="feed-action-btn" onClick={onCopy}>
-              📋 Copier
+              📋 Copy
             </button>
             <div className="feed-dropdown-wrapper" onClick={e => e.stopPropagation()}>
               <button
                 className="feed-action-btn"
                 onClick={(e) => { e.stopPropagation(); onRegenToggle?.(); }}
               >
-                🔄 Regenerer ▾
+                🔄 Regenerate ▾
               </button>
               {regenOpen && (
                 <div className="feed-dropdown">
                   <button className="feed-dropdown-item" onClick={() => onRegenerate('same')}>
-                    <span className="feed-dropdown-icon">🔄</span> Regenerer
+                    <span className="feed-dropdown-icon">🔄</span> Regenerate
                   </button>
                   <button className="feed-dropdown-item" onClick={() => onRegenerate('prompt')}>
-                    <span className="feed-dropdown-icon">✏️</span> Avec prompt...
+                    <span className="feed-dropdown-icon">✏️</span> With prompt...
                   </button>
                   <button className="feed-dropdown-item" onClick={() => onRegenerate('variant')}>
-                    <span className="feed-dropdown-icon">✧</span> Variante
+                    <span className="feed-dropdown-icon">✧</span> Variant
                   </button>
                 </div>
               )}
@@ -154,11 +154,11 @@ export function ArtifactCard({
                 <div className="feed-dropdown feed-dropdown-right">
                   <button className="feed-dropdown-item" onClick={onPin}>
                     <span className="feed-dropdown-icon">{artifact.isPinned ? '📍' : '📌'}</span>
-                    {artifact.isPinned ? 'Desepingler' : 'Epingler'}
+                    {artifact.isPinned ? 'Unpin' : 'Pin'}
                   </button>
                   <div className="feed-dropdown-divider" />
                   <button className="feed-dropdown-item feed-danger" onClick={onDelete}>
-                    <span className="feed-dropdown-icon">🗑</span> Supprimer
+                    <span className="feed-dropdown-icon">🗑</span> Delete
                   </button>
                 </div>
               )}
@@ -261,16 +261,16 @@ export function ArtifactCard({
       {/* Actions */}
       {showActions && (
         <div className="artifact-actions" onClick={e => e.stopPropagation()}>
-          <button className="action-btn" onClick={onCopy} title="Copier">
+          <button className="action-btn" onClick={onCopy} title="Copy">
             📋
           </button>
-          <button className="action-btn" onClick={onPin} title={artifact.isPinned ? 'Desepingler' : 'Epingler'}>
+          <button className="action-btn" onClick={onPin} title={artifact.isPinned ? 'Unpin' : 'Pin'}>
             {artifact.isPinned ? '📍' : '📌'}
           </button>
-          <button className="action-btn" onClick={() => onRegenerate('same')} title="Regenerer">
+          <button className="action-btn" onClick={() => onRegenerate('same')} title="Regenerate">
             🔄
           </button>
-          <button className="action-btn delete" onClick={onDelete} title="Supprimer">
+          <button className="action-btn delete" onClick={onDelete} title="Delete">
             🗑
           </button>
         </div>

@@ -48,7 +48,7 @@ export function NodeCard({ node, selected, onSelect }: NodeCardProps) {
       </div>
 
       <div className="node-meta">
-        <span className="node-files">{node.fileCount} fichiers</span>
+        <span className="node-files">{node.fileCount} files</span>
         <GateDots gates={node.gates} />
       </div>
 

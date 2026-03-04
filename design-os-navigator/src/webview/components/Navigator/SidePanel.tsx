@@ -65,15 +65,15 @@ export function SidePanel({
 
       {/* Body */}
       <div className="sp-body">
-        {/* Section: Statut */}
+        {/* Section: Status */}
         <div className="sp-section">
-          <div className="sp-section-title">Statut</div>
+          <div className="sp-section-title">Status</div>
           <div className="sp-stat">
-            <span className="sp-stat-label">Maturite</span>
+            <span className="sp-stat-label">Maturity</span>
             <span className="sp-stat-value">{node.maturity}</span>
           </div>
           <div className="sp-stat">
-            <span className="sp-stat-label">Fichiers</span>
+            <span className="sp-stat-label">Files</span>
             <span className="sp-stat-value">{node.fileCount}</span>
           </div>
           <div className="sp-stat">
@@ -99,10 +99,10 @@ export function SidePanel({
           </div>
         )}
 
-        {/* Section: Fichiers */}
+        {/* Section: Files */}
         {node.files.length > 0 && (
           <div className="sp-section">
-            <div className="sp-section-title">Fichiers</div>
+            <div className="sp-section-title">Files</div>
             {node.files.slice(0, 10).map(file => (
               <div
                 key={file.path}
@@ -120,15 +120,15 @@ export function SidePanel({
               </div>
             ))}
             {node.files.length > 10 && (
-              <div className="sp-more">+{node.files.length - 10} fichiers</div>
+              <div className="sp-more">+{node.files.length - 10} files</div>
             )}
           </div>
         )}
 
-        {/* Section: Connexions */}
+        {/* Section: Connections */}
         {connections.length > 0 && (
           <div className="sp-section">
-            <div className="sp-section-title">Connexions</div>
+            <div className="sp-section-title">Connections</div>
             {connections.map(conn => (
               <div key={conn.id} className="sp-connection">
                 {conn.label}

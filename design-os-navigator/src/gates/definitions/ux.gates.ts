@@ -10,7 +10,7 @@ import { noHypotheses, avgCompleteness } from '../conditions/contentConditions';
 export const uxGates: GateDefinition[] = [
   {
     id: 'ux-files',
-    label: '1+ fichier UX',
+    label: '1+ UX file',
     command: '/ux',
     condition: (ctx) => {
       return hasRealFiles(ctx.uxFiles);
@@ -18,7 +18,7 @@ export const uxGates: GateDefinition[] = [
   },
   {
     id: 'ux-screen-map',
-    label: 'Screen-map defini',
+    label: 'Screen-map defined',
     command: '/ux',
     condition: (ctx) => {
       return ctx.hasScreenMap && ctx.screenMapContent.length > 100;
@@ -26,7 +26,7 @@ export const uxGates: GateDefinition[] = [
   },
   {
     id: 'ux-hypotheses',
-    label: 'Hypotheses UX validees',
+    label: 'UX hypotheses validated',
     command: '/ux',
     condition: (ctx) => {
       const realFiles = ctx.uxFiles.filter(f => !f.isScaffold);
@@ -36,7 +36,7 @@ export const uxGates: GateDefinition[] = [
   },
   {
     id: 'ux-complete',
-    label: 'Documentation UX complete (80%+)',
+    label: 'UX documentation complete (80%+)',
     command: '/ux',
     condition: (ctx) => {
       return avgCompleteness(ctx.uxFiles, 0.8);
