@@ -30,6 +30,7 @@ That's it. The onboarding agent asks about your project, personas, tech stack, a
 ### Option 1: From the Marketplace (recommended)
 
 Install directly from VS Code or Cursor:
+
 1. Open Extensions (`Cmd+Shift+X` / `Ctrl+Shift+X`)
 2. Search for **"Design Os"**
 3. Click **Install**
@@ -55,6 +56,7 @@ npx vsce package --no-dependencies
 ```
 
 Then install the `.vsix` file:
+
 1. Open VS Code/Cursor
 2. Press `Fn+Cmd+Shift+P` (Mac) or `Ctrl+Shift+P` (Windows/Linux)
 3. Type **"Extensions: Install from VSIX..."**
@@ -72,24 +74,26 @@ Then install the `.vsix` file:
 
 ## Available Agents
 
-| Agent | Command | What it does | Mode |
-|-------|---------|-------------|------|
-| Onboarding | `/onboarding` | Configure your project interactively | Guided |
-| Orchestrator | `/o` | Coordinate multi-agent workflows, propose plans | Coordination |
-| Discovery | `/discovery` | Build user/domain understanding, structure hypotheses | Guided exploration |
-| UX Design | `/ux` | Explore UX directions, challenge hypotheses | Exploration (2+ options) |
-| Spec | `/spec` | Generate complete specs from user stories | Execution |
-| Build | `/build` | Code in TDD from validated specs | Execution |
-| Review | `/review` | Score code conformity vs spec (GO/NO-GO) | Execution |
-| Explore | `/explore` | Quick prototype (happy path only) | Execution |
-| UI Designer | `/ui` | Generate mockups (SVG, HTML, React) | Exploration |
-| Screen Map | `/screen-map` | Diagnose screen-spec-story mapping integrity | Diagnostic |
-| Health | `/health` | Run a full project health check (score + actions) | Diagnostic |
+| Agent        | Command       | What it does                                          | Mode                     |
+| ------------ | ------------- | ----------------------------------------------------- | ------------------------ |
+| Onboarding   | `/onboarding` | Configure your project interactively                  | Guided                   |
+| Orchestrator | `/o`          | Coordinate multi-agent workflows, propose plans       | Coordination             |
+| Discovery    | `/discovery`  | Build user/domain understanding, structure hypotheses | Guided exploration       |
+| UX Design    | `/ux`         | Explore UX directions, challenge hypotheses           | Exploration (2+ options) |
+| Spec         | `/spec`       | Generate complete specs from user stories             | Execution                |
+| Build        | `/build`      | Code in TDD from validated specs                      | Execution                |
+| Review       | `/review`     | Score code conformity vs spec (GO/NO-GO)              | Execution                |
+| Explore      | `/explore`    | Quick prototype (happy path only)                     | Execution                |
+| UI Designer  | `/ui`         | Generate mockups (SVG, HTML, React)                   | Exploration              |
+| Screen Map   | `/screen-map` | Diagnose screen-spec-story mapping integrity          | Diagnostic               |
+| Health       | `/health`     | Run a full project health check (score + actions)     | Diagnostic               |
 
 ## Methodology
 
 ### Spec-Driven Development
+
 No code is written without a validated spec. The cycle:
+
 1. **Strategy** — Define vision, brief, roadmap
 2. **Discovery** (`/discovery`) — User research, personas, domain context, hypothesis mapping
 3. **Design** (`/ux`) — Explore UX solutions, challenge hypotheses, define key screens
@@ -98,13 +102,15 @@ No code is written without a validated spec. The cycle:
 6. **Review** (`/review`) — Score conformity, classify gaps, triage NO-GO
 
 ### Key Principle: Screens ≠ User Stories
+
 Multiple stories often converge on the same screen. The Screen Map (`00_screen-map.md`) maps N stories → M screens. Always start by identifying key screens, not by splitting per story.
 
 ### Checkpoint Modes
-| Mode | Behavior |
-|------|----------|
-| `minimal` | Checkpoint only at end of full cycle |
-| `standard` | Checkpoint between each phase (default) |
+
+| Mode       | Behavior                                 |
+| ---------- | ---------------------------------------- |
+| `minimal`  | Checkpoint only at end of full cycle     |
+| `standard` | Checkpoint between each phase (default)  |
 | `granular` | Checkpoint at every significant decision |
 
 ## Folder Structure
@@ -136,19 +142,24 @@ Design-OS/
 ## Customization
 
 ### Change the Design System
+
 Edit files in `01_Product/06 Design System/`:
+
 - `tokens.md` — Colors, typography, spacing
 - `components.md` — Reusable UI components
 - `patterns.md` — Composition patterns
 - `states.md` — Empty, loading, error, success states
 
 ### Add a Module
+
 1. Edit `modules-registry.md` to add the module
 2. Update `.claude/context.md` to activate it
 3. The agents will auto-create the folder structure on first use
 
 ### Switch Active Module
+
 Edit `.claude/context.md`:
+
 ```markdown
 module: your-module-slug
 module-label: Your Module Name
@@ -158,6 +169,7 @@ pillar: Your Pillar
 ## UX Laws Reference
 
 The framework includes 30 UX laws (from lawsofux.com) integrated into agent workflows. Agents use these laws to:
+
 - `/ux` — Justify design recommendations
 - `/spec` — Validate spec quality
 - `/build` — Guide implementation choices
@@ -171,4 +183,4 @@ MIT — see [LICENSE](./LICENSE)
 
 ---
 
-*Built with [Claude Code](https://claude.com/code).*
+_Built with [Claude Code](https://claude.com/code)._
