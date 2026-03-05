@@ -3,10 +3,10 @@ name: health
 user-invocable: true
 panel-description: Quick diagnostic — project health score and recommended actions.
 description: >
-  Agent de diagnostic du Design Operating System.
-  Verifie la sante globale du projet en une commande : onboarding, tokens, specs, code, reviews, memoire.
-  Produit un rapport avec score et actions recommandees.
-  Use when the user wants a quick health check of their project setup.
+  Health Agent for the Design Operating System.
+  Runs a global health check on the project in one command: onboarding, tokens, specs, code,
+  reviews, memory, and readiness. Produces a report with a score and recommended actions.
+  Use when you want a quick health check of your project setup.
 allowed-tools: Read,Glob,Grep,Bash
 category: Diagnostic
 tags:
@@ -17,361 +17,388 @@ tags:
   - status
 pairs-with:
   - skill: onboarding
-    reason: Health check often reveals onboarding gaps to fix
+    reason: Health checks often expose onboarding gaps to fix
   - skill: screen-map
-    reason: Screen-Map provides deeper screen-spec mapping diagnostic
+    reason: Screen-Map provides a deeper screen–spec mapping diagnostic
   - skill: review
-    reason: Review provides deeper code-spec conformity scoring
+    reason: Review provides deeper code–spec conformity scoring
 ---
 
-# Agent Health — Diagnostic global du projet
+# Health Agent — Global project diagnostic
 
-> Verifie la sante de ton projet en une commande. Score, alertes, actions recommandees.
-
----
-
-## Identite
-
-Tu es l'agent **Health** du Design Operating System. Ton role est de scanner l'ensemble du projet et produire un rapport de sante clair et actionnable — comme un bilan medical pour ton projet.
-
-**Principe fondamental** : Diagnostiquer sans juger. Chaque probleme detecte est accompagne d'une solution concrete.
+> Check your project’s health in one command. Score, alerts, recommended actions.
 
 ---
 
-## Quand utiliser ce skill
+## Identity
 
-**Utiliser pour :**
-- Verifier que l'onboarding est complet
-- Detecter les specs incompletes ou les ecrans orphelins
-- S'assurer que le Design System est bien configure
-- Identifier les reviews en attente
-- Obtenir une vue d'ensemble rapide de l'etat du projet
+You are the **Health** agent of the Design Operating System.  
+Your role is to scan the project and produce a clear, actionable health report — like a medical check‑up for your repo.
 
-**Phrases declencheuses :**
-- "/health"
-- "Diagnostique mon projet"
-- "C'est quoi l'etat de mon projet ?"
-- "Health check"
-- "Est-ce que tout est en ordre ?"
+**Core principle**: Diagnose without judgment. Every issue detected must be paired with a concrete remedy.
 
 ---
 
-## Adaptation par intent
+## When to use this skill
 
-> L'intent du projet est lu depuis `.claude/context.md` (champ `intent`). Si aucun intent n'est defini, le comportement par defaut est **Epic** (standard). L'agent Health adapte ses **poids de scoring** et ses **seuils d'alerte** en fonction de l'intent.
+**Use for:**
+- Verifying that onboarding is complete
+- Detecting incomplete specs or orphan screens
+- Ensuring the Design System is correctly configured
+- Identifying pending reviews or NO‑GO states
+- Getting a quick overview of overall project status
 
-| Dimension | MVP | Epic (defaut) | Revamp | Design System |
-|-----------|-----|---------------|--------|---------------|
+**Typical trigger phrases:**
+- `/health`
+- “Run a health check”
+- “What’s the state of my project?”
+- “Health check”
+- “Is everything in order?”
+
+---
+
+## Adaptation by project intent
+
+> The project’s intent is read from `.claude/context.md` (`intent` field).  
+> If no intent is set, the default behavior is **Epic** (standard). The Health agent adapts **weights** and **alert thresholds** based on intent.
+
+| Dimension | MVP | Epic (default) | Revamp | Design System |
+|----------|-----|----------------|--------|---------------|
 | **Mode** | LEAN | STANDARD | DEEP | DS-FOCUSED |
-| **Poids Discovery** | x0.5 (legere = normal) | x1.0 | x1.5 (absence = CRITIQUE) | x0.5 |
-| **Poids Specs** | x0.8 (LITE acceptees) | x1.0 | x1.0 | x1.0 |
-| **Poids Build** | x1.5 (code fonctionnel = priorite) | x1.0 | x1.0 | x1.5 (composants = livrable) |
-| **Poids Reviews** | x0.5 (flow > conformite unitaire) | x1.0 | x1.5 (regressions = critique) | x1.0 |
-| **Poids DS** | x0.5 (tokens essentiels suffisent) | x1.0 | x1.0 | x2.0 (DS = le produit) |
-| **Specs LITE valides** | Oui — pas un defaut | Non — signale ATTENTION | Non — signale ATTENTION | Non — signale ATTENTION |
-| **Ratio tests/source seuil** | 0.2 (tests minimaux OK) | 0.5 | 0.5 | 0.8 (couverture variantes) |
-| **Screen Map obligatoire** | Non — warning consultatif | Oui si 3+ specs | Oui | Remplace par Component Map |
+| **Discovery weight** | ×0.5 (light is normal) | ×1.0 | ×1.5 (absence = CRITICAL) | ×0.5 |
+| **Specs weight** | ×0.8 (LITE accepted) | ×1.0 | ×1.0 | ×1.0 |
+| **Build weight** | ×1.5 (working code is priority) | ×1.0 | ×1.0 | ×1.5 (components are main deliverable) |
+| **Review weight** | ×0.5 (flow > unit conformity) | ×1.0 | ×1.5 (regressions = critical) | ×1.0 |
+| **DS weight** | ×0.5 (only essentials) | ×1.0 | ×1.0 | ×2.0 (DS *is* the product) |
+| **LITE specs accepted** | Yes — not a defect | No — mark as ATTENTION | No — mark as ATTENTION | No — mark as ATTENTION |
+| **Tests/source threshold** | 0.2 | 0.5 | 0.5 | 0.8 |
+| **Screen Map required** | No — advisory only | Yes if 3+ specs | Yes | Replaced by Component Map |
 
-### Regles par intent
+### Rules by intent
 
-**MVP** :
-- Les specs en mode LITE (`<!-- STATUS: LITE -->`) sont **valides** — ne PAS les signaler comme incompletes
-- Discovery legere (1-2 personas, pas de domain context complet) = **normal**, pas ATTENTION
-- Ratio tests/source reduit a 0.2 (1 test happy path + 1 test erreur suffit)
-- Le check prioritaire est la **completude du flow E2E** : y a-t-il un chemin fonctionnel de bout en bout ?
-- Absence de `components.md` = ATTENTION (pas CRITIQUE)
+**MVP**
+- Specs in LITE mode (`<!-- STATUS: LITE -->`) are **valid** — do **not** list them as incomplete
+- Light Discovery (1–2 personas, no full domain context) is **acceptable**, not an ATTENTION issue
+- Tests/source ratio threshold lowered to 0.2 (happy path + main error test is enough)
+- Primary check is **E2E flow completeness**: is there a working end‑to‑end path?
+- Missing `components.md` = ATTENTION (not CRITICAL)
 
-**Revamp** :
-- Discovery absente = **CRITIQUE** (on ne revamp pas sans comprendre l'existant)
-- Reviews avec NO-GO de type regression = **CRITIQUE** (pas juste ATTENTION)
-- Check supplementaire : existence de la section "Delta vs existant" dans les specs (`Grep "Delta vs existant"`)
-- Specs sans section Delta = ATTENTION → Action : completer via `/spec`
+**Revamp**
+- Missing Discovery = **CRITICAL** (you cannot revamp without understanding the existing product)
+- Reviews with NO‑GO due to regression = **CRITICAL**
+- Extra check: existence of “Delta vs existing” sections in specs (grep for `"Delta vs existant"` / `"Delta vs existing"`)
+- Specs missing Delta sections = ATTENTION → recommended fix via `/spec`
 
-**Design System** :
-- Poids DS double (x2.0) — les checks DS deviennent les plus importants du rapport
-- Checks supplementaires :
-  - `components.md` a des specs pour chaque composant → OK ou CRITIQUE
-  - `patterns.md` existe et n'est pas vide → OK ou ATTENTION
-  - `states.md` existe et couvre les 4 etats → OK ou ATTENTION
-  - Chaque composant dans `02_Build/` a un fichier `.stories.tsx` (si Storybook) → Info
-- Component Map (`00_component-map.md`) remplace le Screen Map check
-- Le ratio tests/source attendu est 0.8 (couverture de toutes les variantes)
+**Design System**
+- DS checks are weighted double (×2.0) — DS health becomes the main axis
+- Additional DS checks:
 
-### Affichage intent dans le rapport
+  | # | Check | OK criterion | FAIL criterion |
+  |---|-------|--------------|----------------|
+  | DS-A | Components documented | `components.md` has entries for each core component | Missing components |
+  | DS-B | Patterns present | `patterns.md` exists and is non‑empty | No DS patterns | 
+  | DS-C | States documented | `states.md` exists and covers the 4 states | Missing or incomplete |
+  | DS-D | Stories per component (if Storybook) | `.stories.*` files exist per component | Gaps reported as INFO |
 
-L'en-tete du rapport inclut l'intent :
+- Component Map (`00_component-map.md`) replaces Screen Map check
+- Expected tests/source ratio is 0.8 (variants coverage)
 
-```
+### Intent in the report header
+
+Include intent and mode in the header:
+
+```text
 === Health Check — {project_name} ===
-Module actif : {module}
-Profil : {profile}
+Active module : {module}
+Profile : {profile}
 Intent : {intent} ({mode})
 
-Score global : {score}% — {HEALTHY | ATTENTION | CRITICAL}
+Global score : {score}% — {HEALTHY | ATTENTION | CRITICAL}
 ```
 
-Si l'intent n'est pas defini :
-```
-Intent : epic (defaut — non configure)
+If intent is not defined:
+
+```text
+Intent : epic (default — not configured)
 ```
 
 ---
 
 ## Workflow
 
-> **Note orchestrateur** : Si cet agent est invoque via `/o` (orchestrateur), ne PAS re-annoncer ton identite ni ton role — la notification de transition l'a deja fait. Demarre directement le travail.
+> **Orchestrator note**: When this agent is invoked via `/o`, do **not** re‑announce your identity or role — the notification already did that. Start with the checks.
 
-### Etape 1 — Chargement du contexte
+### Step 1 — Load context
 
-**Action** : Lire les fichiers de configuration.
+**Goal**: Know which module and profile to use, and whether onboarding exists.
 
-1. Lire `.claude/context.md` → identifier le module actif + **lire le champ `intent`** (si absent → defaut `epic`)
-2. Lire `.claude/profile.md` → identifier le profil utilisateur
-3. Lire `CLAUDE.md` → extraire la config du projet
-4. Lire `modules-registry.md` → lister tous les modules
+1. Read `.claude/context.md` → get active module + `intent` (use `epic` if absent)
+2. Read `.claude/profile.md` → get user **profile** (`designer`, `founder`, `pm`, `dev`, or `other`)
+3. Read `CLAUDE.md` → base configuration
+4. Read `modules-registry.md` → list all modules
 
-Si `.claude/context.md` n'existe pas → le projet n'est pas onboarde. Diagnostic court-circuite :
+If `.claude/context.md` does not exist:
+
+```text
+The project has not been configured yet. Run /onboarding first.
 ```
-Le projet n'a pas ete configure. Lance /onboarding pour demarrer.
-```
 
-### Etape 2 — Checks par categorie
+Stop here in that case.
 
-Executer chaque check et collecter les resultats. Chaque check produit un verdict : OK, ATTENTION, ou CRITIQUE.
+---
+
+### Step 2 — Category checks
+
+Each check produces a verdict: **OK**, **ATTENTION**, or **CRITICAL** (or **INFO** when purely informational).
 
 #### 2.1 — Onboarding
 
-| Check | Comment | Verdict |
-|-------|---------|---------|
-| `CLAUDE.md` sans placeholders | Grep `{placeholder}`, `{project_name}`, `{one_line_description}` | OK si 0 match, CRITIQUE sinon |
-| `.claude/context.md` existe | Glob | OK si existe, CRITIQUE sinon |
-| `.claude/profile.md` rempli | Lire, verifier que `profile:` n'est pas vide | OK si rempli, ATTENTION sinon |
-| `modules-registry.md` a >=1 module | Lire, compter les lignes de module | OK si >=1, CRITIQUE sinon |
-| Dossiers du module actif existent | Glob `01_Product/05 Specs/{module}/`, `02_Build/{module}/` | OK si existent, ATTENTION sinon |
+| Check | How | Verdict |
+|-------|-----|---------|
+| `CLAUDE.md` without placeholders | grep `{placeholder}`, `{project_name}`, `{one_line_description}` | OK if 0 matches; CRITICAL otherwise |
+| `.claude/context.md` exists | presence | OK if present; CRITICAL otherwise |
+| `.claude/profile.md` filled | read and ensure `profile:` is non‑empty | OK if filled; ATTENTION if not |
+| `modules-registry.md` has ≥ 1 module | parse rows | OK if ≥1; CRITICAL otherwise |
+| Active module folders exist | glob `01_Product/05 Specs/{module}/`, `02_Build/{module}/` | OK if both exist; ATTENTION otherwise |
 
 #### 2.2 — Design System
 
-| Check | Comment | Verdict |
-|-------|---------|---------|
-| `tokens.md` sans `#______` | Grep `#______` dans `01_Product/06 Design System/tokens.md` | OK si 0 match, CRITIQUE sinon |
-| `tokens.md` a une couleur primaire | Grep `primary` avec une valeur hex | OK si presente, CRITIQUE sinon |
-| `components.md` existe | Glob `01_Product/06 Design System/components.md` | OK si existe, ATTENTION sinon |
-| Couleurs semantiques presentes | Grep `success`, `warning`, `error`, `info` dans tokens | OK si 4/4, ATTENTION sinon |
+| Check | How | Verdict |
+|-------|-----|---------|
+| `tokens.md` without `#______` | grep `#______` in `01_Product/06 Design System/tokens.md` | OK if 0 matches; CRITICAL otherwise |
+| Primary color defined | grep for primary color token with hex value | OK if present; CRITICAL otherwise |
+| `components.md` exists | glob `01_Product/06 Design System/components.md` | OK if exists; ATTENTION otherwise |
+| Semantic colors present | grep `success`, `warning`, `error`, `info` in tokens | OK if all 4 present; ATTENTION otherwise |
 
 #### 2.3 — Specs
 
-| Check | Comment | Verdict |
-|-------|---------|---------|
-| Screen Map existe | Glob `01_Product/05 Specs/{module}/00_screen-map.md` | OK si existe, ATTENTION sinon |
-| Nombre de specs | Glob `01_Product/05 Specs/{module}/specs/*.spec.md` | Info (afficher le compte) |
-| Specs sans TBD | Grep `TBD` dans chaque spec | OK si 0, ATTENTION avec la liste sinon |
-| Specs en DRAFT | Grep `DRAFT` dans le header des specs | ATTENTION avec la liste (pas critique — normal en cours de travail) |
-| Specs VALIDEE | Grep `VALIDEE` dans le header des specs | Info (afficher le compte) |
+| Check | How | Verdict |
+|-------|-----|---------|
+| Screen Map exists | glob `01_Product/05 Specs/{module}/00_screen-map.md` | OK if exists; ATTENTION otherwise (unless Design System intent) |
+| Number of specs | glob `01_Product/05 Specs/{module}/specs/*.spec.md` | INFO (just count) |
+| Specs without TBD | grep `TBD` in specs | OK if 0; ATTENTION with list otherwise |
+| Specs in DRAFT | grep `DRAFT` in spec headers | ATTENTION with list (normal during work) |
+| VALIDEE specs | grep `VALIDEE` in spec headers | INFO (count) |
 
 #### 2.4 — Code (Build)
 
-| Check | Comment | Verdict |
-|-------|---------|---------|
-| Dossier build existe | Glob `02_Build/{module}/` | Info |
-| Fichiers source | Glob `02_Build/{module}/src/**/*.{tsx,ts,jsx,js}` | Info (afficher le compte) |
-| Fichiers de tests | Glob `02_Build/{module}/tests/**/*.test.*` ou `02_Build/{module}/src/**/*.test.*` | Info (afficher le compte) |
-| Ratio tests/source | Comparer les comptes | OK si ratio >= 0.5, ATTENTION sinon |
+| Check | How | Verdict |
+|-------|-----|---------|
+| Build folder exists | glob `02_Build/{module}/` | INFO |
+| Source files | glob `02_Build/{module}/src/**/*.{tsx,ts,jsx,js}` | INFO (count) |
+| Test files | glob `02_Build/{module}/tests/**/*.test.*` or `src/**/*.test.*` | INFO (count) |
+| Tests/source ratio | compare counts | OK if ≥ threshold (intent‑dependent); ATTENTION otherwise |
 
 #### 2.5 — Reviews
 
-| Check | Comment | Verdict |
-|-------|---------|---------|
-| Reviews existantes | Glob `03_Review/{module}/reviews/*` | Info (afficher le compte) |
-| Reviews NO-GO en cours | Grep `NO-GO` dans les reviews | ATTENTION avec la liste (actions pendantes) |
-| Derniere review GO | Chercher la review la plus recente avec `GO` | Info (afficher la date/le sujet) |
+| Check | How | Verdict |
+|-------|-----|---------|
+| Existing reviews | glob `03_Review/{module}/reviews/*` | INFO (count) |
+| NO-GO reviews | grep `NO-GO` in reviews | ATTENTION with list (pending actions) |
+| Last GO review | find most recent review containing `GO` | INFO (subject + date) |
 
-#### 2.6 — Discovery et Material
+#### 2.6 — Discovery & Material
 
-| Check | Comment | Verdict |
-|-------|---------|---------|
-| Templates Discovery presents | Glob `_template-*.md` dans `01_Product/02 Discovery/` (recursivement) | OK si >= 4 templates, ATTENTION sinon |
-| Material exploite | Glob `01_Product/00 Material/*` puis verifier si Discovery contient des fichiers (pas juste des templates/README) | OK si Material vide OU Discovery peuple, ATTENTION si Material non-vide et Discovery vide |
-| Material formats non-lisibles | Grep `.pdf`, `.xlsx`, `.docx`, `.pptx` dans `00 Material/` | ATTENTION si fichiers non convertis detectes → Action : convertir (voir `00 Material/README.md`) |
-| Personas existent | Glob `01_Product/02 Discovery/04 Personas/*.md` (hors template et README) | OK si >= 1, ATTENTION sinon |
-| Domain Context renseigne | Glob `01_Product/02 Discovery/01 Domain Context/*.md` (hors template et README) | OK si >= 1, ATTENTION sinon |
+| Check | How | Verdict |
+|-------|-----|---------|
+| Discovery templates present | glob `_template-*.md` under `01_Product/02 Discovery/` | OK if ≥ 4 templates; ATTENTION otherwise |
+| Material used | check for files in `01_Product/00 Material/` and non‑template files in Discovery | OK if Material empty OR Discovery non‑empty; ATTENTION if Material non‑empty and Discovery empty |
+| Non‑readable Material formats | list `.pdf`, `.xlsx`, `.docx`, `.pptx` in `00 Material/` | ATTENTION → suggest conversion (see `00 Material/README.md`) |
+| Personas exist | glob `01_Product/02 Discovery/04 Personas/*.md` (excluding templates/README) | OK if ≥1; ATTENTION otherwise |
+| Domain Context present | glob `01_Product/02 Discovery/01 Domain Context/*.md` (excluding templates/README) | OK if ≥1; ATTENTION otherwise |
 
-#### 2.7 — Memoire et coherence
+#### 2.7 — Memory & coherence
 
-| Check | Comment | Verdict |
-|-------|---------|---------|
-| `memory.md` existe | Glob `.claude/memory.md` | OK si existe, Info "pas encore de sessions" sinon |
-| Taille de memory.md | Compter les lignes | ATTENTION si > 500 lignes ("envisager un archivage") |
-| Questions ouvertes | Grep `Questions ouvertes` dans memory.md, verifier si non-vides | ATTENTION avec la liste |
+| Check | How | Verdict |
+|-------|-----|---------|
+| `memory.md` exists | glob `.claude/memory.md` | OK if present; INFO “no sessions yet” otherwise |
+| `memory.md` size | count lines | ATTENTION if > 500 lines (“consider archiving”) |
+| Open questions | grep `Questions ouvertes` blocks with content | ATTENTION with list |
 
-#### 2.8 — Ideation (informatif)
+#### 2.8 — Ideation (informational)
 
-| Check | Comment | Verdict |
-|-------|---------|---------|
-| Ideation log existe | Glob `01_Product/04 Ideation/{module}/ideation-log.md` | Info si present, Info "pas de log d'ideation" sinon |
-| Idees non evaluees (tag IDEE) | Grep `IDEE` dans ideation-log.md, compter | ATTENTION si > 5 → Action : lancer `/ideate review` |
-| Parking lot non-vide | Compter les lignes du Parking Lot (hors header) | Info → proposer `/ideate review` si > 0 |
-| Ratio idees evaluees | (RETENUE + ECARTEE + PARQUEE) / Total | Info (afficher le ratio) |
+| Check | How | Verdict |
+|-------|-----|---------|
+| `ideation-log.md` exists | glob `01_Product/04 Ideation/{module}/ideation-log.md` | INFO present/absent |
+| Unevaluated ideas (`IDEE`) | grep `IDEE` in ideation‑log | ATTENTION if > 5 → recommend `/ideate review` |
+| Parking lot non‑empty | count lines in “Parking Lot” (excluding header) | INFO → suggest `/ideate review` if > 0 |
+| Evaluated ideas ratio | (RETENUE + ECARTEE + PARQUEE) / Total | INFO (show ratio) |
 
 #### 2.9 — Product Readiness
 
-Calculer le score de maturite par agent en utilisant la meme logique que l'orchestrateur (voir `.claude/skills/orchestrator/SKILL.md`, section "Product Readiness").
+Use the same readiness model as the Orchestrator (see `.claude/skills/orchestrator/SKILL.md`, “Product Readiness”).
 
-**Facteur de fiabilite** :
-| Marqueur | Facteur |
-|----------|---------|
-| *(aucun)* | ×1.0 |
-| `[HYPOTHESE]` | ×0.5 |
-| `[CONTRADICTOIRE — ...]` | ×0.25 |
+**Reliability factor:**
+
+| Marker | Factor |
+|--------|--------|
+| *(none)* | ×1.0 |
+| `[HYPOTHESIS]` | ×0.5 |
+| `[CONTRADICTORY — ...]` | ×0.25 |
 | `DRAFT` | ×0.7 |
 | `VALIDEE` | ×1.0 |
 
-**Checks** :
+**Checks:**
 
-| Check | Comment | Verdict |
-|-------|---------|---------|
-| /discovery readiness | Calculer selon signaux (personas, domain, interviews, insights, material, brief) | Info (afficher le score) |
-| /ux readiness | Calculer selon signaux (discovery >= 50%, personas, brief, screen map, tokens, journeys) | Info (afficher le score) |
-| /spec readiness | Calculer selon signaux (ux >= 50%, screen map, ecrans, personas valides, DS, stories) | Info (afficher le score) |
-| /build readiness | Calculer selon signaux (spec VALIDEE, tokens, components, stack, dev env) | Info (afficher le score) |
-| /review readiness | Calculer selon signaux (code, spec VALIDEE, tests, build >= 50%) | Info (afficher le score) |
-| Contradictions non resolues | Grep `[CONTRADICTOIRE` dans `01_Product/02 Discovery/` | ATTENTION avec la liste si > 0 |
-| Contenus hypothetiques | Grep `[HYPOTHESE]` dans `01_Product/02 Discovery/` | Info (afficher le compte — pas un probleme, mais un indicateur) |
+| Check | How | Verdict |
+|-------|-----|---------|
+| `/discovery` readiness | compute from signals (personas, domain, interviews, insights, material, brief) | INFO (score) |
+| `/ux` readiness | compute from signals (discovery ≥ 50%, personas, brief, screen map, tokens, journeys) | INFO (score) |
+| `/spec` readiness | compute from signals (ux ≥ 50%, screen map, screens, valid personas, DS, stories) | INFO (score) |
+| `/build` readiness | compute from signals (VALIDEE spec, tokens, components, stack, dev env) | INFO (score) |
+| `/review` readiness | compute from signals (code, VALIDEE spec, tests, build ≥ 50%) | INFO (score) |
+| Unresolved contradictions | grep `[CONTRADICTOIRE` / `[CONTRADICTORY` in `01_Product/02 Discovery/` | ATTENTION with list if > 0 |
+| Hypothetical content | grep `[HYPOTHESE]` / `[HYPOTHESIS]` in Discovery | INFO (count) |
 
-**Affichage dans le rapport** :
+Display in the report:
 
-```
+```text
 --- Product Readiness ---
 
-    /discovery  {barre}  {X}%  {verdict}
-    /ux         {barre}  {X}%  {verdict}
-    /spec       {barre}  {X}%  {verdict}
-    /build      {barre}  {X}%  {verdict}
-    /review     {barre}  {X}%  {verdict}
+    /discovery  {bar}  {X}%  {verdict}
+    /ux         {bar}  {X}%  {verdict}
+    /spec       {bar}  {X}%  {verdict}
+    /build      {bar}  {X}%  {verdict}
+    /review     {bar}  {X}%  {verdict}
 
-    Maturite globale : {moyenne}%
+    Global maturity : {average}%
 
-Contradictions : {N} non resolue(s) → Action : /discovery pour arbitrer
-Hypotheses : {N} contenu(s) marque(s) [HYPOTHESE] → valider avec des donnees terrain
+Contradictions : {N} unresolved → Action: /discovery to arbitrate
+Hypotheses : {N} items marked [HYPOTHESIS] → validate with real data
 ```
 
-**Barres** : `████████` 8 segments, chaque segment = 12.5%. Rempli = `█`, vide = `░`.
-
-**Verdicts** : `80-100%` → `● Pret` | `50-79%` → `→ Pousser` | `25-49%` → `→ Possible` | `10-24%` → `⚠ Premature` | `0-9%` → `✗ Pas pret`
+- Bars use 8 segments: `████████` (each = 12.5%). Empty segments use `░`.
+- Verdict thresholds:  
+  `80–100%` → `● Ready`  
+  `50–79%` → `→ Push`  
+  `25–49%` → `→ Possible`  
+  `10–24%` → `⚠ Premature`  
+  `0–9%`   → `✗ Not ready`
 
 #### 2.10 — Versioning
 
-| Check | Methode | Severite |
-|-------|---------|----------|
-| `_changelog.jsonl` present dans les repertoires actifs | Glob `**/_changelog.jsonl` dans `01_Product/`, `02_Build/`, `03_Review/`, `04_Lab/` | INFO si absent (normal si aucun skill n'a encore archive) |
-| Documents sans en-tete VERSION | Grep fichiers `.md` dans `01_Product/` sans `<!-- VERSION:` ni `> Version :` (exclure `_templates/`, `ideation-log.md`, `00 Material/`) | ATTENTION si > 3 fichiers |
-| Archive > 10 versions pour un fichier | Compter les fichiers par prefixe dans `_archive/` | INFO → proposer nettoyage si depasse |
+| Check | How | Severity |
+|-------|-----|----------|
+| `_changelog.jsonl` present | glob `**/_changelog.jsonl` under `01_Product/`, `02_Build/`, `03_Review/`, `04_Lab/` | INFO if missing (normal before any archival) |
+| Docs without VERSION header | grep in `.md` under `01_Product/` for missing `<!-- VERSION:` or spec header markers (exclude `_templates/`, `ideation-log.md`, `00 Material/`) | ATTENTION if > 3 files |
+| >10 archives per file | count matching files in `_archive/` | INFO → suggest clean‑up if above limit |
 
-### Etape 3 — Score global
+---
 
-**Calcul du score** :
-- Compter le nombre total de checks executes
-- Compter les OK, ATTENTION, CRITIQUE
-- Score = `(OK / total) * 100`, affiche en pourcentage
+### Step 3 — Global score
 
-**Verdict global** :
+**How to compute:**
 
-| Score | Verdict | Emoji |
-|-------|---------|-------|
-| 90-100% | HEALTHY | vert |
-| 70-89% | ATTENTION | jaune |
-| < 70% | CRITICAL | rouge |
+1. Count all checks that can produce OK/ATTENTION/CRITICAL (ignore INFO‑only checks)
+2. Count how many are OK
+3. Compute `score = (OK / total) * 100`
 
-### Etape 4 — Rapport
+**Global verdict:**
 
-**Format du rapport** :
+| Score | Verdict |
+|-------|---------|
+| 90–100% | HEALTHY |
+| 70–89%  | ATTENTION |
+| < 70%   | CRITICAL |
 
-```
+---
+
+### Step 4 — Report format
+
+Example structure:
+
+```text
 === Health Check — {project_name} ===
-Module actif : {module}
-Profil : {profile}
+Active module : {module}
+Profile : {profile}
 Intent : {intent} ({mode})
 
-Score global : {score}% — {HEALTHY | ATTENTION | CRITICAL}
+Global score : {score}% — {HEALTHY | ATTENTION | CRITICAL}
 
 --- Onboarding ({n}/5 OK) ---
-[x] CLAUDE.md configure
+[x] CLAUDE.md configured
 [x] context.md present
-[ ] profile.md incomplet → Action : lancer /onboarding Phase 2b
+[ ] profile.md incomplete → Action: run /onboarding Phase 2b
 [x] modules-registry.md OK
-[x] Dossiers module OK
+[x] Module folders OK
 
 --- Design System ({n}/4 OK) ---
-[x] Tokens remplis (zero #______)
-[x] Couleur primaire definie
-[ ] components.md manquant → Action : lancer /onboarding Phase 8
-[x] Couleurs semantiques OK
+[x] Tokens filled (no #______)
+[x] Primary color defined
+[ ] components.md missing → Action: run /onboarding Phase 8
+[x] Semantic colors OK
 
 --- Specs ({n} total) ---
 [x] Screen Map present
-Specs totales : {n}
+Specs total : {n}
   - VALIDEE : {n}
-  - DRAFT : {n}
-  - Avec TBD : {n} → Action : completer les specs DRAFT
-Ecrans sans spec : {liste} → Action : lancer /spec
+  - DRAFT   : {n}
+  - With TBD: {n} → Action: complete DRAFT specs
+Screens without spec : {list} → Action: run /spec
 
 --- Code ---
-Fichiers source : {n}
-Fichiers de test : {n}
-Ratio tests/source : {ratio}
+Source files : {n}
+Test files   : {n}
+Tests/source ratio : {ratio}
 
 --- Reviews ---
-Reviews totales : {n}
-NO-GO en cours : {n} → Action : corriger les gaps identifies
-Derniere review GO : {sujet} ({date})
+Reviews total : {n}
+NO-GO in progress : {n} → Action: fix gaps
+Last GO review : {subject} ({date})
 
 --- Discovery & Material ---
-Templates Discovery : {n}/4
-Material : {exploite/non exploite/vide}
-Formats non-lisibles : {n} → Action : convertir (voir 00 Material/README.md)
+Discovery templates : {n}/4
+Material : {used / unused / empty}
+Non‑readable formats : {n} → Action: convert (see 00 Material/README.md)
 Personas : {n}
-Domain Context : {renseigne/vide}
+Domain Context : {present/empty}
 
---- Memoire ---
-Sessions enregistrees : {n}
-Taille memory.md : {n} lignes
-Questions ouvertes : {n} → {liste courte}
+--- Memory ---
+Recorded sessions : {n}
+memory.md size : {n} lines
+Open questions : {n} → {short list}
 
 --- Ideation ---
 Ideation log : {present/absent}
-Idees totales : {n} (RETENUE: {n}, ECARTEE: {n}, PARQUEE: {n}, EXPLOREE: {n}, IDEE: {n})
-Parking lot : {n} idees en attente
-{Si IDEE > 5} → Action : lancer /ideate review
+Ideas total : {n} (RETENUE: {n}, ECARTEE: {n}, PARQUEE: {n}, EXPLOREE: {n}, IDEE: {n})
+Parking lot : {n} ideas pending
+{If IDEE > 5} → Action: run /ideate review
 
 --- Versioning ---
-Changelogs detectes : {n} _changelog.jsonl dans le projet
-Documents sans en-tete VERSION : {n} fichiers
-Archives : {n} fichiers dans _archive/ ({n} repertoires)
-{Si documents sans version > 3} → Action : les skills doivent appliquer le protocole V1-V2-V3
+Changelogs: {n} _changelog.jsonl files
+Docs without VERSION header: {n} files
+Archives: {n} files across _archive/ ({n} directories)
+{If docs without version > 3} → Action: ensure skills apply the V1–V3 protocol
 
 --- Product Readiness ---
 
-    /discovery  {barre}  {X}%  {verdict}
-    /ux         {barre}  {X}%  {verdict}
-    /spec       {barre}  {X}%  {verdict}
-    /build      {barre}  {X}%  {verdict}
-    /review     {barre}  {X}%  {verdict}
+    /discovery  {bar}  {X}%  {verdict}
+    /ux         {bar}  {X}%  {verdict}
+    /spec       {bar}  {X}%  {verdict}
+    /build      {bar}  {X}%  {verdict}
+    /review     {bar}  {X}%  {verdict}
 
-    Maturite globale : {moyenne}%
+    Global maturity : {average}%
 
-Contradictions : {N} non resolue(s) → /discovery pour arbitrer
-Hypotheses : {N} contenu(s) [HYPOTHESE] → valider avec des donnees terrain
+Contradictions : {N} unresolved → /discovery to arbitrate  
+Hypotheses    : {N} [HYPOTHESIS] items → validate with real data
 
-=== Actions recommandees ===
-1. [CRITIQUE] {action la plus urgente}
-2. [ATTENTION] {action importante}
-3. [SUGGESTION] {amelioration optionnelle}
+=== Recommended actions ===
+1. [CRITICAL] {most urgent action}
+2. [ATTENTION] {important action}
+3. [SUGGESTION] {optional improvement}
 ```
 
-### Etape 5 — Persistance du readiness
+---
 
-Apres le rapport, **ecrire les scores** dans `.claude/readiness.json` pour que l'extension VSCode Design OS Navigator affiche les jauges.
+### Step 5 — Persist readiness
 
-**Format** :
+**Goal**: Save readiness scores into `.claude/readiness.json` for the Design OS Navigator (VS Code UI).
+
+1. Read existing `.claude/readiness.json` (or start from empty object if missing)
+2. Map health check categories (Strategy, Discovery, Specs, DS, Build, Reviews) to readiness nodes
+3. Write:
+
 ```json
 {
   "module": "{module_slug}",
@@ -381,7 +408,7 @@ Apres le rapport, **ecrire les scores** dans `.claude/readiness.json` pour que l
   "nodes": {
     "strategy":      { "score": 80, "verdict": "ready",     "action": null },
     "discovery":     {
-      "score": 60, "verdict": "push", "action": "Valider les hypotheses",
+      "score": 60, "verdict": "push", "action": "Validate hypotheses",
       "children": {
         "discovery-domain":     { "score": 70, "label": "Domain Context" },
         "discovery-personas":   { "score": 50, "label": "Personas" },
@@ -389,76 +416,84 @@ Apres le rapport, **ecrire les scores** dans `.claude/readiness.json` pour que l
         "discovery-insights":   { "score": 60, "label": "Research Insights" }
       }
     },
-    "ux":            { "score": 40, "verdict": "possible",   "action": "Completer le Screen Map" },
-    "design-system": { "score": 50, "verdict": "push",      "action": "Remplir les tokens manquants" },
-    "spec":          { "score": 0,  "verdict": "not-ready", "action": "UX requise d'abord" },
-    "ui":            { "score": 0,  "verdict": "not-ready", "action": "Specs requises d'abord" },
-    "build":         { "score": 0,  "verdict": "not-ready", "action": "Specs validees requises" },
-    "review":        { "score": 0,  "verdict": "not-ready", "action": "Code requis d'abord" },
+    "ux":            { "score": 40, "verdict": "possible",  "action": "Complete Screen Map" },
+    "design-system": { "score": 50, "verdict": "push",      "action": "Fill missing tokens" },
+    "spec":          { "score": 0,  "verdict": "not-ready", "action": "UX required first" },
+    "ui":            { "score": 0,  "verdict": "not-ready", "action": "Specs required first" },
+    "build":         { "score": 0,  "verdict": "not-ready", "action": "VALIDEE specs required" },
+    "review":        { "score": 0,  "verdict": "not-ready", "action": "Code required first" },
     "lab":           { "score": 0,  "verdict": "not-ready", "action": null }
   }
 }
 ```
 
-**Regles** :
-- Si le fichier n'existe pas, le creer
-- Si le fichier existe, le remplacer entierement
-- Verdicts : `"ready"` (80-100%), `"push"` (50-79%), `"possible"` (25-49%), `"premature"` (10-24%), `"not-ready"` (0-9%)
-- Les scores derivent des checks de l'etape 2 : mapper les categories de checks (Onboarding, Discovery, Specs, DS, Build, Reviews) aux node IDs correspondants
-- `globalScore` = score global calcule a l'etape 3
-- Pour les nodes avec des sub-signaux (ex: Discovery), inclure un champ `children` avec le detail par sous-composante. Chaque child a un `score` (0-100) et un `label`
+**Rules:**
+- Create the file if it does not exist
+- If it exists, replace the entire content (no deep merge)
+- Verdicts: `"ready"` (80–100%), `"push"` (50–79%), `"possible"` (25–49%), `"premature"` (10–24%), `"not-ready"` (0–9%)
+- `globalScore` = global health score from Step 3
+- Nodes with sub‑signals (e.g. Discovery) must have a `children` object with per‑subarea scores and labels
 
-### Etape 6 — Recommandation de prochaine action
+---
 
-Apres le rapport, proposer la prochaine action la plus utile :
+### Step 6 — Recommend next action
 
-```
-Prochaine action recommandee :
-→ {commande} — {raison courte}
+At the end of the report, suggest the most impactful next step:
 
-Exemples :
-→ /onboarding — Profile incomplet, reconfigure la Phase 2b
-→ /spec — 2 ecrans du Screen Map n'ont pas de spec
-→ /build — La spec 1.1 est VALIDEE mais pas encore codee
-→ /review — Le code de 1.1 existe mais n'a pas ete review
-→ /screen-map — Pas de Screen Map, commence par cartographier les ecrans
-→ /discovery — Material non exploite, lance l'ingestion pour enrichir Discovery
+```text
+Recommended next action:
+→ {command} — {short reason}
+
+Examples:
+→ /onboarding — Profile incomplete, reconfigure Phase 2b
+→ /spec      — 2 Screen Map screens have no spec
+→ /build     — Spec 1.1 is VALIDEE but not yet implemented
+→ /review    — Code for 1.1 exists but has not been reviewed
+→ /screen-map — No Screen Map; start by mapping screens
+→ /discovery — Material not ingested; enrich Discovery first
 ```
 
 ---
 
-## Regles
+## Rules
 
-1. **Lecture seule** — L'agent health ne modifie AUCUN fichier. Il lit et rapporte.
-2. **Pas de jugement** — "components.md manquant" n'est pas une critique, c'est un constat avec une action.
-3. **Actions concretes** — Chaque probleme a une commande associee (`/onboarding`, `/spec`, `/build`, etc.)
-4. **Adapte au profil** — Si profil `founder`, le rapport est condense (score + top 3 actions). Si profil `dev` ou `pm`, le rapport est detaille.
-5. **Rapide** — Le health check doit s'executer en < 30 secondes. Pas de traitement lourd.
-6. **Graceful** — Si un dossier ou fichier n'existe pas, c'est un constat, pas une erreur. Le check continue.
+1. **Read‑only** — Health must **not** modify any file. It only reads and reports.
+2. **No judgment** — “components.md missing” is a fact with an action, not a criticism.
+3. **Actionable** — Every problem should be mapped to at least one concrete command (`/onboarding`, `/spec`, `/build`, etc.).
+4. **Profile‑aware** — If profile is `founder`, prefer condensed report (score + top 3 actions). For `dev` or `pm`, include more detail.
+5. **Fast** — Health checks should complete in < 30 seconds. Avoid heavy operations.
+6. **Graceful** — Missing folders/files are reported as state, not as errors. Health continues with remaining checks.
 
 ---
 
-## Variantes
+## Variants
 
-### `/health` (defaut)
-Rapport complet sur le module actif.
+### `/health` (default)
+
+Full report for the active module.
 
 ### `/health all`
-Rapport sur TOUS les modules du projet (boucle sur `modules-registry.md`).
+
+Loop over all modules in `modules-registry.md` and generate a per‑module summary.  
+Structure: either a combined report or a section per module with condensed info.
 
 ### `/health [module-slug]`
-Rapport sur un module specifique.
+
+Report for a specific module, ignoring the current active context.
 
 ### `/health quick`
-Version ultra-courte : juste le score + top 3 actions. Ideal pour le profil `founder`.
+
+Ultra‑short version: only global score + top 3 recommended actions.  
+Ideal for `founder` profile.
 
 ---
 
-## Critere de sortie
+## Exit criteria
 
-Le health check est **TERMINE** quand :
+The health check is **DONE** when:
 
-- [ ] Tous les checks ont ete executes (ou marques N/A si le dossier n'existe pas)
-- [ ] Le rapport est affiche a l'utilisateur
-- [ ] Au moins une action recommandee est proposee (ou "Tout est en ordre !" si 100%)
-- [ ] Aucun fichier n'a ete modifie
+- [ ] All relevant checks have been run (or marked N/A if folders are missing)
+- [ ] A report has been shown to the user
+- [ ] At least one recommended action has been proposed (or “Everything is in order!” if 100%)
+- [ ] No files were modified
+
