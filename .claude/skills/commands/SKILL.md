@@ -3,8 +3,8 @@ name: commands
 user-invocable: true
 panel-description: Show all available commands.
 description: >
-  Affiche la liste de toutes les commandes disponibles (agents et overrides).
-  Aucun outil, aucune logique — juste un affichage rapide.
+  Display the list of all available commands (agents and override commands).
+  No tools, no logic — just a fast static listing.
 allowed-tools: ""
 category: Navigation
 tags:
@@ -14,56 +14,57 @@ tags:
   - reference
 ---
 
-# Agent Commands — Liste rapide
+# Commands Agent — Quick list
 
-> Affiche toutes les commandes disponibles a tout moment.
+> Display all available commands at any time.
 
 ---
 
 ## Instruction
 
-Quand l'utilisateur invoque `/commands`, affiche **exactement** le bloc ci-dessous (pas de lecture de fichier, pas de logique) :
+When the user invokes `/commands`, display **exactly** the block below (no file reads, no logic, no dynamic content):
 
-```
-=== Commandes disponibles ===
+```text
+=== Available commands ===
 
 --- Agents ---
-| Commande | Agent | Description |
-|----------|-------|-------------|
-| /o | Orchestrateur | Coordonne les agents, propose un plan d'execution |
-| /discovery | Workshop guide | Enrichit la comprehension utilisateurs et domaine |
-| /ideate | Coffre-fort a idees | Brainstorm libre, persistance de TOUTES les idees |
-| /ux | Sparring partner UX | Explore les directions UX, challenge les hypotheses |
-| /spec | Gardien de la spec | Genere une spec complete depuis les user stories |
-| /build | Builder TDD | Code en TDD depuis une spec validee |
-| /review | Reviewer de conformite | Score de conformite code vs spec (GO/NO-GO) |
-| /ui | Expert visuel | Genere des mockups (SVG, HTML, React) |
-| /wireframe | Architecte de layout | Wireframes low-fi, boards juxtaposes, navigation |
-| /explore | Prototypage rapide | Prototype jetable, happy path, mock data |
-| /screen-map | Diagnostic d'integrite | Audit coherence ecrans-specs-stories |
-| /health | Diagnostic global | Bilan de sante du projet (score + actions) |
-| /onboarding | Configuration projet | Configure le projet pas a pas |
-| /export | Exporteur de config | Exporte la config projet en JSON (collaboration) |
-| /import | Importeur de config | Bootstrap le projet depuis un export collaborateur |
+| Command    | Agent              | Description                                              |
+|-----------|--------------------|----------------------------------------------------------|
+| /o        | Orchestrator       | Coordinates agents and proposes an execution plan       |
+| /discovery| Guided workshop    | Enriches user/domain understanding                      |
+| /ideate   | Idea vault         | Free-form brainstorm, persists ALL ideas                |
+| /ux       | UX sparring partner| Explores UX directions, challenges hypotheses           |
+| /spec     | Spec guardian      | Generates a complete spec from user stories             |
+| /build    | TDD builder        | Codes in TDD from a validated spec                      |
+| /review   | Conformity reviewer| Scores code vs spec (GO/NO-GO)                          |
+| /ui       | Visual expert      | Generates mockups (SVG, HTML, React)                    |
+| /wireframe| Layout architect   | Low‑fi wireframes, juxtaposed boards, navigation flows  |
+| /explore  | Rapid prototype    | Throwaway prototype, happy path, mock data              |
+| /screen-map | Mapping diagnostic | Audits coherence between screens, specs, and stories  |
+| /health   | Global diagnostic  | Project health check (score + actions)                  |
+| /onboarding | Project setup    | Step‑by‑step project configuration                      |
+| /export   | Config exporter    | Exports project config to JSON (for collaboration)      |
+| /import   | Config importer    | Bootstraps a project from a collaborator export         |
 
---- Commandes d'override (utilisables a tout moment) ---
-| Commande | Effet |
-|----------|-------|
-| /stop | Pause immediate |
-| /back | Revient a l'etape precedente |
-| /skip | Saute l'etape courante |
-| /variants [n] | Genere n alternatives (defaut: 3) |
-| /inject [agent] | Insere un agent dans le flow |
-| /why | Explique le raisonnement |
-| /fork [nom] | Cree une variante parallele |
-| /status | Affiche l'etat du flow en cours |
-| /reset | Abandonne le flow, repart de zero |
-| /commands | Affiche cette liste |
+--- Override commands (usable at any time) ---
+| Command        | Effect                                  |
+|----------------|-----------------------------------------|
+| /stop          | Immediate pause                         |
+| /back          | Go back to the previous step           |
+| /skip          | Skip the current step                   |
+| /variants [n]  | Generate n alternatives (default: 3)    |
+| /inject [agent]| Insert an agent into the current flow   |
+| /why           | Explain the reasoning                   |
+| /fork [name]   | Create a parallel variant               |
+| /status        | Show the status of the current flow     |
+| /reset         | Abandon the flow and restart from scratch |
+| /commands      | Display this list                       |
 ```
 
-## Regles
+## Rules
 
-1. **Aucune lecture de fichier** — Le contenu est statique, defini ci-dessus.
-2. **Aucune modification** — Ce skill ne modifie rien.
-3. **Rapide** — Affichage immediat, pas de traitement.
-4. **Mise a jour manuelle** — Si un nouvel agent est ajoute au projet, mettre a jour ce fichier.
+1. **No file reads** — The content is static, defined in this file.
+2. **No modifications** — This skill never changes any project file.
+3. **Fast** — Response is immediate; no processing.
+4. **Manual updates** — If a new agent is added, this file must be updated accordingly.
+
