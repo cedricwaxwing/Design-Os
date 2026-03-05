@@ -1,53 +1,53 @@
-# .claude/ — Systeme d'agents du Design OS
+# .claude/ — Design OS Agent System
 
-> Configuration et agents IA du Design Operating System.
+> Configuration and AI agents for the Design Operating System.
 
 ---
 
-## Fichiers de configuration
+## Configuration files
 
-| Fichier | Role | Modifie par |
-|---------|------|-------------|
-| `context.md` | Module actif (slug, label, pilier) | `/onboarding`, manuellement |
-| `profile.md` | Profil utilisateur (designer, founder, PM, dev) | `/onboarding` Phase 2b |
-| `memory.md` | Journal persistant des sessions (memoire contextuelle) | `/o` automatiquement (append-only) |
-| `flow-state.yaml` | Etat du flow orchestrateur (session courante) | `/o` automatiquement |
+| File | Role | Modified by |
+|------|------|------------|
+| `context.md` | Active module (slug, label, pillar) | `/onboarding`, manual edits |
+| `profile.md` | User profile (designer, founder, PM, dev) | `/onboarding` Phase 2b |
+| `memory.md` | Persistent session journal (contextual memory) | `/o` automatically (append‑only) |
+| `flow-state.yaml` | Orchestrator flow state (current session) | `/o` automatically |
 
-## Dossier skills/
+## `skills/` folder
 
-Chaque sous-dossier contient un `SKILL.md` qui definit un agent (slash command) :
+Each subfolder contains a `SKILL.md` that defines an agent (slash command):
 
-| Agent | Commande | Role |
-|-------|----------|------|
-| **Onboarding** | `/onboarding` | Configure le projet (premiere chose a lancer) |
-| **Orchestrator** | `/o` | Coordonne les agents, propose des plans |
-| **Discovery** | `/discovery` | Enrichit la comprehension utilisateurs/domaine, structure les hypotheses |
-| **UX Design** | `/ux` | Explore les directions UX, challenge les hypotheses |
-| **Spec** | `/spec` | Genere des specs completes (9 sections) |
-| **Build** | `/build` | Code en TDD depuis une spec validee |
-| **Review** | `/review` | Score la conformite code vs spec |
-| **Explore** | `/explore` | Prototype rapide (happy path) |
-| **UI Designer** | `/ui` | Mockups SVG, HTML, React |
-| **Screen-Map** | `/screen-map` | Diagnostique la coherence ecrans/specs/stories |
-| **Health** | `/health` | Diagnostic global du projet (score + actions recommandees) |
+| Agent | Command | Role |
+|-------|--------|------|
+| **Onboarding** | `/onboarding` | Configures the project (first thing to run) |
+| **Orchestrator** | `/o` | Coordinates agents, proposes plans |
+| **Discovery** | `/discovery` | Deepens user/domain understanding, structures hypotheses |
+| **UX Design** | `/ux` | Explores UX directions, challenges hypotheses |
+| **Spec** | `/spec` | Generates complete specs (9 sections) |
+| **Build** | `/build` | Codes in TDD from a validated spec |
+| **Review** | `/review` | Scores code conformity vs spec |
+| **Explore** | `/explore` | Quick prototype (happy path) |
+| **UI Designer** | `/ui` | SVG, HTML, React mockups |
+| **Screen‑Map** | `/screen-map` | Diagnoses screen/spec/story coherence |
+| **Health** | `/health` | Global project diagnostic (score + recommended actions) |
 
-## Comment ca marche
+## How it works
 
-1. L'utilisateur lance une commande (ex: `/ux`)
-2. Claude Code lit le `SKILL.md` correspondant
-3. L'agent suit son workflow defini dans le SKILL.md
-4. Il lit `context.md` pour savoir sur quel module travailler
-5. Il lit `profile.md` pour adapter son style de communication
+1. The user runs a command (e.g. `/ux`)
+2. Claude Code reads the corresponding `SKILL.md`
+3. The agent follows the workflow defined in that SKILL file
+4. It reads `context.md` to know which module to work on
+5. It reads `profile.md` to adapt its communication style
 
-## Skills externes
+## External skills
 
-Le fichier `skills-registry.md` (racine du projet) liste les skills externes chargeables a la volee.
-Les agents `/build` et `/review` les chargent automatiquement depuis GitHub selon la stack du projet.
-Voir le registre pour les conditions d'activation et comment ajouter un skill.
+The `skills-registry.md` file (project root) lists external skills that can be loaded on demand.
+The `/build` and `/review` agents load them automatically from GitHub based on the project stack.
+See the registry for activation conditions and how to add a new skill.
 
-## Modifier le comportement
+## How to change behavior
 
-- **Changer de module** : Editer `context.md`
-- **Changer de profil** : Editer `profile.md` ou relancer `/onboarding`
-- **Personnaliser un agent** : Editer le `SKILL.md` correspondant
-- **Ajouter un skill externe** : Ajouter une ligne dans `skills-registry.md`
+- **Change module**: Edit `context.md`
+- **Change profile**: Edit `profile.md` or run `/onboarding` again
+- **Customize an agent**: Edit its corresponding `SKILL.md`
+- **Add an external skill**: Add a row in `skills-registry.md`

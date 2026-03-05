@@ -1,54 +1,54 @@
-# Registre des modules
+# Module Registry
 
-> Remplis ce fichier avec tes modules. Genere automatiquement par `/onboarding`.
+> Fill this file with your modules. Generated automatically by `/onboarding`.
 
-| # | Module | Slug | Pilier | Statut | Phase actuelle |
+| # | Module | Slug | Pillar | Status | Current phase |
 |---|--------|------|--------|--------|----------------|
 | 1 | Core | `core` |  | Actif | Discovery |
 
 ---
 
-## Comment utiliser
+## How to use
 
-1. Ajouter un module : inserer une ligne dans le tableau ci-dessus
-2. Activer un module : modifier `.claude/context.md` avec le slug du module
-3. Un seul module actif a la fois — les agents resolvent les chemins via `{module}`
+1. Add a module: insert a row in the table above
+2. Activate a module: edit `.claude/context.md` with the module slug
+3. Only one module is active at a time — agents resolve paths via `{module}`
 
 ## Conventions
 
-- **Slug** : kebab-case, pas d'espaces, pas de majuscules (ex: `study-cockpit`, `user-dashboard`)
-- **Pilier** : Regroupement logique de modules (optionnel). Ex: "Collaboration", "Analytics", "Admin"
-- **Statut** : `Actif` | `Planifie` | `Archive`
-- **Phase** : `Discovery` | `Design` | `Spec` | `Build` | `Review` | `Done`
+- **Slug**: kebab‑case, no spaces, no capitals (e.g. `study-cockpit`, `user-dashboard`)
+- **Pillar**: Logical grouping of modules (optional). Example: "Collaboration", "Analytics", "Admin"
+- **Status**: `Active` | `Planned` | `Archived`
+- **Phase**: `Discovery` | `Design` | `Spec` | `Build` | `Review` | `Done`
 
 ---
 
-## Quand creer un module
+## When to create a module
 
-Un module represente une **zone fonctionnelle autonome** du produit. Voici les regles de decision :
+A module represents an **autonomous functional area** of the product. Decision rules:
 
-| Situation | Decision | Raison |
+| Situation | Decision | Reason |
 |-----------|----------|--------|
-| 2 features partagent 80%+ des ecrans | **Meme module** | Les ecrans sont communs, les specs aussi |
-| 2 features ont des personas distincts et des parcours separes | **Modules distincts** | Les utilisateurs et les flows sont differents |
-| Une feature a son propre dashboard/landing | **Module distinct** | Point d'entree autonome |
-| Une feature est un sous-ensemble d'un ecran existant | **Meme module** | C'est un composant, pas un module |
-| Tu hesites | **Commence avec 1 module** | Tu pourras toujours splitter plus tard |
+| 2 features share 80%+ of screens | **Same module** | Screens and specs are mostly shared |
+| 2 features have distinct personas and separate journeys | **Separate modules** | Users and flows are different |
+| A feature has its own dashboard/landing | **Separate module** | Independent entry point |
+| A feature is a subset of an existing screen | **Same module** | It is a component, not a module |
+| You are unsure | **Start with 1 module** | You can always split later |
 
-### Dependencies inter-modules
+### Inter‑module dependencies
 
-Les modules sont concus pour etre independants, mais des dependances peuvent exister :
-- Documentees dans la **section 7 (Dependencies)** de chaque spec
-- Un composant partage entre modules vit dans le Design System (`05 Design System/`)
-- Si un module A depend d'un ecran du module B, le Screen Map du module A le reference
+Modules are designed to be independent, but dependencies can exist:
+- Documented in **section 7 (Dependencies)** of each spec
+- Shared components live in the Design System (`05 Design System/`)
+- If module A depends on a screen in module B, module A’s Screen Map references it
 
-### Exemple
+### Example
 
 ```
-Pilier "Collaboration" :
-  ├── Module "dashboard" — Vue d'ensemble pour le Manager
-  └── Module "study-cockpit" — Espace de travail pour le Researcher
+Pillar "Collaboration":
+  ├── Module "dashboard" — Overview for the Manager
+  └── Module "study-cockpit" — Workspace for the Researcher
 
-Pilier "Admin" :
-  └── Module "settings" — Configuration pour l'Admin
+Pillar "Admin":
+  └── Module "settings" — Configuration for the Admin
 ```

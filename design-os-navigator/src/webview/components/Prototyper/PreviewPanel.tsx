@@ -39,7 +39,7 @@ export function PreviewPanel({ artifact, onClose }: PreviewPanelProps) {
       <div className="preview-panel empty">
         <div className="preview-empty-state">
           <span className="preview-empty-icon">◇</span>
-          <p>Selectionnez un artefact pour le previsualiser</p>
+          <p>Select an artifact to preview it</p>
         </div>
       </div>
     );

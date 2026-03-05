@@ -1,267 +1,268 @@
-# Getting Started — Walkthrough narratif
+# Getting Started — Narrative walkthrough
 
-> Tu decouvres le Design OS ? Ce guide te montre un parcours complet, etape par etape,
-> a travers un exemple concret. En 15 minutes de lecture, tu comprendras tout le systeme.
+> Discovering the Design OS for the first time?  
+> This guide walks you through a complete, end‑to‑end example.  
+> In ~15 minutes of reading, you will understand how the whole system hangs together.
 
 ---
 
-## Etape 0 — Installer le Navigator
+## Step 0 — Install the Navigator
 
-Le **Design OS Navigator** est une extension Cursor/VS Code qui affiche ton projet comme un graphe de nodes interactif. Chaque phase (Discovery, UX, Spec, Build, Review) est un node cliquable avec ses actions et son score de readiness.
+The **Design OS Navigator** is a Cursor/VS Code extension that displays your project as an interactive node graph. Each phase (Discovery, UX, Spec, Build, Review) is a clickable node with its actions and readiness score.
 
-### Installation rapide
+### Quick install
 
 ```bash
 ./setup.sh
 ```
 
-Ce script detecte automatiquement Cursor ou VS Code et installe l'extension.
+This script automatically detects Cursor or VS Code and installs the extension.
 
-### Installation manuelle
+### Manual install
 
-1. Ouvre Cursor / VS Code
+1. Open Cursor / VS Code
 2. `Cmd+Shift+P` → **"Extensions: Install from VSIX"**
-3. Selectionne `design-os-navigator/design-os-navigator-0.1.0.vsix`
+3. Select `design-os-navigator/design-os-navigator-0.1.0.vsix`
 
-### Utilisation
+### Using it
 
-- Le Navigator **s'ouvre automatiquement** la premiere fois que tu ouvres le projet
-- Apres ca : clique sur **"Design OS"** dans la barre du bas, ou `Cmd+Shift+P` → **"Design OS: Open Navigator"**
-- Clique sur un node pour voir ses fichiers, son score de readiness, et les commandes disponibles
-- Les boutons d'action envoient directement les slash commands dans le terminal
-
----
-
-## Le scenario
-
-**Julie** est fondatrice d'une startup. Elle veut creer **BookRoom**, une app de reservation de salles de reunion pour les PME. Elle n'est pas developpeuse, elle n'est pas designer. Elle a une vision produit et elle veut avancer vite.
-
-Elle a installe Claude Code et clone le repo Design OS. Voici son parcours.
+- The Navigator **opens automatically** the first time you open the project.
+- After that: click **"Design OS"** in the side bar, or `Cmd+Shift+P` → **"Design OS: Open Navigator"**.
+- Click a node to see its files, readiness score, and available commands.
+- Action buttons send the slash commands directly into the terminal.
 
 ---
 
-## Etape 1 — L'onboarding (`/onboarding`)
+## The scenario
 
-Julie ouvre le terminal dans le dossier du projet et tape `/onboarding`.
+**Julie** is the founder of a startup. She wants to create **BookRoom**, a meeting‑room booking app for SMBs. She is not a developer, she is not a designer. She has a product vision and wants to move fast.
 
-**L'agent l'accueille** :
-```
-Bienvenue dans le Design Operating System !
-
-Ce framework t'aide a concevoir et builder des produits digitaux avec des agents IA specialises.
-Le cycle : Strategy → Discovery → Design → Spec → Build → Review.
-
-Je vais te poser quelques questions pour configurer ton projet. Ca prend environ 5 minutes.
-
-On commence ?
-```
-
-**L'agent pose les questions par petits groupes** (pas tout d'un coup) :
-
-1. "Comment s'appelle ton projet ?" → `BookRoom`
-2. "Decris-le en une phrase." → `App de reservation de salles de reunion pour les PME`
-3. "Dans quel domaine ?" → `SaaS / productivite`
-4. "Ou en es-tu ?" → `Ideation`
-5. "Quel est ton role ?" → `Fondatrice`
-
-Puis l'agent detecte le profil :
-```
-Pour adapter mon style de travail, quel est ton profil principal ?
-
-- Founder / CEO → Vue haut niveau, je te consulte sur les decisions cles uniquement
-- Designer → Mode creatif, checkpoints sur chaque decision de design
-- Product Manager → Focus specs et couverture des stories
-- Developpeur → Focus build, autonome sur le code
-```
-
-Julie choisit **Founder**. L'agent configure le mode `minimal` — il ne la sollicitera que pour les decisions strategiques.
-
-**Questions suivantes** : personas, tech stack (avec des defauts intelligents que Julie accepte), couleurs de marque (`#3B82F6`), theme light.
-
-**L'agent montre un resume** :
-```
-Voici ce que je vais ecrire :
-
-- CLAUDE.md → Rempli avec les infos du projet
-- .claude/context.md → Module actif : bookroom
-- .claude/profile.md → Profil : founder (mode minimal)
-- modules-registry.md → 1 module : bookroom
-- tokens.md → Palette generee depuis #3B82F6
-- Dossiers du module : specs/, screens/, build/, review/, lab/
-
-On ecrit tout ?
-```
-
-Julie confirme. **12 fichiers crees en 3 secondes.**
-
-```
-Onboarding termine — 12 fichiers crees.
-Profil : founder (mode minimal)
-Module actif : bookroom
-
-Ton projet est configure ! En tant que fondatrice, voici l'essentiel :
-
-/o  → Lance l'orchestrateur pour un workflow complet (ton agent principal)
-/ux → Explore des directions UX
-
-Mode : minimal — je te consulte sur les decisions cles uniquement.
-```
+She has installed Cursor (or Claude Code) and cloned the Design OS repo. Here is her journey.
 
 ---
 
-## Etape 2 — Explorer les directions UX (`/ux`)
+## Step 1 — Onboarding (`/onboarding`)
 
-Julie tape `/ux` et dit : "Je veux un dashboard ou les managers voient les salles disponibles et reservent en 2 clics."
+Julie opens a terminal in the project folder and types `/onboarding`.
 
-**L'agent UX explore 3 directions** :
-
+**The agent welcomes her:**
 ```
-Direction A — Vue calendrier
-Un calendrier hebdomadaire avec les creneaux colores par salle.
-+ Familier (pattern Google Calendar)
-- Dense visuellement, dur a scanner sur mobile
+Welcome to the Design Operating System!
 
-Direction B — Vue carte des salles
-Un plan du bureau avec les salles cliquables, couleur = dispo/occupe.
-+ Intuitif, spatial
-- Necessite un plan du bureau, plus complexe a builder
+This framework helps you design and build digital products with specialized AI agents.
+The cycle: Strategy → Discovery → Design → Spec → Build → Review.
 
-Direction C — Vue liste smart
-Une liste triee par "prochaine salle dispo" avec filtres rapides (capacite, equipement).
-+ Simple, rapide, mobile-first
-- Moins sexy visuellement
+I’ll ask you a few questions to configure your project. It takes about 5 minutes.
 
-Quel layout te parle le plus ? (ou combine : "le calendrier du A avec les filtres du C")
+Shall we start?
 ```
 
-Julie repond : "Le C avec les filtres, mais ajoute un mini-calendrier en haut pour choisir le jour."
+**The agent asks questions in small groups** (not all at once):
 
-L'agent **converge sur une direction fusionnee**, genere un Screen Map, et valide avec Julie :
+1. "What is your project called?" → `BookRoom`
+2. "Describe it in one sentence." → `Meeting‑room booking app for SMBs`
+3. "Which domain?" → `SaaS / productivity`
+4. "Where are you in the journey?" → `Ideation`
+5. "What is your role?" → `Founder`
+
+Then the agent asks for her profile:
 ```
-Screen Map mis a jour : 00_screen-map.md
-Ecran #1 : Dashboard Reservations (stories 1.1, 1.2, 1.3)
-Ecran #2 : Detail Salle (stories 1.4, 1.5)
-Ecran #3 : Confirmation Reservation (story 1.6)
+To adapt my working style, what’s your main profile?
 
-On passe a la spec du Dashboard ?
+- Founder / CEO → High‑level view, I only consult you on key decisions
+- Designer → Creative mode, checkpoints on every design decision
+- Product Manager → Focus on specs and story coverage
+- Developer → Focus on build, autonomous on code
+```
+
+Julie chooses **Founder**. The agent switches to `minimal` mode — it will only interrupt her for strategic decisions.
+
+**Next questions**: personas, tech stack (with smart defaults Julie accepts), brand color (`#3B82F6`), light theme.
+
+**The agent shows a summary:**
+```
+Here’s what I’m going to write:
+
+- CLAUDE.md → Filled with your project info
+- .claude/context.md → Active module: bookroom
+- .claude/profile.md → Profile: founder (minimal mode)
+- modules-registry.md → 1 module: bookroom
+- tokens.md → Palette generated from #3B82F6
+- Module folders: specs/, screens/, build/, review/, lab/
+
+Shall I write everything?
+```
+
+Julie confirms. **12 files created in 3 seconds.**
+
+```
+Onboarding complete — 12 files created.  
+Profile: founder (minimal mode)  
+Active module: bookroom
+
+Your project is configured! As a founder, here’s what matters:
+
+/o  → Launch the orchestrator for a full workflow (your main agent)  
+/ux → Explore UX directions
+
+Mode: minimal — I’ll only ask you for key decisions.
 ```
 
 ---
 
-## Etape 3 — Generer la spec (`/spec`)
+## Step 2 — Explore UX directions (`/ux`)
 
-Julie dit "oui" et le systeme enchaine vers `/spec`.
+Julie types `/ux` and says: “I want a dashboard where managers can see available rooms and book in 2 clicks.”
 
-L'agent genere une spec complete en 9 sections :
-
-1. **Vue d'ensemble** — Qui, quoi, pourquoi
-2. **Acceptance criteria** — En format Gherkin (testable)
-3. **Layout** — Schema ASCII de la page
-4. **Etats** — Vide (pas de salles), chargement, normal, erreur
-5. **Navigation** — D'ou on vient, ou on va
-6. **Donnees** — Interfaces TypeScript, endpoints API
-7. **Design System** — Tokens utilises, responsive
-8. **Roles** — Admin voit tout, Manager voit son etage, Viewer lecture seule
-9. **Hors perimetre** — Ce que cette page ne fait PAS
+**The UX agent explores 3 directions:**
 
 ```
-Spec generee : 01_Product/05 Specs/bookroom/specs/1.1-dashboard-reservations.spec.md
-Statut : VALIDEE
-9/9 sections remplies, 0 TBD.
+Direction A — Calendar view  
+A weekly calendar with time slots colored by room.  
++ Familiar (Google Calendar‑style pattern)  
+− Visually dense, harder to scan on mobile
 
-La spec est prete pour le build. On lance /build ?
+Direction B — Floor‑plan view  
+An office map with clickable rooms, color = available/occupied.  
++ Intuitive, spatial  
+− Requires a floor plan, more complex to build
+
+Direction C — Smart list view  
+A list sorted by “next available room” with quick filters (capacity, equipment).  
++ Simple, fast, mobile‑first  
+− Less visually “wow”
+
+Which layout speaks to you most? (or mix: “calendar from A with filters from C”)
+```
+
+Julie answers: “C with filters, but add a mini‑calendar at the top to pick the day.”
+
+The agent **converges on a merged direction**, generates a Screen Map, and confirms with Julie:
+```
+Screen Map updated: 00_screen-map.md  
+Screen #1: Dashboard Reservations (stories 1.1, 1.2, 1.3)  
+Screen #2: Room Detail (stories 1.4, 1.5)  
+Screen #3: Reservation Confirmation (story 1.6)
+
+Shall we move on to the Dashboard spec?
 ```
 
 ---
 
-## Etape 4 — Coder en TDD (`/build`)
+## Step 3 — Generate the spec (`/spec`)
 
-Julie confirme. L'agent Build :
+Julie says “yes” and the system chains into `/spec`.
 
-1. Lit la spec
-2. Ecrit les tests d'abord (empty state, loading, data, error)
-3. Code les composants pour faire passer les tests
-4. Utilise les tokens du Design System (pas de couleurs en dur)
-5. Gere le responsive (mobile, tablette, desktop)
+The agent generates a full spec in 9 sections:
+
+1. **Overview** — Who, what, why  
+2. **Acceptance criteria** — Gherkin format (testable)  
+3. **Layout** — ASCII sketch of the page  
+4. **States** — Empty (no rooms), loading, normal, error  
+5. **Navigation** — Where we come from, where we go  
+6. **Data** — TypeScript interfaces, API endpoints  
+7. **Design System** — Tokens used, responsive behavior  
+8. **Roles** — Admin sees everything, Manager sees their floor, Viewer is read‑only  
+9. **Out of scope** — What this page explicitly does NOT do
 
 ```
-Build termine : 02_Build/bookroom/src/
+Spec generated: 01_Product/05 Specs/bookroom/specs/1.1-dashboard-reservations.spec.md  
+Status: VALIDEE (validated)  
+9/9 sections filled, 0 TBD.
+
+The spec is ready for build. Launch /build?
+```
+
+---
+
+## Step 4 — Code in TDD (`/build`)
+
+Julie confirms. The Build agent:
+
+1. Reads the spec  
+2. Writes tests first (empty state, loading, data, error)  
+3. Codes the components to make the tests pass  
+4. Uses Design System tokens (no hard‑coded colors)  
+5. Handles responsive behavior (mobile, tablet, desktop)
+
+```
+Build complete: 02_Build/bookroom/src/
 - DashboardReservations.tsx
 - DashboardReservations.test.tsx
 - components/RoomCard.tsx
 - components/MiniCalendar.tsx
 - hooks/useRooms.ts
 
-Tests : 12/12 passed
+Tests: 12/12 passed
 ```
 
 ---
 
-## Etape 5 — Review de conformite (`/review`)
+## Step 5 — Conformity review (`/review`)
 
-L'agent Review score le code vs la spec :
-
-```
-Review : Dashboard Reservations
-Score : 11/12 criteres passes (92%)
-
-Verdict : NO-GO
-
-Gap detecte :
-- [IMPL] L'etat erreur affiche "Error" en anglais au lieu du message UX de la spec
-  → Type : IMPL (code a corriger)
-  → Action : Renvoyer vers /build pour corriger
-
-Aucun gap DESIGN, SPEC ou DISCOVERY.
-```
-
-L'agent renvoie vers `/build` pour le fix. Apres correction :
+The Review agent scores the code against the spec:
 
 ```
-Review : Dashboard Reservations (v2)
-Score : 12/12 (100%)
-Verdict : GO
+Review: Dashboard Reservations  
+Score: 11/12 criteria passed (92%)
 
-Le Dashboard Reservations est conforme a la spec. Pret pour production.
+Verdict: NO‑GO
+
+Gap detected:  
+- [IMPL] The error state shows “Error” in English instead of the UX copy defined in the spec  
+  → Type: IMPL (code to fix)  
+  → Action: Send back to /build to correct
+
+No DESIGN, SPEC or DISCOVERY gaps.
+```
+
+The agent sends it back to `/build` for a fix. After correction:
+
+```
+Review: Dashboard Reservations (v2)  
+Score: 12/12 (100%)  
+Verdict: GO
+
+Dashboard Reservations is now fully compliant with the spec. Ready for production.
 ```
 
 ---
 
-## Etape 6 — Et ensuite ?
+## Step 6 — What next?
 
-Julie peut maintenant :
-- **Continuer** : `/o` pour lancer la spec + build de l'ecran #2 (Detail Salle)
-- **Prototyper** : `/explore` pour tester rapidement une idee avant de specer
-- **Verifier** : `/screen-map` pour s'assurer que toutes les stories ont un ecran
-- **Verifier la sante** : `/health` pour un diagnostic global du projet
+Julie can now:
+- **Continue**: `/o` to launch spec + build of screen #2 (Room Detail)  
+- **Prototype**: `/explore` to quickly test an idea before spec‑ing it  
+- **Check coverage**: `/screen-map` to ensure every story maps to a screen  
+- **Check health**: `/health` for a global project diagnostic
 
 ---
 
-## Resume du parcours
+## Journey recap
 
 ```
-/onboarding          5 min    → Projet configure, profil defini
+/onboarding          5 min    → Project configured, profile set
        ↓
-/ux                  10 min   → 3 directions explorees, Screen Map cree
+/ux                  10 min   → 3 directions explored, Screen Map created
        ↓
 /spec                5 min    → Spec complete (9 sections, 0 TBD)
        ↓
-/build               15 min   → Code TDD, tests passes
+/build               15 min   → TDD code, tests passing
        ↓
-/review              2 min    → NO-GO → fix → GO (100%)
+/review              2 min    → NO‑GO → fix → GO (100%)
        ↓
-Ecran #1 livre !
+Screen #1 shipped!
 ```
 
-**Temps total** : ~35 minutes pour un ecran complet, de l'idee au code teste et review.
+**Total time**: ~35 minutes for a complete screen, from idea to tested and reviewed code.
 
 ---
 
-## Conseils pour debuter
+## Tips to get started
 
-1. **Commence toujours par `/onboarding`** — c'est la fondation
-2. **Utilise `/o` quand tu ne sais pas quoi faire** — l'orchestrateur te guide
-3. **Mets tes documents dans `00 Material/`** — les agents les utiliseront
-4. **N'hesite pas a dire "montre-moi d'autres options"** — le systeme est fait pour explorer
-5. **Tape `/why` si tu ne comprends pas un choix** — l'agent expliquera son raisonnement
-6. **Un doute ? `/health`** — diagnostic complet du projet en une commande
+1. **Always start with `/onboarding`** — it’s the foundation.  
+2. **Use `/o` when you’re not sure what to do next** — the orchestrator will guide you.  
+3. **Drop your materials into `01_Product/00 Material/`** — the agents will use them.  
+4. **Feel free to say “show me other options”** — the system is built for exploration.  
+5. **Type `/why` if you don’t understand a choice** — the agent will explain its reasoning.  
+6. **In doubt? `/health`** — full project health check in a single command.

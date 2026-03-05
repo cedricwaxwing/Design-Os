@@ -1,14 +1,14 @@
-# Design System — Etats standard
+# Design System — Standard States
 
-> Chaque composant et chaque page DOIT gerer ces 4 etats + les edge cases.
-> L'agent Build verifie que tous les etats sont implementes.
-> L'agent Review verifie que tous les etats sont testes.
+> Every component and page MUST handle these 4 states + key edge cases.  
+> The Build agent checks that all states are implemented.  
+> The Review agent checks that all states are tested.
 
 ---
 
-## Etat vide (Empty State)
+## Empty state
 
-Quand il n'y a aucune donnee a afficher.
+When there is no data to display.
 
 ```tsx
 <div className="flex flex-col items-center justify-center py-16 px-4">
@@ -16,30 +16,30 @@ Quand il n'y a aucune donnee a afficher.
     <IconRelevant className="w-6 h-6 text-neutral-400 dark:text-neutral-500" />
   </div>
   <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-1">
-    Aucun [element] pour l'instant
+    No [items] yet
   </h3>
   <p className="text-sm text-neutral-500 text-center max-w-sm mb-4">
-    [Explication de pourquoi c'est vide et ce que l'utilisateur peut faire]
+    [Explain why it’s empty and what the user can do next]
   </p>
   <button className="bg-primary hover:bg-primary-light text-white font-semibold px-4 py-2 rounded-md transition-colors">
-    [CTA : Creer le premier, Ajouter, Inviter...]
+    [CTA: Create the first one, Add, Invite…]
   </button>
 </div>
 ```
 
-### Regles
-- Toujours une icone contextuelle (pas generique)
-- Toujours un message explicatif (pas juste "Vide")
-- Toujours un CTA si l'utilisateur peut agir
-- Le CTA correspond a l'action principale de la page
+### Rules
+- Always show a contextual icon (not a generic one)
+- Always show an explanatory message (not just “Empty”)
+- Always show a CTA if the user can act
+- The CTA should be the main action of the page
 
 ---
 
-## Etat chargement (Loading State)
+## Loading state
 
-Quand les donnees sont en cours de chargement.
+When data is currently being loaded.
 
-### Skeleton Loader (prefere)
+### Skeleton loader (preferred)
 ```tsx
 <div className="animate-pulse space-y-4">
   {/* Skeleton pour une carte */}
@@ -62,18 +62,18 @@ Quand les donnees sont en cours de chargement.
 </div>
 ```
 
-### Spinner (pour actions ponctuelles)
+### Spinner (for short‑lived actions)
 ```tsx
 <div className="flex items-center justify-center py-8">
   <div className="w-6 h-6 border-2 border-neutral-200 dark:border-neutral-700 border-t-primary rounded-full animate-spin" />
 </div>
 ```
 
-### Regles
-- Skeleton > Spinner pour le chargement initial de page
-- Le skeleton reproduit la forme du contenu attendu
-- Spinner uniquement pour les actions courtes (submit, refresh)
-- Pas de texte "Chargement..." seul
+### Rules
+- Skeleton > Spinner for initial page load
+- The skeleton should roughly match the shape of the final content
+- Use a spinner only for short actions (submit, refresh)
+- Avoid plain “Loading…” text on its own
 
 ---
 

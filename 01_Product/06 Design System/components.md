@@ -1,14 +1,14 @@
-# Design System — Composants
+# Design System — Components
 
-> Composants atomiques reutilisables. Code d'implementation adapte a la stack du projet.
-> Remplis ce fichier manuellement ou via `/onboarding` qui genere les composants pour ta stack.
+> Reusable atomic components. Implementation code should match your project stack.  
+> Fill this file manually or via `/onboarding`, which can generate components for your stack.
 
 ---
 
-## Boutons
+## Buttons
 
 ### Primary
-<!-- Adapte a ta stack (Tailwind, CSS Modules, Styled Components...) -->
+<!-- Adapt to your stack (Tailwind, CSS Modules, Styled Components, etc.) -->
 ```
 [Code du bouton primaire — couleur primary, texte blanc, hover, active, disabled]
 ```
@@ -28,17 +28,17 @@
 [Code du bouton danger — fond rouge, texte blanc]
 ```
 
-### Regles
-- Hauteur minimum : 36px (primaire), 32px (secondaire)
-- Toujours un etat hover, active, focus, disabled
-- Le bouton primaire est visuellement distinct (Von Restorff Effect)
-- Les actions destructives sont eloignees des actions principales
+### Rules
+- Minimum height: 36px (primary), 32px (secondary)
+- Always have hover, active, focus, and disabled states
+- The primary button must be visually distinct (Von Restorff effect)
+- Destructive actions should be visually and spatially separated from primary actions
 
 ---
 
 ## Inputs
 
-### Text Input
+### Text input
 ```
 [Code de l'input texte — fond, bordure, placeholder, focus ring, error state]
 ```
@@ -53,11 +53,11 @@
 [Code du textarea — meme style, auto-resize optionnel]
 ```
 
-### Regles
-- Label au-dessus du champ (convention standard)
-- Placeholder descriptif (pas juste le nom du champ)
-- Etat erreur : bordure rouge + message sous le champ
-- Focus : ring de couleur primaire
+### Rules
+- Label above the field (standard convention)
+- Descriptive placeholder (not just the field name)
+- Error state: red border + message under the field
+- Focus: ring in primary color
 
 ---
 

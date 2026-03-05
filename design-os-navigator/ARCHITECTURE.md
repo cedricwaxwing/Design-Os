@@ -1,8 +1,8 @@
 # Design OS Navigator — Architecture
 
-> Guide technique pour les modifications par IA (Claude)
+> Technical guide for AI‑driven changes (Cursor / Claude)
 
-## Vue d'ensemble
+## Overview
 
 ```
 design-os-navigator/
@@ -10,18 +10,18 @@ design-os-navigator/
 │   ├── extension/           # Entry point + commands (TODO: migrate)
 │   │   └── index.ts         # Future entry point
 │   │
-│   ├── services/            # État encapsulé
-│   │   ├── StateManager.ts  # Singleton — tout l'état en un seul endroit
+│   ├── services/            # Encapsulated state
+│   │   ├── StateManager.ts  # Singleton — all state in one place
 │   │   ├── TerminalService.ts
 │   │   └── ArtifactService.ts
 │   │
-│   ├── parser/              # Scanning modularisé
+│   ├── parser/              # Modular scanning
 │   │   ├── index.ts         # Re-exports (API publique)
 │   │   ├── signals.ts       # scanContentSignals(), emptySignals()
 │   │   ├── files.ts         # listFiles(), detectScaffold()
 │   │   └── context.ts       # parseContext(), parseHistory()
 │   │
-│   ├── gates/               # Système déclaratif (28 gates)
+│   ├── gates/               # Declarative system (28 gates)
 │   │   ├── index.ts         # evaluateGates(), calculateReadiness()
 │   │   ├── schema.ts        # Types GateDefinition, GateResult
 │   │   ├── definitions/     # 1 fichier par node (9 fichiers)
@@ -34,7 +34,7 @@ design-os-navigator/
 │   │   │   ├── review.gates.ts      # 3 gates
 │   │   │   ├── material.gates.ts    # 3 gates
 │   │   │   └── lab.gates.ts         # 2 gates
-│   │   └── conditions/      # Fonctions réutilisables
+│   │   └── conditions/      # Reusable predicate functions
 │   │       ├── fileConditions.ts    # hasRealFiles(), countRealFiles()
 │   │       └── contentConditions.ts # fileHasContent(), sectionsFilled()
 │   │
@@ -59,16 +59,16 @@ design-os-navigator/
 │   │   └── styles/
 │   │       └── tokens.css   # Design tokens Catppuccin
 │   │
-│   ├── types/               # Types partagés
+│   ├── types/               # Shared types
 │   │   ├── index.ts         # Re-exports
 │   │   └── messages.ts      # ExtensionMessage, WebviewMessage
 │   │
-│   ├── extension-legacy.ts  # Ancien extension.ts (à migrer)
-│   ├── parser-legacy.ts     # Ancien parser.ts (partiellement migré)
-│   └── types-legacy.ts      # Anciens types (à consolider)
+│   ├── extension-legacy.ts  # Old extension.ts (to migrate)
+│   ├── parser-legacy.ts     # Old parser.ts (partially migrated)
+│   └── types-legacy.ts      # Old types (to consolidate)
 │
-├── webview/dist/            # Build React (généré)
-├── out/                     # Build extension (généré)
+├── webview/dist/            # React build output (generated)
+├── out/                     # Extension build output (generated)
 │
 ├── esbuild.config.mjs       # Bundler extension
 ├── vite.config.ts           # Bundler webview React
@@ -77,21 +77,21 @@ design-os-navigator/
 └── tsconfig.webview.json    # Config TS React/JSX
 ```
 
-## Principes clés
+## Key principles
 
-### 1. Un fichier = Une responsabilité
+### 1. One file = one responsibility
 
-| Besoin | Fichier à modifier |
-|--------|-------------------|
-| Ajouter un gate | `src/gates/definitions/{node}.gates.ts` |
-| Changer un composant UI | `src/webview/components/{Section}/{Name}.tsx` |
-| Modifier la logique de parsing | `src/parser/{module}.ts` |
-| Changer l'état global | `src/services/StateManager.ts` |
-| Ajouter un type de message | `src/types/messages.ts` |
+| Need | File to change |
+|------|----------------|
+| Add a gate | `src/gates/definitions/{node}.gates.ts` |
+| Change a UI component | `src/webview/components/{Section}/{Name}.tsx` |
+| Change parsing logic | `src/parser/{module}.ts` |
+| Change global state | `src/services/StateManager.ts` |
+| Add a message type | `src/types/messages.ts` |
 
-### 2. Gates déclaratifs
+### 2. Declarative gates
 
-Chaque gate est une config de ~5 lignes :
+Each gate is a ~5‑line config:
 
 ```typescript
 // src/gates/definitions/strategy.gates.ts
@@ -116,7 +116,7 @@ Chaque composant est autonome :
 - CSS via classes (tokens.css)
 
 ```typescript
-// Exemple: src/webview/components/Navigator/NodeCard.tsx
+// Example: src/webview/components/Navigator/NodeCard.tsx
 interface NodeCardProps {
   node: DesignOsNode;
   selected: boolean;
@@ -128,9 +128,9 @@ export function NodeCard({ node, selected, onClick }: NodeCardProps) {
 }
 ```
 
-### 4. Messages typés
+### 4. Typed messages
 
-Communication extension ↔ webview via discriminated union :
+Extension ↔ webview communicate via a discriminated union:
 
 ```typescript
 // src/types/messages.ts
@@ -140,40 +140,40 @@ export type ExtensionMessage =
   | { type: 'toast'; message: string; variant: 'success' | 'error' };
 ```
 
-## Commandes de développement
+## Development commands
 
 ```bash
-# Build complet
+# Full build
 npm run compile
 
 # Dev mode (watch extension + webview)
 npm run dev
 
-# Type check seulement
+# Type check only
 npm run typecheck
 
 # Tests
 npm run test
 ```
 
-## Migration incrémentale
+## Incremental migration
 
-Les fichiers `-legacy` contiennent l'ancien code. La migration se fait progressivement :
+The `*-legacy` files contain the old code. Migration is done progressively:
 
-1. **Déjà migrés** :
+1. **Already migrated**:
    - Gates → `src/gates/`
    - Parser signals/files/context → `src/parser/`
    - Webview → `src/webview/` (React)
-   - Types messages → `src/types/messages.ts`
+   - Message types → `src/types/messages.ts`
 
-2. **À migrer** :
+2. **To migrate**:
    - `extension-legacy.ts` → `src/extension/` + `src/services/`
-   - Reste de `parser-legacy.ts` → `src/parser/nodes/`
+   - Remaining `parser-legacy.ts` → `src/parser/nodes/`
    - `types-legacy.ts` → `src/types/`
 
 ## Design System
 
-Tokens CSS dans `src/webview/styles/tokens.css` :
+CSS tokens in `src/webview/styles/tokens.css`:
 
 ```css
 :root {
@@ -186,4 +186,4 @@ Tokens CSS dans `src/webview/styles/tokens.css` :
 }
 ```
 
-Palette : Catppuccin Mocha
+Palette: Catppuccin Mocha

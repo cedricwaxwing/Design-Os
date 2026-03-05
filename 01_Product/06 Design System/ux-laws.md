@@ -329,11 +329,11 @@
 
 **Definition** : Les utilisateurs sont plus motives et plus rapides quand ils percoivent qu'ils approchent de la fin. La progression visible est un accelerateur.
 
-**Application** :
-- Les wizards multi-step affichent toujours la progression (stepper + "Etape 2/4")
-- Les barres de progression utilisent la couleur primary pour la partie completee
-- Le dernier step est visuellement distinct (couleur succes)
-- Les taches partiellement completees montrent leur avancement ("3/5 sections remplies")
+**Application**:
+- Multi‑step wizards always show progress (stepper + “Step 2/4”)
+- Progress bars use the primary color for the completed portion
+- The final step is visually distinct (success color)
+- Partially completed tasks show their progress (“3/5 sections filled”)
 
 **Agents** : ux-design, build, ui-designer, review
 

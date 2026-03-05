@@ -17,7 +17,7 @@ export function parseContext(root: string): ProjectContext {
   const profilePath = path.join(root, '.claude', 'profile.md');
 
   const context: ProjectContext = {
-    module: '', moduleLabel: '', pillar: '', intent: '', profile: '', language: 'fr',
+    module: '', moduleLabel: '', pillar: '', intent: '', profile: '', language: 'en',
   };
 
   if (fs.existsSync(contextPath)) {
@@ -31,7 +31,7 @@ export function parseContext(root: string): ProjectContext {
   if (fs.existsSync(profilePath)) {
     const content = fs.readFileSync(profilePath, 'utf-8');
     context.profile = extractYamlField(content, 'profile') || 'designer';
-    context.language = extractYamlField(content, 'language') || 'fr';
+    context.language = extractYamlField(content, 'language') || 'en';
   }
 
   return context;

@@ -1,213 +1,213 @@
-# Glossaire — Design OS
+# Glossary — Design OS
 
-> Tous les termes techniques utilises dans le Design Operating System, expliques simplement.
+> All technical terms used in the Design Operating System, explained in plain English.
 
 ---
 
 ## A
 
 ### Acceptance Criteria
-Conditions precises qu'un ecran ou composant doit remplir pour etre considere "termine". Ecrites en format **Gherkin** (voir ci-dessous). Exemple : "Quand je clique sur Reserver, alors la salle passe en statut Reservee."
+Precise conditions that a screen or component must meet to be considered "done". Written in **Gherkin** format (see below). Example: "When I click Book, then the room status changes to Booked."
 
 ### Agent
-Un assistant IA specialise dans une tache precise. Chaque agent a sa commande : `/ux` pour le design, `/spec` pour les specs, `/build` pour le code. Tu les appelles comme des collegues experts.
+An AI assistant specialized in a specific task. Each agent has its own command: `/ux` for design, `/spec` for specs, `/build` for code. You invoke them like expert teammates.
 
-### Auto-layout
-Organisation automatique des elements dans un conteneur (horizontal, vertical, espacement regulier). Equivalent du flexbox en CSS.
+### Auto‑layout
+Automatic arrangement of elements inside a container (horizontal, vertical, evenly spaced). Equivalent to CSS flexbox.
 
 ---
 
 ## B
 
 ### Breakpoint
-Largeur d'ecran a laquelle le layout change. Par exemple, en dessous de 768px on passe en mode mobile. Les breakpoints du Design OS : `sm` (640px), `md` (768px), `lg` (1024px), `xl` (1280px).
+Screen width at which the layout changes. For example, below 768px the layout switches to mobile. Design OS breakpoints: `sm` (640px), `md` (768px), `lg` (1024px), `xl` (1280px).
 
 ### Build
-Phase ou le code est ecrit. Dans le Design OS, le build suit toujours une spec validee et utilise le TDD (tests d'abord).
+Phase where code is written. In Design OS, build always follows a validated spec and uses TDD (tests first).
 
 ---
 
 ## C
 
 ### Checkpoint
-Moment ou le systeme s'arrete pour te demander ton avis avant de continuer. Trois niveaux : `minimal` (peu de pauses), `standard` (pause entre chaque phase), `granular` (pause a chaque decision).
+Moment when the system pauses to ask for your input before continuing. Three levels: `minimal` (few pauses), `standard` (pause between phases), `granular` (pause on every decision).
 
-### Component (Composant)
-Un element d'interface reutilisable : bouton, carte, formulaire, modal. Un ecran est compose de plusieurs composants.
+### Component
+A reusable UI element: button, card, form, modal. A screen is composed of multiple components.
 
 ---
 
 ## D
 
 ### Design System (DS)
-L'ensemble des regles visuelles de ton produit : couleurs, typographie, espacements, composants. C'est la "charte graphique" numerique. Stocke dans `01_Product/06 Design System/`.
+The full set of visual rules for your product: colors, typography, spacing, components. It is your digital "brand book". Stored in `01_Product/06 Design System/`.
 
 ### Design Tokens
-Voir **Tokens**.
+See **Tokens**.
 
 ### Discovery
-Phase d'exploration ou tu comprends tes utilisateurs : interviews, recherche, analyse du domaine. Stocke dans `01_Product/02 Discovery/`.
+Exploration phase where you understand your users: interviews, research, domain analysis. Stored in `01_Product/02 Discovery/`.
 
 ### Draft
-Statut d'une spec incomplete. Une spec DRAFT peut avoir des sections marquees "TBD" (a definir). Elle ne peut pas etre utilisee par `/build` — il faut d'abord la passer en VALIDEE.
+Status of an incomplete spec. A DRAFT spec can have sections marked "TBD". It cannot be used by `/build` — you must first promote it to VALIDATED.
 
 ---
 
 ## E
 
 ### Edge Case
-Scenario rare ou limite que le code doit quand meme gerer. Exemple : "Que se passe-t-il si l'utilisateur reserve 100 salles en meme temps ?"
+Rare or boundary scenario that the code still needs to handle. Example: "What happens if the user books 100 rooms at the same time?"
 
 ### Empty State
-L'ecran affiche quand il n'y a pas encore de donnees. Exemple : "Aucune salle configuree — ajoutez votre premiere salle." Toujours prevu dans les specs du Design OS.
+Screen shown when there is no data yet. Example: "No rooms configured — add your first room." Always planned explicitly in Design OS specs.
 
 ### EPIC
-Un grand objectif fonctionnel decoupe en plusieurs user stories. Exemple : EPIC "Reservation de salles" contient les stories "Voir les salles", "Reserver un creneau", "Annuler une reservation".
+A large functional objective broken down into multiple user stories. Example: EPIC "Room booking" contains the stories "View rooms", "Book a slot", "Cancel a booking".
 
 ---
 
 ## F
 
 ### Flow
-Enchainement d'etapes ou d'agents. Un flow complet : `/ux` → `/spec` → `/build` → `/review`. L'orchestrateur (`/o`) gere les flows.
+Sequence of steps or agents. A full flow: `/ux` → `/spec` → `/build` → `/review`. The orchestrator (`/o`) manages flows.
 
 ---
 
 ## G
 
 ### Gherkin
-Format standard pour ecrire des criteres de validation. Structure : **Given** (contexte de depart) → **When** (action de l'utilisateur) → **Then** (resultat attendu). Exemple :
-```
-Given je suis sur le dashboard
-When je clique sur "Reserver" pour la Salle A
-Then un formulaire de reservation s'ouvre avec la Salle A pre-selectionnee
+Standard format for writing acceptance criteria. Structure: **Given** (starting context) → **When** (user action) → **Then** (expected result). Example:
+```gherkin
+Given I am on the dashboard
+When I click "Book" for Room A
+Then a booking form opens with Room A pre‑selected
 ```
 
-### GO / NO-GO
-Verdict de la review. **GO** = le code est conforme a la spec, pret pour production. **NO-GO** = il y a des ecarts a corriger.
+### GO / NO‑GO
+Review verdict. **GO** = the code is compliant with the spec and ready for production. **NO‑GO** = discrepancies remain and must be fixed.
 
 ---
 
 ## H
 
 ### Handoff
-Le moment ou un agent passe le relais au suivant. Exemple : `/ux` fait un handoff vers `/spec` en transmettant les decisions de design et les artefacts produits.
+Moment when one agent hands over to the next. Example: `/ux` hands off to `/spec` and passes design decisions and produced artifacts.
 
 ### Happy Path
-Le scenario "tout se passe bien" — pas d'erreurs, pas de cas limites. Les prototypes (`/explore`) ne codent que le happy path pour valider vite.
+The "everything works" scenario — no errors, no edge cases. Prototypes (`/explore`) only implement the happy path to validate ideas quickly.
 
 ### Health Check
-Diagnostic global du projet. L'agent `/health` verifie que tout est en ordre : onboarding complet, tokens remplis, specs sans TBD, etc.
+Global project diagnostic. The `/health` agent verifies that everything is in order: onboarding complete, tokens filled, specs without TBD, etc.
 
 ---
 
 ## K
 
-### Key Screen (Ecran cle)
-Un ecran principal de ton produit. Plusieurs user stories peuvent converger sur le meme ecran cle. Le Screen Map liste tous les ecrans cles.
+### Key Screen
+A primary screen of your product. Several user stories can converge on the same key screen. The Screen Map lists all key screens.
 
 ---
 
 ## L
 
 ### Layout
-La disposition des elements sur un ecran : ou sont le header, la sidebar, le contenu principal, etc.
+The arrangement of elements on a screen: where the header, sidebar, and main content live, etc.
 
 ### Lean UX
-Approche ou tu explores plusieurs solutions avant de converger. Le Design OS impose un minimum de 2 alternatives avant de choisir.
+Approach where you explore several solutions before converging. Design OS enforces a minimum of 2 alternatives before choosing.
 
 ---
 
 ## M
 
 ### Module
-Une zone fonctionnelle de ton produit. Exemple : "reservations", "admin", "facturation". Chaque module a ses propres specs, ecrans, code et reviews. Definis dans `modules-registry.md`.
+A functional area of your product. Example: "bookings", "admin", "billing". Each module has its own specs, screens, code, and reviews. Defined in `modules-registry.md`.
 
 ### Moodboard
-Collection d'images, couleurs ou sites web qui representent l'ambiance visuelle souhaitee. Utilise pendant l'onboarding pour calibrer le Design System.
+Collection of images, colors, or websites that represent the desired visual atmosphere. Used during onboarding to calibrate the Design System.
 
 ---
 
 ## N
 
-### NO-GO
-Voir **GO / NO-GO**.
+### NO‑GO
+See **GO / NO‑GO**.
 
 ---
 
 ## O
 
-### Orchestrateur
-L'agent `/o` qui coordonne les autres agents. Il comprend ton intention, propose un plan, et enchaine les agents dans le bon ordre. C'est le "chef d'orchestre".
+### Orchestrator
+The `/o` agent that coordinates other agents. It understands your intent, proposes a plan, and chains agents in the right order. Think of it as the "conductor".
 
 ### Override
-Commande pour reprendre le controle quand le systeme est en train de travailler. Exemples : `/stop` (pause), `/back` (revenir en arriere), `/skip` (sauter une etape).
+Command to take back control while the system is working. Examples: `/stop` (pause), `/back` (go back), `/skip` (skip a step).
 
 ---
 
 ## P
 
 ### Persona
-Un profil type d'utilisateur de ton produit. Chaque persona a un nom, un role, un besoin cle et une frustration principale. Exemple : "Marie, Office Manager, doit reserver 5 salles par jour, frustrée par les doubles reservations."
+A typical profile of a user of your product. Each persona has a name, role, key need, and primary frustration. Example: "Marie, Office Manager, needs to book 5 rooms per day and is frustrated by double bookings."
 
-### Pillar (Pilier)
-Un regroupement de modules lies. Exemple : le pilier "Collaboration" regroupe les modules "reservations" et "messagerie".
+### Pillar
+A group of related modules. Example: the "Collaboration" pillar groups the "bookings" and "messaging" modules.
 
 ---
 
 ## R
 
 ### Review
-Phase ou le code est compare a la spec pour verifier la conformite. L'agent `/review` donne un score et un verdict GO ou NO-GO.
+Phase where code is compared to the spec to verify conformity. The `/review` agent gives a score and a GO/NO‑GO verdict.
 
 ---
 
 ## S
 
 ### Screen Map
-Document central qui mappe N user stories → M ecrans. Evite de creer un ecran par story (anti-pattern). Stocke dans `01_Product/05 Specs/{module}/00_screen-map.md`.
+Central document that maps N user stories → M screens. Prevents you from creating one screen per story (an anti‑pattern). Stored in `01_Product/05 Specs/{module}/00_screen-map.md`.
 
-### Skeleton (Squelette)
-Version grise/animee d'un ecran affichee pendant le chargement des donnees. Donne l'impression que le contenu arrive (au lieu d'un spinner).
+### Skeleton
+Grey, animated version of a screen shown while data is loading. Gives the impression that content is arriving (instead of a spinner).
 
 ### Slug
-Un identifiant court et sans espaces pour un module. Exemples : `bookroom`, `admin-panel`, `user-settings`. Utilise dans les noms de dossiers et les chemins.
+Short identifier without spaces for a module. Examples: `bookroom`, `admin-panel`, `user-settings`. Used in folder names and paths.
 
 ### Spec (Specification)
-Document detaille qui decrit exactement ce qu'un ecran ou composant doit faire. 9 sections : vue d'ensemble, criteres, layout, etats, navigation, donnees, design system, roles, hors perimetre.
+Detailed document that describes exactly what a screen or component must do. 9 sections: overview, acceptance criteria, layout, states, navigation, data, design system, roles, out of scope.
 
 ---
 
 ## T
 
-### TDD (Test-Driven Development)
-Methode de developpement ou tu ecris les **tests d'abord**, puis le code pour les faire passer. Le Design OS impose le TDD dans la phase `/build`.
+### TDD (Test‑Driven Development)
+Development method where you write **tests first**, then code to make them pass. Design OS enforces TDD in the `/build` phase.
 
 ### Tokens
-Valeurs nommees du Design System. Au lieu d'ecrire `#3B82F6` partout, tu ecris `primary`. Au lieu de `16px`, tu ecris `space-4`. Les tokens sont dans `01_Product/06 Design System/tokens.md`.
+Named values from the Design System. Instead of writing `#3B82F6` everywhere, you use `primary`. Instead of `16px`, you use `space-4`. Tokens live in `01_Product/06 Design System/tokens.md`.
 
 ### Triage
-Classification des ecarts trouves en review. 4 types :
-- **IMPL** → Le code a un bug → renvoyer vers `/build`
-- **SPEC** → La spec est incomplete → renvoyer vers `/spec`
-- **DESIGN** → Le design est a revoir → renvoyer vers `/ux`
-- **DISCOVERY** → Il manque de la connaissance utilisateur → renvoyer vers la Discovery
+Classification of gaps found in review. 4 types:
+- **IMPL** → Code bug → send back to `/build`
+- **SPEC** → Spec is incomplete → send back to `/spec`
+- **DESIGN** → Design needs revision → send back to `/ux`
+- **DISCOVERY** → Missing user knowledge → send back to Discovery
 
-Priorite : DISCOVERY > DESIGN > SPEC > IMPL.
+Priority: DISCOVERY > DESIGN > SPEC > IMPL.
 
 ---
 
 ## U
 
 ### User Story
-Une fonctionnalite decrite du point de vue de l'utilisateur. Format : "En tant que [role], je veux [action] pour [benefice]." Exemple : "En tant que manager, je veux voir les salles disponibles pour reserver rapidement."
+A feature described from the user's point of view. Format: "As a [role], I want [action] so that [benefit]." Example: "As a manager, I want to see available rooms so I can book quickly."
 
 ### UX (User Experience)
-L'experience globale de l'utilisateur avec ton produit. Le "comment ca se passe" quand quelqu'un utilise ton app.
+The overall experience a user has with your product. The "what it feels like" when someone uses your app.
 
 ---
 
 ## V
 
-### VALIDEE
-Statut d'une spec complete et approuvee. Toutes les 9 sections sont remplies, zero TBD. Seule une spec VALIDEE peut etre utilisee par `/build`.
+### VALIDATED
+Status of a complete and approved spec. All 9 sections are filled, zero TBD. Only a VALIDATED spec can be used by `/build`.

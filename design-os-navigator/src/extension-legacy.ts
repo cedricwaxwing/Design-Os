@@ -377,7 +377,7 @@ function handleCopyArtifact(id: string) {
   const artifact = prototyperArtifacts.find(a => a.id === id);
   if (artifact) {
     vscode.env.clipboard.writeText(artifact.content);
-    postToPanel({ type: 'protoToast', message: `"${artifact.title}" copié !`, toastType: 'success' });
+    postToPanel({ type: 'protoToast', message: `"${artifact.title}" copied!`, toastType: 'success' });
   }
 }
 
@@ -395,7 +395,7 @@ function handleExportArtifact(id: string, format?: string) {
     if (uri) {
       const fs = require('fs');
       fs.writeFileSync(uri.fsPath, artifact.content);
-      postToPanel({ type: 'protoToast', message: `Exporté : ${uri.fsPath}`, toastType: 'success' });
+      postToPanel({ type: 'protoToast', message: `Exported to: ${uri.fsPath}`, toastType: 'success' });
     }
   });
 }
@@ -405,7 +405,7 @@ function handleDeleteArtifact(id: string) {
   prototyperArtifacts = prototyperArtifacts.filter(a => a.id !== id);
   postToPanel({ type: 'removeArtifact', id });
   if (artifact) {
-    postToPanel({ type: 'protoToast', message: `"${artifact.title}" supprimé`, toastType: 'error' });
+    postToPanel({ type: 'protoToast', message: `"${artifact.title}" deleted`, toastType: 'error' });
   }
 }
 
@@ -416,7 +416,7 @@ function handlePinArtifact(id: string) {
     postToPanel({ type: 'updateArtifact', artifact });
     postToPanel({
       type: 'protoToast',
-      message: artifact.isPinned ? `"${artifact.title}" épinglé !` : `"${artifact.title}" désépinglé`,
+      message: artifact.isPinned ? `"${artifact.title}" pinned!` : `"${artifact.title}" unpinned`,
       toastType: artifact.isPinned ? 'success' : 'warning'
     });
   }
@@ -428,14 +428,14 @@ function handleRegenerateArtifact(id: string, mode: 'same' | 'prompt' | 'variant
 
   postToPanel({ type: 'setLoading', id, loading: true });
 
-  // TODO: Use _prompt when integrating Claude API for actual regeneration
+  // TODO: Use _prompt when integrating API for actual regeneration
   setTimeout(() => {
     postToPanel({ type: 'setLoading', id, loading: false });
     postToPanel({
       type: 'protoToast',
       message: mode === 'variant'
-        ? `Variante de "${artifact.title}" générée !`
-        : `"${artifact.title}" régénéré !`,
+        ? `Variant of "${artifact.title}" generated!`
+        : `"${artifact.title}" regenerated!`,
       toastType: 'success'
     });
   }, 2000);
@@ -446,7 +446,7 @@ function handleEditArtifact(id: string, newContent: string) {
   if (artifact) {
     artifact.content = newContent;
     postToPanel({ type: 'updateArtifact', artifact });
-    postToPanel({ type: 'protoToast', message: `"${artifact.title}" sauvegardé !`, toastType: 'success' });
+    postToPanel({ type: 'protoToast', message: `"${artifact.title}" saved!`, toastType: 'success' });
   }
 }
 
@@ -685,7 +685,7 @@ function openFlowPreview(filePath: string) {
   const content = fs.readFileSync(filePath, 'utf-8');
   const mermaidMatch = content.match(/```mermaid\n([\s\S]*?)```/);
   if (!mermaidMatch) {
-    vscode.window.showWarningMessage('Aucun diagramme Mermaid trouvé dans ce fichier.');
+    vscode.window.showWarningMessage('No Mermaid diagram found in this file.');
     return;
   }
 

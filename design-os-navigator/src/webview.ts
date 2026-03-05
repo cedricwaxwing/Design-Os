@@ -1708,21 +1708,21 @@ export function getWebviewContent(data: GraphData): string {
                 <rect x="3" y="3" width="18" height="18" rx="2"/>
                 <path d="M3 9h18"/><path d="M9 21V9"/>
               </svg>
-              <div class="proto-empty-title">Aucun artefact</div>
-              <div class="proto-empty-desc">Utilisez la Console pour generer<br>des specs, wireframes ou prototypes.</div>
+              <div class="proto-empty-title">No artifacts yet</div>
+              <div class="proto-empty-desc">Use the Console to generate<br>specs, wireframes or prototypes.</div>
             </div>
             <div id="protoList"></div>
           </div>
 
           <!-- Preview panel -->
           <div class="proto-preview" id="protoPreview">
-            <div class="proto-preview-header">
-              <button class="proto-back-btn" id="protoBackBtn">&#8592; Retour</button>
+              <div class="proto-preview-header">
+              <button class="proto-back-btn" id="protoBackBtn">&#8592; Back</button>
               <span class="art-badge" id="protoPreviewBadge">DOC</span>
               <span class="proto-preview-title" id="protoPreviewTitle">Titre</span>
               <div class="proto-preview-actions">
-                <button class="art-btn" id="protoPreviewCopyBtn">Copier</button>
-                <button class="art-btn" id="protoPreviewExportBtn">Exporter</button>
+                <button class="art-btn" id="protoPreviewCopyBtn">Copy</button>
+                <button class="art-btn" id="protoPreviewExportBtn">Export</button>
               </div>
             </div>
             <div class="proto-preview-body" id="protoPreviewBody"></div>
@@ -1741,11 +1741,11 @@ export function getWebviewContent(data: GraphData): string {
           <div class="proto-modal-backdrop" id="protoDeleteBackdrop"></div>
           <div class="proto-modal" id="protoDeleteModal">
             <div class="proto-modal-icon">&#128465;</div>
-            <div class="proto-modal-title">Supprimer cet artefact ?</div>
-            <div class="proto-modal-message">Cette action est irreversible. L'artefact "<span id="protoDeleteName"></span>" sera definitivement supprime.</div>
+            <div class="proto-modal-title">Delete this artifact?</div>
+            <div class="proto-modal-message">This action is irreversible. The artifact "<span id="protoDeleteName"></span>" will be permanently deleted.</div>
             <div class="proto-modal-actions">
-              <button class="proto-modal-btn" id="protoDeleteCancel">Annuler</button>
-              <button class="proto-modal-btn danger" id="protoDeleteConfirm">Supprimer</button>
+              <button class="proto-modal-btn" id="protoDeleteCancel">Cancel</button>
+              <button class="proto-modal-btn danger" id="protoDeleteConfirm">Delete</button>
             </div>
           </div>
 
@@ -1753,12 +1753,12 @@ export function getWebviewContent(data: GraphData): string {
           <div class="proto-modal-backdrop" id="protoPromptBackdrop"></div>
           <div class="proto-modal" id="protoPromptModal">
             <div class="proto-modal-icon prompt">&#128260;</div>
-            <div class="proto-modal-title">Regenerer avec instructions</div>
-            <div class="proto-modal-message">Decris les modifications souhaitees.</div>
-            <textarea class="proto-prompt-textarea" id="protoPromptTextarea" placeholder="Ex: Rends le plus compact, ajoute une section FAQ..."></textarea>
+            <div class="proto-modal-title">Regenerate with instructions</div>
+            <div class="proto-modal-message">Describe the changes you want.</div>
+            <textarea class="proto-prompt-textarea" id="protoPromptTextarea" placeholder="Ex: Make it more compact, add an FAQ section..."></textarea>
             <div class="proto-modal-actions">
-              <button class="proto-modal-btn" id="protoPromptCancel">Annuler</button>
-              <button class="proto-modal-btn primary" id="protoPromptConfirm">Regenerer</button>
+              <button class="proto-modal-btn" id="protoPromptCancel">Cancel</button>
+              <button class="proto-modal-btn primary" id="protoPromptConfirm">Regenerate</button>
             </div>
           </div>
         </div>
@@ -1851,6 +1851,17 @@ export function getWebviewContent(data: GraphData): string {
       return (tag || 'VIDE').replace(/\\s+/g, '-');
     }
 
+    function maturityLabel(tag) {
+      switch (tag) {
+        case 'VIDE': return 'Empty';
+        case 'AMORCE': return 'Started';
+        case 'EN COURS': return 'In progress';
+        case 'COMPLET': return 'Complete';
+        case 'VALIDE': return 'Validated';
+        default: return tag || 'Empty';
+      }
+    }
+
     function gateDots(gates) {
       if (!gates || gates.length === 0) return '';
       var html = '<span class="gate-dots">';
@@ -1934,7 +1945,7 @@ export function getWebviewContent(data: GraphData): string {
       if (!msg || !msg.previewable) {
         // Reset to placeholder
         container.className = 'file-preview-body placeholder';
-        container.innerHTML = '<span class="file-preview-placeholder-text">Aucun aper\\u00E7u</span>';
+        container.innerHTML = '<span class="file-preview-placeholder-text">No preview</span>';
         container.onclick = null;
         if (footer) footer.style.display = 'none';
         currentPreviewPath = null;
@@ -2151,13 +2162,13 @@ export function getWebviewContent(data: GraphData): string {
 
         if (pipeline.length > 0) {
           var stageIcons = { DRAFT: '\\u25CB', 'EN COURS': '\\u29BF', VALIDEE: '\\u25B8', BUILT: '\\u2699', REVIEWED: '\\u2713' };
-          var stageLabels = { DRAFT: 'Draft', 'EN COURS': 'En cours', VALIDEE: 'Validee', BUILT: 'Code', REVIEWED: 'Review' };
+          var stageLabels = { DRAFT: 'Draft', 'EN COURS': 'In progress', VALIDEE: 'Validated', BUILT: 'Code', REVIEWED: 'Review' };
 
           html += '<div class="ctx-section">' +
             '<div class="ctx-label">Pipeline specs</div>' +
             '<div class="ctx-counters">' +
               '<span class="ctx-counter"><span class="count">' + pipeline.length + '</span> spec' + (pipeline.length > 1 ? 's' : '') + '</span>' +
-              '<span class="ctx-counter"><span class="count">' + screenCount + '</span> ecran' + (screenCount > 1 ? 's' : '') + '</span>';
+              '<span class="ctx-counter"><span class="count">' + screenCount + '</span> screen' + (screenCount > 1 ? 's' : '') + '</span>';
           if (staleCount > 0) {
             html += '<span class="ctx-counter warn"><span class="count">' + staleCount + '</span> stale</span>';
           }
@@ -2203,21 +2214,21 @@ export function getWebviewContent(data: GraphData): string {
         var flows = ctx.flows || [];
 
         if (jCount > 0 || fCount > 0) {
-          html += '<div class="ctx-section"><div class="ctx-label">Parcours utilisateur</div><div class="ctx-counters">';
+          html += '<div class="ctx-section"><div class="ctx-label">User journeys</div><div class="ctx-counters">';
           html += '<span class="ctx-counter"><span class="count">' + jCount + '</span> journey' + (jCount > 1 ? 's' : '') + ' SVG</span>';
           html += '<span class="ctx-counter"><span class="count">' + fCount + '</span> flow' + (fCount > 1 ? 's' : '') + '</span>';
           html += '</div></div>';
         }
 
         if (flows.length > 0) {
-          html += '<div class="ctx-section"><div class="ctx-label">Flows detectes</div>';
+          html += '<div class="ctx-section"><div class="ctx-label">Detected flows</div>';
           html += '<div class="flow-list">';
           for (var fi = 0; fi < flows.length; fi++) {
             var flow = flows[fi];
             html += '<div class="flow-item" data-flow-path="' + flow.path + '">' +
               '<span class="flow-name">' + flow.name + '</span>' +
-              '<span class="flow-badge">' + flow.nodeCount + ' ecrans</span>' +
-              '<span class="flow-open" title="Ouvrir le flow interactif">\\u2197</span>' +
+              '<span class="flow-badge">' + flow.nodeCount + ' screens</span>' +
+              '<span class="flow-open" title="Open interactive flow">\\u2197</span>' +
             '</div>';
           }
           html += '</div></div>';
@@ -2407,7 +2418,7 @@ export function getWebviewContent(data: GraphData): string {
             node.label + badge +
           '</div>' +
           '<div class="node-meta">' +
-            '<span class="maturity-tag ' + maturityCls(node.maturity) + '">' + (node.maturity || 'VIDE') + '</span>' +
+            '<span class="maturity-tag ' + maturityCls(node.maturity) + '">' + maturityLabel(node.maturity) + '</span>' +
             gateDots(node.gates) +
             '<span class="gate-ratio">' + gateRatio(node.gates) + '</span>' +
           '</div>';
@@ -2455,7 +2466,7 @@ export function getWebviewContent(data: GraphData): string {
           '<span class="phase-tag">' + node.phase + '</span>' +
           '<h2>' + (nodeIcons[node.id] || '') + ' ' + node.label + '</h2>' +
         '</div>' +
-        '<button class="close-btn" id="close-panel-btn" title="Fermer (Echap)">\\u2715</button>' +
+        '<button class="close-btn" id="close-panel-btn" title="Close (Esc)">\\u2715</button>' +
       '</div>';
 
       // ─── 2. Gate checklist (always visible) ───
@@ -2466,7 +2477,7 @@ export function getWebviewContent(data: GraphData): string {
 
       html += '<div class="detail-gates">' +
         '<div class="detail-gates-header">' +
-          '<span class="maturity-tag ' + maturityCls(node.maturity) + '">' + (node.maturity || 'VIDE') + '</span>' +
+          '<span class="maturity-tag ' + maturityCls(node.maturity) + '">' + maturityLabel(node.maturity) + '</span>' +
           '<span style="font-size:12px;color:var(--text-dim)">' + metCount + '/' + gateTotal + ' conditions</span>' +
         '</div>' +
         '<div class="detail-gates-bar"><div class="detail-gates-fill" style="width:' + gatePct + '%"></div></div>' +
@@ -2489,7 +2500,7 @@ export function getWebviewContent(data: GraphData): string {
       // ─── 2b. File Preview (right below readiness) ───
       html += '<div class="file-preview">' +
         '<div id="preview-content" class="file-preview-body placeholder">' +
-          '<span class="file-preview-placeholder-text">Aucun aper\u00E7u</span>' +
+          '<span class="file-preview-placeholder-text">No preview</span>' +
         '</div>' +
         '<div id="preview-footer" class="file-preview-footer" style="display:none;">' +
           '<span id="preview-name" class="file-preview-name"></span>' +
@@ -2510,7 +2521,7 @@ export function getWebviewContent(data: GraphData): string {
       }
 
       // ─── 3.1. Commands ───
-      if (node.commands.length > 0) {
+        if (node.commands.length > 0) {
         let commandsHtml = '';
         for (const cmd of node.commands) {
           commandsHtml += '<button class="command-btn" data-command="' + cmd.command + '">' +
@@ -2518,19 +2529,19 @@ export function getWebviewContent(data: GraphData): string {
             '<span class="command-desc">' + cmd.description + '</span>' +
           '</button>';
         }
-        html += collapsible('commands', 'Commandes', node.commands.length, commandsHtml, false);
+        html += collapsible('commands', 'Commands', node.commands.length, commandsHtml, false);
       }
 
       // ─── 3.2. What's Next (collapsible) ───
       var whatsNextContent = renderWhatsNext(node);
       if (whatsNextContent) {
-        html += collapsible('whats-next', 'Prochaines etapes', null, whatsNextContent, false);
+        html += collapsible('whats-next', "What's next", null, whatsNextContent, false);
       }
 
       // ─── 3.3. Contextual section (node-specific) ───
       html += renderContextSection(node);
 
-      // ─── 4. Activite recente ───
+      // ─── 4. Recent activity ───
       if (node.files.length > 0) {
         const sorted = node.files.slice().sort((a, b) => (b.modifiedAt || 0) - (a.modifiedAt || 0));
         const maxShow = 8;
@@ -2557,10 +2568,10 @@ export function getWebviewContent(data: GraphData): string {
           '</div>';
         }
         if (node.files.length > maxShow) {
-          filesHtml += '<div class="empty-state">+ ' + (node.files.length - maxShow) + ' autres fichiers</div>';
+          filesHtml += '<div class="empty-state">+ ' + (node.files.length - maxShow) + ' more files</div>';
         }
 
-        html += collapsible('activity', 'Activite recente', node.files.length, filesHtml, false);
+        html += collapsible('activity', 'Recent activity', node.files.length, filesHtml, false);
       }
 
       // ─── 5. Confidence signals (collapsed by default) ───
@@ -3182,17 +3193,17 @@ export function getWebviewContent(data: GraphData): string {
           skillBadge +
           '<span class="art-title">' + protoEscapeHtml(artifact.title) + '</span></div>' +
           '<div class="art-actions">' +
-          '<button class="art-btn art-open-btn">Ouvrir</button>' +
-          '<button class="art-btn art-copy-btn">Copier</button>' +
+          '<button class="art-btn art-open-btn">Open</button>' +
+          '<button class="art-btn art-copy-btn">Copy</button>' +
           '<div class="art-dropdown art-regen-dd"><button class="art-btn">Regen \\u25BE</button>' +
           '<div class="art-dropdown-menu">' +
-          '<button class="art-dd-item art-regen-same"><span class="art-dd-icon">\\uD83D\\uDD04</span>Regenerer</button>' +
-          '<button class="art-dd-item art-regen-prompt"><span class="art-dd-icon">\\u270F</span>Avec prompt...</button>' +
-          '<button class="art-dd-item art-regen-variant"><span class="art-dd-icon">\\uD83C\\uDFB2</span>Variante</button></div></div>' +
+          '<button class="art-dd-item art-regen-same"><span class="art-dd-icon">\\uD83D\\uDD04</span>Regenerate</button>' +
+          '<button class="art-dd-item art-regen-prompt"><span class="art-dd-icon">\\u270F</span>With prompt...</button>' +
+          '<button class="art-dd-item art-regen-variant"><span class="art-dd-icon">\\uD83C\\uDFB2</span>Variant</button></div></div>' +
           '<button class="art-btn primary art-export-btn">Export</button>' +
           '<div class="art-dropdown art-menu-dd"><button class="art-btn art-menu-btn">\\u22EF</button>' +
           '<div class="art-dropdown-menu">' +
-          '<button class="art-dd-item art-pin-btn"><span class="art-dd-icon">' + (artifact.isPinned ? '\\uD83D\\uDCCD' : '\\uD83D\\uDCCC') + '</span>' + (artifact.isPinned ? 'Desepingler' : 'Epingler') + '</button>' +
+          '<button class="art-dd-item art-pin-btn"><span class="art-dd-icon">' + (artifact.isPinned ? '\\uD83D\\uDCCD' : '\\uD83D\\uDCCC') + '</span>' + (artifact.isPinned ? 'Unpin' : 'Pin') + '</button>' +
           '<div class="art-dd-divider"></div>' +
           '<button class="art-dd-item danger art-delete-btn"><span class="art-dd-icon">\\uD83D\\uDDD1</span>Supprimer</button></div></div>' +
           '</div></div>' + contentHtml + '</div>';

@@ -1,18 +1,18 @@
 # Skills Registry — External Skills Catalog
 
-> Ce registre liste les skills externes disponibles. Les agents les chargent a la volee
-> depuis GitHub quand le contexte du projet le justifie. Aucun skill externe n'est actif par defaut.
+> This registry lists available external skills. Agents load them on demand
+> from GitHub when the project context requires it. No external skill is active by default.
 
 ---
 
 ## Source
 
-Repository : https://github.com/vercel-labs/agent-skills
-Base URL : `https://raw.githubusercontent.com/vercel-labs/agent-skills/refs/heads/main/skills/`
+Repository: https://github.com/vercel-labs/agent-skills  
+Base URL: `https://raw.githubusercontent.com/vercel-labs/agent-skills/refs/heads/main/skills/`
 
 ---
 
-## Catalogue
+## Catalog
 
 | Skill | Fichier | Active quand | Agent consommateur |
 |-------|---------|-------------|-------------------|
@@ -21,31 +21,31 @@ Base URL : `https://raw.githubusercontent.com/vercel-labs/agent-skills/refs/head
 | Composition Patterns | `{base}/composition-patterns/SKILL.md` | Framework = React (tous) + composant complexe | `/build` |
 | Web Design Guidelines | `{base}/web-design-guidelines/SKILL.md` | Platform = web, both + review UI | `/review` |
 
-> `{base}` = Base URL ci-dessus.
+> `{base}` = Base URL above.
 
 ---
 
-## Regles d'activation
+## Activation rules
 
-1. **Jamais charge par defaut** — uniquement quand l'agent en a besoin
-2. **Lecture seule** — le skill est lu via WebFetch, pas copie localement
-3. **Cache session** — une fois charge dans la session, pas besoin de re-fetch
-4. **Stack-driven** — l'activation depend de la stack dans CLAUDE.md (Tech Stack + Platform)
-5. **Non-bloquant** — si le fetch echoue (offline, 404), l'agent continue sans le skill
-6. **Extensible** — ajouter une ligne au tableau pour un nouveau skill
-
----
-
-## Comment ajouter un skill externe
-
-1. Trouver le SKILL.md source (GitHub, custom, etc.)
-2. Ajouter une ligne au tableau ci-dessus
-3. Specifier la condition d'activation (stack, phase, agent)
-4. L'agent le chargera automatiquement a la prochaine session
+1. **Never loaded by default** — only when an agent needs it
+2. **Read‑only** — the skill is read via WebFetch, not copied locally
+3. **Session cache** — once loaded in the session, no need to refetch
+4. **Stack‑driven** — activation depends on the stack in `CLAUDE.md` (Tech Stack + Platform)
+5. **Non‑blocking** — if fetch fails (offline, 404), the agent continues without the skill
+6. **Extensible** — add a row to the table for a new skill
 
 ---
 
-## Comment ca marche
+## How to add an external skill
+
+1. Find the source `SKILL.md` (GitHub, custom, etc.)
+2. Add a row in the table above
+3. Specify the activation condition (stack, phase, agent)
+4. The agent will load it automatically in the next session
+
+---
+
+## How it works
 
 ```
 Build/Review demarre
@@ -59,8 +59,8 @@ Lit skills-registry.md → filtre les skills qui matchent
     ▼
 WebFetch du SKILL.md depuis GitHub (silencieux)
     │
-    ├─ Succes → integre les regles dans le contexte
-    └─ Echec → continue sans (graceful degradation)
+         ├─ Success → integrates rules into the context
+         └─ Failure → continues without (graceful degradation)
 ```
 
-Les regles des skills externes sont **supplementaires** — elles ne remplacent ni le Design System, ni la spec, ni le workflow TDD.
+Rules from external skills are **additional** — they do not replace the Design System, the spec, or the TDD workflow.
