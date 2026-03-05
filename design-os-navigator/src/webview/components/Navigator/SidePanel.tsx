@@ -66,9 +66,9 @@ export function SidePanel({
 
       {/* Body */}
       <div className="sp-body">
-        {/* Section: Status */}
+        {/* Section: STATUS (spec 1.2) */}
         <div className="sp-section">
-          <div className="sp-section-title">Status</div>
+          <div className="sp-section-title">STATUS</div>
           <div className="sp-stat">
             <span className="sp-stat-label">Maturity</span>
             <span className="sp-stat-value">{getMaturityLabel(node.maturity)}</span>
@@ -83,10 +83,10 @@ export function SidePanel({
           </div>
         </div>
 
-        {/* Section: Actions (priorite haute) */}
+        {/* Section: ACTIONS (spec 1.2) */}
         {node.commands.length > 0 && (
           <div className="sp-section">
-            <div className="sp-section-title">Actions</div>
+            <div className="sp-section-title">ACTIONS</div>
             {node.commands.map((cmd, i) => (
               <button
                 key={cmd.command}
@@ -100,10 +100,10 @@ export function SidePanel({
           </div>
         )}
 
-        {/* Section: Files */}
+        {/* Section: FILES (spec 1.2) */}
         {node.files.length > 0 && (
           <div className="sp-section">
-            <div className="sp-section-title">Files</div>
+            <div className="sp-section-title">FILES</div>
             {node.files.slice(0, 10).map(file => (
               <div
                 key={file.path}
@@ -126,10 +126,10 @@ export function SidePanel({
           </div>
         )}
 
-        {/* Section: Connections */}
+        {/* Section: CONNECTIONS (spec 1.2) */}
         {connections.length > 0 && (
           <div className="sp-section">
-            <div className="sp-section-title">Connections</div>
+            <div className="sp-section-title">CONNECTIONS</div>
             {connections.map(conn => (
               <div key={conn.id} className="sp-connection">
                 {conn.label}

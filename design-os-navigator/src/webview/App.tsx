@@ -219,6 +219,13 @@ export default function App({ initialData }: AppProps) {
           </>
         )}
 
+        {activeTab === 'navigator' && !graphData && (
+          <div className="navigator-error-state">
+            <p className="navigator-error-message">No project data available.</p>
+            <p className="navigator-error-hint">Open a workspace that contains CLAUDE.md and .claude/context.md, then reopen the Design OS Navigator.</p>
+          </div>
+        )}
+
         {activeTab === 'prototyper' && (
           <ArtifactFeed
             artifacts={artifacts}

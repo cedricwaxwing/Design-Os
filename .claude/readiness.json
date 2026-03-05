@@ -1,8 +1,8 @@
 {
   "module": "core",
-  "updatedAt": "2026-03-05T14:00:00.000Z",
-  "updatedBy": "/o",
-  "globalScore": 14,
+  "updatedAt": "2026-03-05T15:00:00.000Z",
+  "updatedBy": "/review",
+  "globalScore": 51,
   "nodes": {
     "strategy": {
       "score": 25,
@@ -10,20 +10,20 @@
       "action": "Complete the brief and vision via /onboarding"
     },
     "discovery": {
-      "score": 5,
-      "verdict": "not-ready",
-      "action": "Run /discovery to add domain context, personas, and hypotheses",
+      "score": 45,
+      "verdict": "possible",
+      "action": "Run /ux to define Screen Map; add interviews later to validate hypotheses",
       "children": {
-        "discovery-domain": { "score": 0, "label": "Domain Context" },
-        "discovery-personas": { "score": 0, "label": "Personas" },
+        "discovery-domain": { "score": 50, "label": "Domain Context" },
+        "discovery-personas": { "score": 40, "label": "Personas" },
         "discovery-interviews": { "score": 0, "label": "Interviews" },
-        "discovery-insights": { "score": 0, "label": "Research Insights" }
+        "discovery-insights": { "score": 50, "label": "Research Insights" }
       }
     },
     "ux": {
-      "score": 10,
-      "verdict": "not-ready",
-      "action": "Discovery first; then run /ux to define Screen Map and flows"
+      "score": 70,
+      "verdict": "push",
+      "action": "Validate Screen Map; then /wireframe (optional) or /spec LITE"
     },
     "design-system": {
       "score": 65,
@@ -31,9 +31,9 @@
       "action": "Enrich components and patterns as needed"
     },
     "spec": {
-      "score": 0,
-      "verdict": "not-ready",
-      "action": "Define UX and Screen Map first, then /spec"
+      "score": 85,
+      "verdict": "ready",
+      "action": "Specs validated; run /build for Navigator home + Node detail panel"
     },
     "ui": {
       "score": 0,
@@ -41,14 +41,14 @@
       "action": "Specs required first"
     },
     "build": {
-      "score": 25,
-      "verdict": "possible",
-      "action": "Validated specs required before /build"
+      "score": 80,
+      "verdict": "ready",
+      "action": "Run /review to score conformity vs specs"
     },
     "review": {
-      "score": 0,
-      "verdict": "not-ready",
-      "action": "Code required first"
+      "score": 85,
+      "verdict": "ready",
+      "action": "Navigator 1.1 & 1.2 reviewed GO; optional: fix EdgesSvg DS-2 (rgba) for full DS compliance"
     },
     "lab": {
       "score": 0,
