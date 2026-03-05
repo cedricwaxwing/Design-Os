@@ -5,17 +5,17 @@
 ## Profil actif
 
 ```yaml
-language:             # fr | en | de | es | pt | ... (set by /onboarding Phase 0)
-profile:              # designer | founder | pm | dev | other
-checkpoint_mode:      # auto-set — granular (designer) | minimal (founder) | standard (pm/dev)
-communication_style:  # visual (designer) | strategic (founder) | structured (pm) | technical (dev)
-detail_level:         # high (designer/dev) | medium (pm) | low (founder)
-integration_mode:     # zero | material | advanced (set by /onboarding Phase 0b/0c)
-output_preference:    # visual (designer) | textual (founder/pm) | code (dev)
-review_focus:         # visual_conformity (designer) | spec_conformity (pm/dev) | business_value (founder)
-ds_engagement:        # creator (designer) | consumer (dev) | viewer (founder/pm)
-artifact_format:      # svg_html (designer) | markdown (pm/founder) | tsx (dev)
-guidance_mode:        # wizard | hybrid | freeform (default: hybrid)
+language: en             # fr | en | de | es | pt | ... (set by /onboarding Phase 0)
+profile: designer        # designer | founder | pm | dev | other
+checkpoint_mode: granular      # auto-set — granular (designer) | minimal (founder) | standard (pm/dev)
+communication_style: visual  # visual (designer) | strategic (founder) | structured (pm) | technical (dev)
+detail_level: high         # high (designer/dev) | medium (pm) | low (founder)
+integration_mode: zero     # zero | material | advanced (set by /onboarding Phase 0b/0c)
+output_preference: visual    # visual (designer) | textual (founder/pm) | code (dev)
+review_focus: visual_conformity         # visual_conformity (designer) | spec_conformity (pm/dev) | business_value (founder)
+ds_engagement: creator        # creator (designer) | consumer (dev) | viewer (founder/pm)
+artifact_format: svg_html      # svg_html (designer) | markdown (pm/founder) | tsx (dev)
+guidance_mode: hybrid        # wizard | hybrid | freeform (default: hybrid)
 ```
 
 ## Agents preferes (auto-set, modifiable)

@@ -12,10 +12,10 @@
 
 | Token | Valeur | Usage |
 |-------|--------|-------|
-| `primary` | `#______` | Couleur primaire, CTA, liens |
-| `primary-light` | `#______` | Hover, accents legers |
-| `primary-dark` | `#______` | Active/pressed |
-| `primary-50` | `#______` | Fond tres leger (badges, highlights) |
+| `primary` | `#3B82F6` | Couleur primaire, CTA, liens |
+| `primary-light` | `#60A5FA` | Hover, accents legers |
+| `primary-dark` | `#1D4ED8` | Active/pressed |
+| `primary-50` | `#EFF6FF` | Fond tres leger (badges, highlights) |
 
 <!-- INSTRUCTIONS POUR /onboarding :
      A partir de la couleur primaire fournie par l'utilisateur, generer :
@@ -29,10 +29,10 @@
 
 | Token | Valeur | Usage |
 |-------|--------|-------|
-| `bg-base` | `#______` | Fond de page |
-| `bg-surface` | `#______` | Fond des cartes, conteneurs |
-| `bg-elevated` | `#______` | Fond des modales, drawers |
-| `bg-input` | `#______` | Fond des champs de saisie |
+| `bg-base` | `#0F172A` | Fond de page |
+| `bg-surface` | `#1E293B` | Fond des cartes, conteneurs |
+| `bg-elevated` | `#334155` | Fond des modales, drawers |
+| `bg-input` | `#1E293B` | Fond des champs de saisie |
 
 <!-- INSTRUCTIONS POUR /onboarding :
      Light mode : bg-base=#FFFFFF, bg-surface=#F9FAFB, bg-elevated=#FFFFFF, bg-input=#F3F4F6
@@ -53,10 +53,10 @@
 
 | Token | Valeur | Usage |
 |-------|--------|-------|
-| `text-primary` | `#______` | Texte principal |
-| `text-secondary` | `#______` | Texte secondaire, metadata |
-| `text-tertiary` | `#______` | Texte desactive, placeholder |
-| `text-on-primary` | `#______` | Texte sur fond primaire (CTAs) |
+| `text-primary` | `#F9FAFB` | Texte principal |
+| `text-secondary` | `#9CA3AF` | Texte secondaire, metadata |
+| `text-tertiary` | `#6B7280` | Texte desactive, placeholder |
+| `text-on-primary` | `#FFFFFF` | Texte sur fond primaire (CTAs) |
 
 <!-- INSTRUCTIONS POUR /onboarding :
      Light mode : text-primary=#111827, text-secondary=#6B7280, text-tertiary=#9CA3AF, text-on-primary=#FFFFFF
@@ -66,8 +66,8 @@
 
 | Token | Valeur | Usage |
 |-------|--------|-------|
-| `border-default` | `#______` | Bordures standards |
-| `border-subtle` | `#______` | Bordures legeres, separateurs |
+| `border-default` | `#1F2937` | Bordures standards |
+| `border-subtle` | `#111827` | Bordures legeres, separateurs |
 
 ### Couleurs des roles
 
@@ -84,9 +84,9 @@
 
 ### Font
 
-- **Famille** : <!-- ta font ici, ex: Inter, Geist, System -->
-- **Fallback** : `-apple-system, BlinkMacSystemFont, sans-serif`
-- **Chargement** : <!-- via @theme, Google Fonts, local, etc. -->
+- **Famille** : Outfit, -apple-system, BlinkMacSystemFont, system-ui, sans-serif
+- **Fallback** : `-apple-system, BlinkMacSystemFont, system-ui, sans-serif`
+- **Chargement** : Google Fonts (Outfit)
 
 ### Echelle typographique
 
@@ -149,9 +149,9 @@ Base : **4px** (compatible avec Tailwind par defaut).
 
 ### Librairie
 
-- **Librairie** : <!-- ta librairie ici, ex: Lucide, Heroicons, Phosphor, Material Symbols, Tabler Icons -->
-- **Style** : <!-- outline | filled | les deux (avec regle de priorite) -->
-- **Import** : <!-- ex: import { IconName } from 'lucide-react' -->
+- **Librairie** : Lucide
+- **Style** : outline
+- **Import** : `import { IconName } from 'lucide-react'`
 - **Taille par defaut** : 20px
 - **Taille compacte** : 16px
 - **Taille large** : 24px

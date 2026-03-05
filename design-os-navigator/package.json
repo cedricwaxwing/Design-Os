@@ -59,10 +59,11 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "lint": "eslint src --ext ts,tsx",
-    "package": "npm run build && vsce package",
+    "package": "npm run build && npx @vscode/vsce package --no-dependencies",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.webview.json --noEmit"
   },
   "devDependencies": {
+    "@vscode/vsce": "^3.2.1",
     "@types/node": "^20.0.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",

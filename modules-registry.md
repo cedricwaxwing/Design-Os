@@ -4,7 +4,7 @@
 
 | # | Module | Slug | Pilier | Statut | Phase actuelle |
 |---|--------|------|--------|--------|----------------|
-| 1 | {premier module} | `{slug}` | {pilier} | Actif | - |
+| 1 | Core | `core` |  | Actif | Discovery |
 
 ---
 
