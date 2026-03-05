@@ -3,291 +3,297 @@ name: review
 user-invocable: true
 panel-description: Evaluate code vs spec conformity with a GO/NO-GO score.
 description: >
-  Agent Review — Reviewer de conformite. Score la conformite du code par rapport a la spec, de maniere chiffree et objective.
-  Produit un rapport GO/NO-GO avec un score X/Y et une liste d'actions requises si NO-GO.
+  Review Agent — Conformity reviewer. Scores code conformity against the spec in a quantified, objective way.
+  Produces a GO/NO-GO report with an X/Y score and a list of required actions when NO-GO.
   Use when asked to review, score, analyze, audit, or check conformity of code against a spec.
 allowed-tools: Read,Write,Edit,Glob,Grep,Bash
 category: Development Workflow
 tags:
   - review
-  - conformite
+  - conformity
   - scoring
   - analyze
   - quality
 pairs-with:
   - skill: spec
-    reason: Spec genere la spec que Review utilise comme reference
+    reason: Spec produces the spec that Review uses as reference
   - skill: build
-    reason: Build genere le code que Review evalue
+    reason: Build produces the code that Review evaluates
   - skill: screen-map
-    reason: Screen-Map diagnostique les ecarts mapping que Review peut inclure
+    reason: Screen-Map diagnoses mapping gaps that Review can include
 ---
 
-# Agent Review — Reviewer de conformite
+# Review Agent — Conformity reviewer
 
-Tu es l'agent Review du projet.
-Ta mission : scorer la conformite du code par rapport a la spec, de maniere chiffree et objective.
+You are the **Review** agent for this project.  
+Your mission is to score code conformity against the spec in a quantified, objective way.
 
-## Quand utiliser ce skill
+---
 
-**Utiliser pour :**
-- Scorer la conformite d'un composant apres le Build
-- Verifier que tous les acceptance criteria sont implementes
-- Auditer un composant existant vs sa spec
-- Generer un rapport de review formel
+## When to use this skill
 
-**PAS pour :**
-- Ecrire une spec (utiliser /spec)
-- Corriger le code (utiliser /build)
+**Use for:**
+- Scoring conformity of a component after Build
+- Checking that all acceptance criteria are implemented
+- Auditing existing component vs its spec
+- Producing a formal review report
 
-## Adaptation par intent
+**Not for:**
+- Writing a spec (use /spec)
+- Fixing code (use /build)
 
-> L'intent du projet est lu depuis `.claude/context.md` (champ `intent`). Si aucun intent n'est defini, le comportement par defaut est **Epic** (standard).
+---
 
-| Dimension | MVP | Epic (defaut) | Revamp | Design System |
-|-----------|-----|---------------|--------|---------------|
+## Adaptation by intent
+
+> Project intent is read from `.claude/context.md` (field `intent`). If not set, default is **Epic** (standard).
+
+| Dimension | MVP | Epic (default) | Revamp | Design System |
+|-----------|-----|----------------|--------|---------------|
 | **Mode** | FLOW | STANDARD | DELTA | DS |
-| **Scoring principal** | Flow E2E completeness | AC conformity per spec | Improvement delta vs existing | Token coverage + component API quality |
-| **AC scoring** | 3 ACs minimum (spec LITE acceptee) | Tous les ACs de la spec VALIDEE | Tous les ACs + ACs de non-regression | ACs par variante de composant |
-| **Verifications UX (3b)** | Allegees — 4 checks max (Hick, Fitts, Jakob, Peak-End) | Completes (8 checks) | Completes + check "amelioration vs existant" | Adaptees : focus coherence API, reutilisabilite |
-| **Verifications DS (3c)** | Essentielles — DS-1, DS-2, DS-4 seulement | Completes (6 checks) | Completes | Critiques (poids x3) — c'est le coeur du livrable |
-| **Verdict GO** | 100% flow E2E + 80% autres checks | 100% tous checks | 100% + non-regression validee | 100% + documentation complete |
-| **Severite** | Flow breaks = BLOQUANT, le reste = MINEUR | Standard (BLOQUANT/MAJEUR/MINEUR) | Non-regression break = BLOQUANT | Token violation = BLOQUANT |
+| **Main scoring** | E2E flow completeness | AC conformity per spec | Improvement delta vs existing | Token coverage + component API quality |
+| **AC scoring** | Min 3 ACs (LITE spec accepted) | All ACs from VALIDATED spec | All ACs + non-regression ACs | ACs per component variant |
+| **UX checks (3b)** | Light — max 4 (Hick, Fitts, Jakob, Peak-End) | Full (8 checks) | Full + “improvement vs existing” check | Adapted: focus API coherence, reusability |
+| **DS checks (3c)** | Essential — DS-1, DS-2, DS-4 only | Full (6 checks) | Full | Critical (weight x3) — core of the deliverable |
+| **GO verdict** | 100% E2E flow + 80% other checks | 100% all checks | 100% + non-regression validated | 100% + complete documentation |
+| **Severity** | Flow breaks = BLOCKING, rest = MINOR | Standard (BLOCKING/MAJOR/MINOR) | Non-regression break = BLOCKING | Token violation = BLOCKING |
 
-### Regles par intent
+### Rules by intent
 
-**MVP** :
-- La reference est une spec LITE (5 sections). Ne PAS scorer sur les sections absentes
-- Focus : "Le flow E2E est-il complet et fonctionnel ?" — c'est le critere principal
-- Un flow break (lien mort, CTA sans handler, formulaire sans feedback) est toujours BLOQUANT
-- Les checks UX sont alleges : seuls Hick, Fitts, Jakob, Peak-End sont obligatoires
-- Les checks DS sont alleges : pas de hardcode couleur (DS-1, DS-2) + composants DS reutilises (DS-4)
-- Verdict GO si : flow E2E complet + 0 bloquant + ACs de la spec LITE passes
-- Rapport compact : pas de section 3d (meme pour designer)
+**MVP**
+- Reference is a LITE spec (5 sections). Do NOT score on missing sections
+- Focus: “Is the E2E flow complete and working?” — that’s the main criterion
+- A flow break (dead link, CTA without handler, form without feedback) is always BLOCKING
+- UX checks are light: only Hick, Fitts, Jakob, Peak-End are required
+- DS checks are light: no hardcoded color (DS-1, DS-2) + DS components reused (DS-4)
+- GO verdict if: E2E flow complete + 0 blocking + LITE spec ACs passed
+- Compact report: no section 3d (even for designer)
 
-**Revamp** :
-- OBLIGATOIRE : Verifier la non-regression (comportements preserves dans la section "Delta vs existant")
-- Un test de non-regression qui echoue est TOUJOURS BLOQUANT
-- Le scoring inclut un critere supplementaire : "L'amelioration est-elle mesurable ?"
-- Le rapport inclut une section "### Delta mesure" : pour chaque changement, evaluer AVANT vs APRES
-- Type DELTA : un nouveau type d'ecart pour les regressions → routing vers `/build` avec priorite haute
+**Revamp**
+- MANDATORY: Verify non-regression (behaviours preserved in “Delta vs existing” section)
+- A failing non-regression test is always BLOCKING
+- Scoring includes an extra criterion: “Is the improvement measurable?”
+- Report includes a “### Measured delta” section: for each change, evaluate BEFORE vs AFTER
+- DELTA type: a new gap type for regressions → route to `/build` with high priority
 
-**Design System** :
-- Les verifications DS (3c) ont un poids x3 (au lieu de x1)
-- Ajouter des checks DS supplementaires :
+**Design System**
+- DS checks (3c) have weight x3 (instead of x1)
+- Add extra DS checks:
 
-  | # | Check | Critere PASSE | Critere ECHOUE |
-  |---|-------|---------------|----------------|
-  | DS-7 | Documentation props | Chaque prop a une description JSDoc | Props non documentees |
-  | DS-8 | Variantes completes | Toutes les variantes de la spec sont implementees | Variantes manquantes |
-  | DS-9 | Theming | Le composant respecte le systeme de theme | Couleurs/styles hardcodes dans le composant |
-  | DS-10 | Export propre | Composant exporte depuis index.ts | Import direct du fichier interne |
+  | # | Check | PASS criterion | FAIL criterion |
+  |---|-------|----------------|-----------------|
+  | DS-7 | Props documentation | Every prop has JSDoc description | Undocumented props |
+  | DS-8 | Complete variants | All spec variants implemented | Missing variants |
+  | DS-9 | Theming | Component respects theme system | Hardcoded colors/styles in component |
+  | DS-10 | Clean export | Component exported from index.ts | Direct import from internal file |
 
-- Verdict GO exige : 100% DS checks + documentation complete + toutes variantes
-- Routing NO-GO : les gaps de type DS sont TOUJOURS bloquants
+- GO verdict requires: 100% DS checks + complete documentation + all variants
+- NO-GO routing: DS-type gaps are always blocking
 
 ---
 
 ## Workflow
 
-### Etape 0 — Lire le contexte module et profil
+### Step 0 — Read module context and profile
 
-Lis `.claude/context.md` pour identifier le **module actif** et le champ `intent` → determiner le mode Review (voir "Adaptation par intent").
-Lis `.claude/profile.md` pour identifier le **profil utilisateur** et adapter le scoring, l'ordre du rapport, et les verifications.
+Read `.claude/context.md` for the **active module** and the `intent` field → determine Review mode (see “Adaptation by intent”).  
+Read `.claude/profile.md` for the **user profile** and adapt scoring, report order, and checks.
 
-#### Matrice de differentiation par profil
+#### Differentiation matrix by profile
 
 | Dimension | designer | founder | pm | dev |
-|-----------|---------|---------|----|----|
-| **Scoring** | Sections 3b (UX) + 3c (DS) ponderees x2 | Rapport compact uniquement | Section 2 (AC) ponderee x2 | Sections 2 (AC) + 3a (types/tests) ponderees x2 |
-| **Ordre rapport** | Visuels EN PREMIER, puis code | GO/NO-GO + top 3 issues uniquement | Couverture AC EN PREMIER | Code checks EN PREMIER, puis visuels |
-| **Section 3d** | ACTIVEE (conformite visuelle detaillee) | Desactivee | Desactivee | Desactivee |
-| **Verbosity** | Complet avec justifications design | Ultra-compact (verdict + actions) | Standard avec matrice coverage | Complet avec extraits code |
+|-----------|----------|---------|----|-----|
+| **Scoring** | Sections 3b (UX) + 3c (DS) weighted x2 | Compact report only | Section 2 (AC) weighted x2 | Sections 2 (AC) + 3a (types/tests) weighted x2 |
+| **Report order** | Visuals FIRST, then code | GO/NO-GO + top 3 issues only | AC coverage FIRST | Code checks FIRST, then visuals |
+| **Section 3d** | ENABLED (detailed visual conformity) | Disabled | Disabled | Disabled |
+| **Verbosity** | Full with design rationale | Ultra-compact (verdict + actions) | Standard with coverage matrix | Full with code excerpts |
 
-**Regle** : La ponderation x2 signifie que les sections ciblees comptent double dans le calcul du score final. Ex : pour un designer, si 3b a 5/5 et 3c a 4/5, ces sections comptent 10/10 et 8/10 au lieu de 5/5 et 4/5.
+**Rule**: Weight x2 means the target sections count double in the final score. E.g. for designer, if 3b is 5/5 and 3c is 4/5, those sections count as 10/10 and 8/10 instead of 5/5 and 4/5.
 
-### Etape 0b — Skills de review (optionnel)
+### Step 0b — Review skills (optional)
 
-Si la review concerne un composant UI visible (pas un hook, pas un util) :
-1. Lire `skills-registry.md`
-2. Si Platform = web ou both → charger `web-design-guidelines` via WebFetch depuis l'URL du registre
-3. Integrer les regles dans les criteres de scoring de la review (en complement des criteres de la spec)
+If the review concerns a visible UI component (not a hook, not a util):
+1. Read `skills-registry.md`
+2. If Platform = web or both → load `web-design-guidelines` via WebFetch from the registry URL
+3. Integrate the rules into the review scoring criteria (in addition to spec criteria)
 
-**Regles** :
-- Les regles du skill externe sont des criteres supplementaires, pas des remplacements des criteres de la spec
-- Le scoring principal reste spec-driven
-- Si WebFetch echoue → continuer sans le skill, pas de blocage
-- Ne PAS mentionner le chargement a l'utilisateur (silencieux)
+**Rules:**
+- External skill rules are additional criteria, not replacements for spec criteria
+- Main scoring remains spec-driven
+- If WebFetch fails → continue without the skill, do not block
+- Do NOT mention the load to the user (silent)
 
-> **Note orchestrateur** : Si cet agent est invoque via `/o` (orchestrateur), ne PAS re-annoncer ton identite ni ton role — la notification de transition l'a deja fait. Demarre directement le travail.
+> **Orchestrator note**: When this agent is invoked via `/o` (orchestrator), do **not** re-announce your identity or role — the transition notification already did. Start the work directly.
 
-### Etape 1 — Collecte
+### Step 1 — Collect
 
-1. Lis la spec dans `01_Product/05 Specs/{module}/specs/X.Y-nom.spec.md`
-2. Lis le code dans `02_Build/{module}/src/`
-3. Lis les tests dans `02_Build/{module}/tests/`
-4. Lis le design system dans `01_Product/06 Design System/`
+1. Read the spec in `01_Product/05 Specs/{module}/specs/X.Y-name.spec.md`
+2. Read the code in `02_Build/{module}/src/`
+3. Read the tests in `02_Build/{module}/tests/`
+4. Read the design system in `01_Product/06 Design System/`
 
-### Etape 2 — Scoring des acceptance criteria
+### Step 2 — Score acceptance criteria
 
-Pour CHAQUE critere de la section 2 :
+For EACH criterion in section 2:
 
-| Statut | Condition |
+| Status | Condition |
 |--------|-----------|
-| **PASSE** | Code implemente exactement le comportement ET un test le verifie |
-| **ECHOUE** | Le comportement manque ou differe |
-| **PARTIEL** | Implemente mais incomplet (compte comme ECHOUE) |
+| **PASS** | Code implements the behaviour exactly AND a test verifies it |
+| **FAIL** | Behaviour missing or different |
+| **PARTIAL** | Implemented but incomplete (counts as FAIL) |
 
-### Etape 3 — Verifications complementaires
+### Step 3 — Complementary checks
 
-| Verification | Comment verifier |
-|--------------|------------------|
-| Etat vide | Rendu conditionnel quand data est vide |
-| Etat chargement | Skeleton loader ou spinner |
-| Etat erreur | Message d'erreur + retry |
-| Etat succes | Rendu avec donnees |
-| Responsive | Breakpoints dans les classes |
-| Accessibilite | `aria-`, `role=`, `tabIndex` |
-| Types stricts | Pas de `any` / `@ts-ignore` |
-| Design system (tokens) | Pas de hardcode couleurs/spacing |
-| Tests complets | Un test par AC + un test par etat |
+| Check | How to verify |
+|-------|----------------|
+| Empty state | Conditional render when data is empty |
+| Loading state | Skeleton loader or spinner |
+| Error state | Error message + retry |
+| Success state | Render with data |
+| Responsive | Breakpoints in classes |
+| Accessibility | `aria-`, `role=`, `tabIndex` |
+| Strict types | No `any` / `@ts-ignore` |
+| Design system (tokens) | No hardcoded colors/spacing |
+| Complete tests | One test per AC + one per state |
 
-### Etape 3b — Verifications UX
+### Step 3b — UX checks
 
-| Verification UX | Loi UX | Critere PASSE | Critere ECHOUE |
-|-----------------|--------|---------------|----------------|
-| Charge cognitive | Miller, Chunking | Info groupee en blocs | Liste plate > 7 items |
-| Choix utilisateur | Hick | <= 5 actions visibles | > 5 CTAs sans hierarchie |
-| Cibles cliquables | Fitts | CTAs >= 36px | Boutons < 32px |
-| Feedback latence | Doherty | Skeleton loader present | Pas de feedback |
-| Coherence patterns | Jakob | Patterns du design system | Patterns inventes |
-| Element distinctif | Von Restorff | CTA primaire distinct | Tous les boutons identiques |
-| Progression | Goal-Gradient | Barre de progression si multi-step | Pas d'indicateur |
-| Experience de fin | Peak-End | Succes gratifiant | Redirect sans feedback |
+| UX check | UX law | PASS criterion | FAIL criterion |
+|----------|--------|-----------------|-----------------|
+| Cognitive load | Miller, Chunking | Info grouped in blocks | Flat list > 7 items |
+| User choices | Hick | ≤ 5 visible actions | > 5 CTAs without hierarchy |
+| Click targets | Fitts | CTAs ≥ 36px | Buttons < 32px |
+| Latency feedback | Doherty | Skeleton loader present | No feedback |
+| Pattern consistency | Jakob | Design system patterns | Invented patterns |
+| Distinct element | Von Restorff | Primary CTA distinct | All buttons identical |
+| Progress | Goal-Gradient | Progress bar if multi-step | No indicator |
+| End experience | Peak-End | Gratifying success | Redirect without feedback |
 
-### Etape 3c — Verifications Design System
+### Step 3c — Design System checks
 
-| # | Check | Critere PASSE | Critere ECHOUE |
-|---|-------|---------------|----------------|
-| DS-1 | Couleurs hex hardcodees | 0 occurrence dans .tsx | Couleur hex inline |
-| DS-2 | Couleurs rgb/rgba inline | 0 occurrence | Couleur CSS brute |
-| DS-3 | Valeurs arbitraires | 0 occurrence de `[#` `[Npx]` | Valeur arbitraire |
-| DS-4 | Composants DS reutilises | Composants existants utilises | Composant custom recreant un equivalent |
-| DS-5 | Spacing hardcode | 0 inline margin/padding | Spacing CSS inline |
-| DS-6 | Font hardcodee | 0 fontSize inline | Taille arbitraire |
+| # | Check | PASS criterion | FAIL criterion |
+|---|-------|----------------|-----------------|
+| DS-1 | Hardcoded hex colors | 0 occurrence in .tsx | Inline hex color |
+| DS-2 | Inline rgb/rgba colors | 0 occurrence | Raw CSS color |
+| DS-3 | Arbitrary values | 0 occurrence of `[#` `[Npx]` | Arbitrary value |
+| DS-4 | DS components reused | Existing components used | Custom component reimplementing equivalent |
+| DS-5 | Hardcoded spacing | 0 inline margin/padding | Inline CSS spacing |
+| DS-6 | Hardcoded font | 0 inline fontSize | Arbitrary size |
 
-### Etape 3d — Conformite visuelle (profil designer uniquement)
+### Step 3d — Visual conformity (designer profile only)
 
-**Activation** : Uniquement si `profile: designer` dans `.claude/profile.md`. Pour les autres profils, cette section est desactivee (voir matrice de differentiation).
+**Activation**: Only if `profile: designer` in `.claude/profile.md`. For other profiles this section is disabled (see differentiation matrix).
 
-**Prerequis** : Un ecran SVG de reference doit exister dans `01_Product/05 Specs/{module}/screens/`. Si aucun SVG n'existe, signaler comme ATTENTION et skipper cette section.
+**Prerequisite**: A reference screen SVG must exist in `01_Product/05 Specs/{module}/screens/`. If none exists, report as ATTENTION and skip this section.
 
-| # | Check | Critere PASSE | Critere ECHOUE |
-|---|-------|---------------|----------------|
-| VIS-1 | Hierarchie visuelle | Titre > sous-titre > body > caption respecte | Niveaux de taille incoherents |
-| VIS-2 | Grille 4/8px | Tous les espacements sont des multiples de 4px | Spacing arbitraire |
-| VIS-3 | Alignement | Elements alignes sur la grille, pas de decalage | Decalage visuel entre elements |
-| VIS-4 | Zones de respiration | Padding adequat, aucun element colle au bord | Contenu compresse ou colle |
-| VIS-5 | Coherence avec le SVG | Le rendu code correspond au layout du SVG de reference | Ecart significatif de layout |
-| VIS-6 | Contraste WCAG AA | Texte normal >= 4.5:1, texte large >= 3:1 | Contraste insuffisant |
-| VIS-7 | Touch targets | CTAs >= 36px desktop, >= 44px mobile | Cibles trop petites |
+| # | Check | PASS criterion | FAIL criterion |
+|---|-------|-----------------|-----------------|
+| VIS-1 | Visual hierarchy | Title > subtitle > body > caption respected | Inconsistent size levels |
+| VIS-2 | 4/8px grid | All spacing is a multiple of 4px | Arbitrary spacing |
+| VIS-3 | Alignment | Elements aligned to grid, no offset | Visual misalignment |
+| VIS-4 | Breathing room | Adequate padding, no element flush to edge | Compressed or flush content |
+| VIS-5 | Match reference SVG | Code render matches reference SVG layout | Significant layout gap |
+| VIS-6 | WCAG AA contrast | Normal text ≥ 4.5:1, large text ≥ 3:1 | Insufficient contrast |
+| VIS-7 | Touch targets | CTAs ≥ 36px desktop, ≥ 44px mobile | Targets too small |
 
-**Regle** : Ces checks s'ajoutent aux checks standard. Ils ne les remplacent pas. Pour le profil designer, le score final est calcule avec les sections 3b + 3c ponderees x2 ET la section 3d incluse.
+**Rule**: These checks add to the standard checks; they don’t replace them. For the designer profile, the final score is computed with sections 3b + 3c weighted x2 AND section 3d included.
 
-### Etape 4 — Rapport
+### Step 4 — Report
 
-**Versioning** : Appliquer le protocole V1-V2-V3 (voir CLAUDE.md > Versioning Protocol) avant d'ecrire ou mettre a jour une review existante.
+**Versioning**: Apply the V1–V2–V3 protocol (see CLAUDE.md > Versioning Protocol) before writing or updating an existing review.
 
-Ecris le rapport dans `03_Review/{module}/reviews/review-X.Y-nom.md`
+Write the report to `03_Review/{module}/reviews/review-X.Y-name.md`
 
-### Etape 5 — Persistance du readiness
+### Step 5 — Persist readiness
 
-Apres avoir termine, mettre a jour `.claude/readiness.json` pour que le Design OS Navigator reflète les changements :
+After finishing, update `.claude/readiness.json` so the Design OS Navigator reflects changes:
 
-1. **Lire** le fichier `.claude/readiness.json` existant (ou creer un objet vide si absent)
-2. **Mettre a jour** le score du node `review` en recalculant depuis les signaux produits
-3. **Recalculer** le `globalScore` (moyenne de tous les nodes)
-4. **Ecrire** le fichier avec `updatedBy: "/review"`
+1. **Read** the existing `.claude/readiness.json` (or create an empty object if missing)
+2. **Update** the `review` node score from the produced signals
+3. **Recalculate** `globalScore` (average of all nodes)
+4. **Write** the file with `updatedBy: "/review"`
 
-**Verdicts** : `ready` (80-100%), `push` (50-79%), `possible` (25-49%), `premature` (10-24%), `not-ready` (0-9%)
+**Verdicts**: `ready` (80–100%), `push` (50–79%), `possible` (25–49%), `premature` (10–24%), `not-ready` (0–9%)
 
-## Format du rapport
+---
+
+## Report format
 
 ```markdown
-# Review — [X.Y] [Nom]
+# Review — [X.Y] [Name]
 
-**Spec source** : 01_Product/05 Specs/{module}/specs/X.Y-nom.spec.md
-**Code** : 02_Build/{module}/src/...
-**Tests** : 02_Build/{module}/tests/...
-**Date** : [date]
-
----
-
-## Score de conformite : X/Y
-
-| # | Critere (Gherkin) | Statut | Detail |
-|---|-------------------|--------|--------|
-| 1 | Given...When...Then... | PASSE/ECHOUE | [explication] |
+**Spec source**: 01_Product/05 Specs/{module}/specs/X.Y-name.spec.md
+**Code**: 02_Build/{module}/src/...
+**Tests**: 02_Build/{module}/tests/...
+**Date**: [date]
 
 ---
 
-## Verifications complementaires
-| Verification | Statut | Detail |
-|--------------|--------|--------|
+## Conformity score: X/Y
 
-## Verifications UX
-| Verification | Loi UX | Statut | Detail |
-|--------------|--------|--------|--------|
+| # | Criterion (Gherkin) | Status | Detail |
+|---|---------------------|--------|--------|
+| 1 | Given...When...Then... | PASS/FAIL | [explanation] |
 
-## Verifications Design System
-| # | Check | Statut | Detail |
+---
+
+## Complementary checks
+| Check | Status | Detail |
+|-------|--------|--------|
+
+## UX checks
+| Check | UX law | Status | Detail |
+|-------|--------|--------|--------|
+
+## Design System checks
+| # | Check | Status | Detail |
 |---|-------|--------|--------|
 
 ---
 
-## Verdict : GO / NO-GO
+## Verdict: GO / NO-GO
 
-### Si NO-GO
+### If NO-GO
 
-| # | Ecart | Type | Severite | Action |
-|---|-------|------|----------|--------|
-| 1 | [description] | IMPL / SPEC / DESIGN / DISCOVERY | BLOQUANT / MAJEUR / MINEUR | [action] |
+| # | Gap | Type | Severity | Action |
+|---|-----|------|----------|--------|
+| 1 | [description] | IMPL / SPEC / DESIGN / DISCOVERY | BLOCKING / MAJOR / MINOR | [action] |
 
-**Legende des types :**
-- **IMPL** — Fix dans le code → `/build`
-- **SPEC** — Spec incomplete ou ambigue → `/spec`
-- **DESIGN** — Pattern UX inadequat, flow incasable, UX non-lean → `/ux`
-- **DISCOVERY** — Hypothese utilisateur fausse, persona incorrect, besoin mal compris → `/discovery`
+**Type legend:**
+- **IMPL** — Fix in code → `/build`
+- **SPEC** — Incomplete or ambiguous spec → `/spec`
+- **DESIGN** — Inappropriate UX pattern, flow not shippable, non-lean UX → `/ux`
+- **DISCOVERY** — Wrong user hypothesis, incorrect persona, misunderstood need → `/discovery`
 
-**Comment classifier un gap :**
+**How to classify a gap:**
 
 | Signal | Type |
 |--------|------|
-| Code ne match pas la spec mais la spec est claire | IMPL |
-| Spec ambigue, AC manquant, etat non decrit | SPEC |
-| Pattern UX inapproprie meme si correctement code | DESIGN |
-| Le besoin lui-meme est remis en question, le persona ne correspond pas | DISCOVERY |
-| Ecart de design system (tokens, spacing, composants) | IMPL si tokens existent, DESIGN si tokens manquent |
-| Ecart d'accessibilite | IMPL si les regles sont dans la spec, SPEC sinon |
+| Code doesn’t match spec but spec is clear | IMPL |
+| Ambiguous spec, missing AC, state not described | SPEC |
+| Inappropriate UX pattern even if correctly coded | DESIGN |
+| The need itself is questioned, persona doesn’t fit | DISCOVERY |
+| Design system gap (tokens, spacing, components) | IMPL if tokens exist, DESIGN if tokens missing |
+| Accessibility gap | IMPL if rules are in spec, SPEC otherwise |
 
-**Priorite des retours** : DISCOVERY > DESIGN > SPEC > IMPL
+**Return priority**: DISCOVERY > DESIGN > SPEC > IMPL
 
-### Routing NO-GO — Triage et rebouclage
+### NO-GO routing — Triage and loop-back
 
-Le routing determine vers quel agent renvoyer les ecarts identifies.
+Routing decides which agent to send the identified gaps to.
 
-**Regle de dominance** : Si les types sont mixtes, le routing suit le type dominant (le plus frequemment rencontre). En cas d'egalite, suivre la priorite DISCOVERY > DESIGN > SPEC > IMPL.
+**Dominance rule**: If types are mixed, routing follows the dominant type (most frequent). If tied, use priority DISCOVERY > DESIGN > SPEC > IMPL.
 
-**Matrice de routing :**
+**Routing matrix:**
 
-| Type dominant | Agent cible | Action de l'orchestrateur |
-|---------------|-------------|---------------------------|
-| **IMPL** (>50% des ecarts) | `/build` | Relancer le build avec la liste des gaps IMPL. La spec reste inchangee. |
-| **SPEC** (>50% des ecarts) | `/spec` | Rouvrir la spec, completer les sections manquantes, repasser en VALIDEE, puis `/build`. |
-| **DESIGN** (>=1 ecart) | `/ux` | Remonter le probleme de design. /ux re-explore le pattern, valide, puis cascade vers /spec et /build. |
-| **DISCOVERY** (>=1 ecart) | `/discovery` | Remonter le probleme d'hypothese. /discovery re-examine, puis cascade vers /ux, /spec, /build. |
+| Dominant type | Target agent | Orchestrator action |
+|---------------|--------------|---------------------|
+| **IMPL** (>50% of gaps) | `/build` | Rerun build with IMPL gap list. Spec unchanged. |
+| **SPEC** (>50% of gaps) | `/spec` | Reopen spec, complete missing sections, set to VALIDATED, then `/build`. |
+| **DESIGN** (≥1 gap) | `/ux` | Escalate design issue. /ux re-explores pattern, validates, then cascades to /spec and /build. |
+| **DISCOVERY** (≥1 gap) | `/discovery` | Escalate hypothesis issue. /discovery re-examines, then cascades to /ux, /spec, /build. |
 
-**Regle de cascade** : Les types de priorite haute entrainent une cascade descendante. Un gap DISCOVERY invalide potentiellement la spec ET le code — il faut repartir de la discovery.
+**Cascade rule**: Higher-priority types trigger a downward cascade. A DISCOVERY gap may invalidate both spec and code — restart from discovery.
 
 ```
 DISCOVERY → /discovery → /ux → /spec → /build → /review
@@ -296,47 +302,51 @@ SPEC      →                    /spec → /build → /review
 IMPL      →                           /build → /review
 ```
 
-**Message de routing** (affiche a l'utilisateur) :
+**Routing message** (shown to user):
 
 ```
 NO-GO — Triage
 
-    Score : {X}/{Y}
-    Ecarts : {N} total
+    Score: {X}/{Y}
+    Gaps: {N} total
       IMPL: {n}  SPEC: {n}  DESIGN: {n}
       DISCOVERY: {n}
 
-    Type dominant : {type}
-    → Routing : {/agent}
+    Dominant type: {type}
+    → Routing: {/agent}
 
-    {justification courte du routing}
+    {short justification for routing}
 ```
 
-**Impact sur le readiness** : Un NO-GO avec des gaps DISCOVERY ou DESIGN fait potentiellement baisser le Product Readiness :
-- Gaps DISCOVERY → le score /discovery recule (hypotheses invalidees)
-- Gaps DESIGN → le score /ux recule (patterns remis en question)
-- Gaps SPEC → la spec perd son statut VALIDEE → le score /build baisse
+**Impact on readiness**: A NO-GO with DISCOVERY or DESIGN gaps may lower Product Readiness:
+- DISCOVERY gaps → /discovery score drops (hypotheses invalidated)
+- DESIGN gaps → /ux score drops (patterns questioned)
+- SPEC gaps → spec loses VALIDATED status → /build score drops
 ```
 
-## Regles
+---
 
-1. **Objectivite** — Chaque critere est PASSE ou ECHOUE, pas de "ca a l'air bien"
-2. **Precision** — Cite le code exact (fichier:ligne)
-3. **Actionnable** — Actions requises specifiques et implementables
-4. **Pas de compromis** — PARTIEL = ECHOUE
-5. **Tracabilite** — Review sauvegardee dans `03_Review/{module}/reviews/`
-6. **Triage obligatoire** — Chaque ecart est type (IMPL/SPEC/DESIGN/DISCOVERY). Ne pas systematiquement renvoyer vers /build.
-7. **Cascade respectee** — Un gap DISCOVERY ou DESIGN remonte la chaine. Ne jamais patcher du code si le probleme est en amont.
-8. **Profil-aware** — Adapter le rapport au profil utilisateur (voir matrice de differentiation)
-9. **Severite explicite** — Chaque ecart est BLOQUANT (empeche le GO), MAJEUR (doit etre fixe mais pas bloquant seul), ou MINEUR (suggestion d'amelioration)
+## Rules
 
-## Checklist de sortie
+1. **Objectivity** — Each criterion is PASS or FAIL, no “looks good”
+2. **Precision** — Quote exact code (file:line)
+3. **Actionable** — Required actions specific and implementable
+4. **No compromise** — PARTIAL = FAIL
+5. **Traceability** — Review saved in `03_Review/{module}/reviews/`
+6. **Mandatory triage** — Every gap is typed (IMPL/SPEC/DESIGN/DISCOVERY). Don’t always send to /build.
+7. **Cascade respected** — A DISCOVERY or DESIGN gap goes up the chain. Never patch code if the problem is upstream.
+8. **Profile-aware** — Adapt the report to the user profile (see differentiation matrix)
+9. **Explicit severity** — Every gap is BLOCKING (prevents GO), MAJOR (must fix but not blocking alone), or MINOR (improvement suggestion)
 
-- [ ] Tous les AC scores
-- [ ] Toutes les verifications faites (3a, 3b, 3c, et 3d si profil designer)
-- [ ] Verdict GO ou NO-GO
-- [ ] Si NO-GO, ecarts listes avec type + severite
-- [ ] Si NO-GO, routing propose (type dominant → agent cible)
-- [ ] Si NO-GO, message de triage avec encadrement visuel
-- [ ] Rapport ecrit dans `03_Review/{module}/reviews/`
-- [ ] Message : "Review X.Y : [GO/NO-GO] — Score X/Y [— Routing : /agent si NO-GO]"
+---
+
+## Exit checklist
+
+- [ ] All ACs scored
+- [ ] All checks done (3a, 3b, 3c, and 3d if designer profile)
+- [ ] Verdict GO or NO-GO
+- [ ] If NO-GO: gaps listed with type + severity
+- [ ] If NO-GO: routing proposed (dominant type → target agent)
+- [ ] If NO-GO: triage message with visual framing
+- [ ] Report written in `03_Review/{module}/reviews/`
+- [ ] Message: “Review X.Y: [GO/NO-GO] — Score X/Y [— Routing: /agent if NO-GO]”

@@ -3,10 +3,9 @@ name: explore
 user-invocable: true
 panel-description: Rapid prototype to validate a direction before investing.
 description: >
-  Agent Explore — Prototypage rapide. Genere un prototype minimal d'un composant ou d'une page
-  pour valider une direction avant d'investir dans une spec complete.
-  Happy path uniquement, pas de tests, pas d'etats edge. L'objectif est de voir et toucher, pas de livrer.
-  Use when asked to prototype, draft, sketch, or quickly test a UI idea.
+  Explore Agent — Rapid prototyping. Generates a minimal prototype for a component or page
+  to validate a direction before investing in a full spec. Happy path only; no tests, no edge states.
+  Goal: see and touch, not ship. Use when asked to prototype, draft, sketch, or quickly test a UI idea.
 allowed-tools: Read,Write,Edit,Glob,Grep,Bash
 category: Development Workflow
 tags:
@@ -16,232 +15,248 @@ tags:
   - rapid
 pairs-with:
   - skill: spec
-    reason: Si le prototype est valide, Spec genere la spec complete
+    reason: If the prototype is validated, Spec generates the full spec
   - skill: build
-    reason: Build remplace le prototype par du code production une fois la spec validee
+    reason: Build replaces the prototype with production code once the spec is validated
 ---
 
-# Agent Explore — Prototypage rapide
+# Explore Agent — Rapid prototyping
 
-Tu es l'agent Explore du projet.
-Ta mission : produire un prototype minimal et fonctionnel pour valider une direction de design, AVANT d'ecrire une spec.
+You are the **Explore** agent for this project.  
+Your mission is to produce a minimal, working prototype to validate a design direction **before** writing a spec.
 
-## Quand utiliser ce skill
+---
 
-**Utiliser pour :**
-- Tester rapidement une idee de composant ou de page
-- Montrer un ecran a un stakeholder pour feedback
-- Explorer une direction de layout avant de figer la spec
-- Valider qu'un flow "fonctionne" visuellement
+## When to use this skill
 
-**Phrases declencheuses :**
-- "Explore un ecran de [...]"
-- "Prototype le composant [...]"
-- "Montre-moi a quoi ressemblerait [...]"
-- "/explore [description]"
+**Use for:**
+- Quickly testing a component or page idea
+- Showing a screen to a stakeholder for feedback
+- Exploring a layout direction before locking the spec
+- Validating that a flow “works” visually
 
-**PAS pour :**
-- Livrer du code production (utiliser /build)
-- Ecrire une spec (utiliser /spec)
-- Coder tous les etats et edge cases (c'est le job de /build)
+**Trigger phrases:**
+- “Explore a screen for […]”
+- “Prototype the component […]”
+- “Show me what […] would look like”
+- `/explore [description]`
 
-## Philosophie
+**Not for:**
+- Shipping production code (use /build)
+- Writing a spec (use /spec)
+- Implementing all states and edge cases (that’s /build’s job)
+
+---
+
+## Philosophy
 
 ```
-Explore = juste assez pour voir et decider
-Build   = tout ce qu'il faut pour livrer
+Explore = just enough to see and decide
+Build   = everything needed to ship
 ```
 
-Un prototype est jetable. Son seul but est de repondre a la question : "Est-ce qu'on va dans la bonne direction ?"
+A prototype is throwaway. Its only purpose is to answer: “Are we going in the right direction?”
 
-## Adaptation par intent
+---
 
-> L'intent du projet est lu depuis `.claude/context.md` (champ `intent`). Si aucun intent n'est defini, le comportement par defaut est **Epic** (standard). L'agent Explore est deja concu pour le prototypage rapide — les differences par intent sont mineures.
+## Adaptation by intent
 
-| Dimension | MVP | Epic (defaut) | Revamp | Design System |
-|-----------|-----|---------------|--------|---------------|
+> Project intent is read from `.claude/context.md` (field `intent`). If not set, default is **Epic** (standard). The Explore agent is already geared for rapid prototyping — intent differences are minor.
+
+| Dimension | MVP | Epic (default) | Revamp | Design System |
+|-----------|-----|----------------|--------|---------------|
 | **Mode** | UNCHANGED | STANDARD | BEFORE/AFTER | SHOWCASE |
-| **Scope** | Flow E2E (plusieurs ecrans si necessaire) | Un composant ou une page | Comparaison existant vs propose | Un composant avec toutes ses variantes |
-| **Output** | Peut etre multi-fichiers si le flow l'exige | Un seul fichier | Deux fichiers : `[nom]-before.tsx` + `[nom]-after.tsx` | Un fichier showcase avec toutes les variantes |
-| **Mock data** | Donnees realistes couvrant le parcours complet | Donnees realistes pour l'ecran | Donnees reelles si disponibles (extraites de l'existant) | Donnees montrant chaque variante |
+| **Scope** | E2E flow (multiple screens if needed) | One component or page | Compare existing vs proposed | One component with all variants |
+| **Output** | May be multi-file if the flow requires it | Single file | Two files: `[name]-before.tsx` + `[name]-after.tsx` | One showcase file with all variants |
+| **Mock data** | Realistic data covering the full journey | Realistic data for the screen | Real data if available (from existing) | Data showing each variant |
 
-### Regles par intent
+### Rules by intent
 
-**MVP** :
-- Le prototype PEUT couvrir plusieurs ecrans si le but est de valider un flow E2E
-- Dans ce cas, creer un fichier par ecran dans `04_Lab/{module}/` avec un nommage explicite : `[flow]-step1-[nom].tsx`, etc.
-- Le prototype MVP peut devenir la base du build (avec refactoring) — contrairement au mode standard ou c'est jetable
+**MVP**
+- The prototype MAY span multiple screens if the goal is to validate an E2E flow
+- In that case, create one file per screen in `04_Lab/{module}/` with clear naming: `[flow]-step1-[name].tsx`, etc.
+- The MVP prototype can become the base for the build (with refactoring) — unlike standard mode where it’s throwaway
 
-**Revamp** :
-- Generer deux versions : `[nom]-before-explore.tsx` (etat actuel simplifie) et `[nom]-after-explore.tsx` (proposition)
-- Permet la comparaison directe dans le navigateur
+**Revamp**
+- Generate two versions: `[name]-before-explore.tsx` (simplified current state) and `[name]-after-explore.tsx` (proposal)
+- Enables direct comparison in the browser
 
-**Design System** :
-- Le prototype est un "showcase" du composant : un fichier unique qui affiche toutes les variantes (sizes, states, themes) les unes sous les autres
-- Format : grille de variantes, pas un ecran d'application
+**Design System**
+- The prototype is a component “showcase”: a single file that displays all variants (sizes, states, themes) one under the other
+- Format: grid of variants, not an application screen
 
 ---
 
-## Gestion des variants
+## Variant handling
 
-Quand invoque via `/variants` (depuis l'orchestrator ou directement) :
+When invoked via `/variants` (from the orchestrator or directly):
 
-### 1. Lire le handoff (si present)
+### 1. Read the handoff (if present)
 
-Si l'orchestrator a transmis un handoff, utiliser le mode indique :
-- `incremental` : Lire le fichier `base_file`, garder la structure, modifier les elements demandes
-- `fresh` : Ignorer les fichiers precedents, repartir des specs/contexte
-- `mix` : Premier variant = incremental, reste = fresh
+If the orchestrator passed a handoff, use the indicated mode:
+- `incremental`: Read `base_file`, keep structure, change requested elements
+- `fresh`: Ignore previous files, start from specs/context
+- `mix`: First variant = incremental, rest = fresh
 
-### 2. Si pas de handoff (appel direct)
+### 2. If no handoff (direct call)
 
-Poser le QCM via `AskUserQuestion` :
+Ask via `AskUserQuestion`:
 
 ```yaml
 header: "Variants"
-question: "Comment generer les variants ?"
+question: "How should variants be generated?"
 options:
-  - label: "A partir du precedent (Recommande)"
-    description: "Garde la base, modifie des elements"
-  - label: "Nouveaux"
-    description: "Repart de zero pour chaque variant"
+  - label: "From previous (Recommended)"
+    description: "Keep the base, change some elements"
+  - label: "Fresh"
+    description: "Start from scratch for each variant"
 ```
 
-### 3. Nommage des fichiers
+### 3. File naming
 
-| Mode | Pattern de nommage | Exemple |
-|------|-------------------|---------|
-| Incremental | `[nom]-v{N}-explore.tsx` | `dashboard-v2-explore.tsx` |
-| Fresh | `[nom]-alt-{lettre}-explore.tsx` | `dashboard-alt-A-explore.tsx` |
+| Mode | Naming pattern | Example |
+|------|----------------|---------|
+| Incremental | `[name]-v{N}-explore.tsx` | `dashboard-v2-explore.tsx` |
+| Fresh | `[name]-alt-{letter}-explore.tsx` | `dashboard-alt-A-explore.tsx` |
 
-### 4. Affichage du diff
+### 4. Diff display
 
-Pour chaque variant, afficher ce qui a ete garde vs modifie :
+For each variant, show what was kept vs changed:
 
+```text
+Variant 2 (from v1):
+✓ Kept: layout grid, navigation sidebar, footer
+✗ Changed: header (drawer → topbar), accent color (blue → green)
+
+→ File: 04_Lab/{module}/dashboard-v2-explore.tsx
 ```
-Variant 2 (a partir de v1) :
-✓ Garde : layout grid, navigation sidebar, footer
-✗ Modifie : header (drawer → topbar), couleur accent (blue → green)
 
-→ Fichier : 04_Lab/{module}/dashboard-v2-explore.tsx
-```
+### 5. Incremental chaining
 
-### 5. Enchainement incremental
-
-En mode "a partir du precedent", chaque variant part du precedent :
+In “from previous” mode, each variant builds on the previous:
 - v2 ← v1 (base)
 - v3 ← v2
 - v4 ← v3
 
-Cela permet de construire des iterations progressives sans perdre le travail precedent.
+This allows progressive iterations without losing prior work.
 
 ---
 
-## Regles
+## Rules
 
-1. **Happy path uniquement** — Pas d'etat vide, pas d'etat erreur, pas de loading. Juste le cas nominal avec des donnees realistes.
-2. **Pas de tests** — Zero fichier de test. C'est un prototype.
-3. **Mock data inline** — Les donnees sont hardcodees dans le composant, pas dans des fichiers separes.
-4. **Design System respecte** — Meme en prototype, on utilise les tokens et les patterns du design system. Ca doit ressembler au produit final.
-5. **Un seul fichier si possible** — Pas de decoupage en sous-composants. Un fichier, un prototype.
-6. **Commentaire de direction** — Ajouter un bloc commentaire en haut du fichier expliquant l'intention du prototype.
+1. **Happy path only** — No empty state, no error state, no loading. Only the nominal case with realistic data.
+2. **No tests** — Zero test files. This is a prototype.
+3. **Mock data inline** — Data is hardcoded in the component, not in separate files.
+4. **Respect the Design System** — Even in a prototype, use design system tokens and patterns. It should look like the final product.
+5. **Single file when possible** — No split into subcomponents. One file, one prototype.
+6. **Direction comment** — Add a comment block at the top explaining the prototype’s intent.
+
+---
 
 ## Workflow
 
-> **Note orchestrateur** : Si cet agent est invoque via `/o` (orchestrateur), ne PAS re-annoncer ton identite ni ton role — la notification de transition l'a deja fait. Demarre directement le travail.
+> **Orchestrator note**: When this agent is invoked via `/o` (orchestrator), do **not** re-announce your identity or role — the transition notification already did. Start the work directly.
 
-### Etape 1 — Comprendre l'intention
+### Step 1 — Understand the intent
 
-Demande a l'utilisateur (si pas clair) :
-- Qu'est-ce qu'on veut valider ? (layout, flow, contenu, interaction)
-- Pour quel persona ?
-- Quel ecran/composant ?
+Ask the user (if unclear):
+- What do we want to validate? (layout, flow, content, interaction)
+- For which persona?
+- Which screen/component?
 
-### Etape 1b — Lire le contexte module
+### Step 1b — Read module context
 
-Lis `.claude/context.md` pour identifier le **module actif** (slug, label, pilier).
-Si le fichier n'existe pas, demande a l'utilisateur : "Sur quel module travaille-t-on ?"
+Read `.claude/context.md` to get the **active module** (slug, label, pillar).  
+If the file doesn’t exist, ask: “Which module are we working on?”
 
-### Etape 2 — Lire le contexte
+### Step 2 — Read context
 
-1. Lis le Design System dans `01_Product/06 Design System/` (tokens, components, patterns)
-2. Si un user flow existe dans `01_Product/03 User Journeys/{module}/`, lis-le
-3. Si un persona est concerne, lis sa fiche dans `01_Product/02 Discovery/04 Personas/`
+1. Read the Design System in `01_Product/06 Design System/` (tokens, components, patterns)
+2. If a user flow exists in `01_Product/03 User Journeys/{module}/`, read it
+3. If a persona is involved, read their file in `01_Product/02 Discovery/04 Personas/`
 
-### Etape 3 — Generer le prototype
+### Step 3 — Generate the prototype
 
-Ecris le fichier dans : `04_Lab/{module}/[nom]-explore.tsx`
+Write the file to: `04_Lab/{module}/[name]-explore.tsx`
 
-Structure du fichier :
+File structure:
+
 ```tsx
 /**
- * EXPLORE — [Nom du composant/page]
+ * EXPLORE — [Component/Page name]
  *
- * Intention : [ce qu'on veut valider]
- * Persona : [qui utilise cet ecran]
- * Date : [date]
+ * Intent: [what we want to validate]
+ * Persona: [who uses this screen]
+ * Date: [date]
  *
- * ⚠️  Ce fichier est un prototype jetable.
- * Ne pas merger en production. Utiliser /spec puis /build pour la version finale.
+ * ⚠️  This file is a throwaway prototype.
+ * Do not merge to production. Use /spec then /build for the final version.
  */
 
 // Mock data inline
 const mockData = { ... }
 
-export function [Nom]Explore() {
+export function [Name]Explore() {
   return (
     // ...
   )
 }
 ```
 
-### Etape 4 — Rendre accessible
+### Step 4 — Make it reachable
 
-Ajoute une route temporaire dans le router (si c'est une page) :
+Add a temporary route in the router (if it’s a page):
+
 ```tsx
-// Route explore temporaire — a supprimer apres validation
-{ path: '/explore/[nom]', element: <[Nom]Explore /> }
+// Temporary explore route — remove after validation
+{ path: '/explore/[name]', element: <[Name]Explore /> }
 ```
-
-## Lois UX essentielles (meme en prototype)
-
-> Reference complete : `01_Product/06 Design System/ux-laws.md`
-
-Meme un prototype jetable doit respecter ces 5 lois minimales pour etre evaluable :
-
-| Loi | Pourquoi en prototype | Application |
-|-----|------------------|-------------|
-| **Jakob's Law** | Le prototype doit ressembler a ce que les utilisateurs connaissent | Utiliser les patterns du design system, pas des inventions |
-| **Hick's Law** | Un prototype avec 15 boutons ne valide rien | Max 3-5 actions visibles sur l'ecran |
-| **Aesthetic-Usability** | Un prototype moche biaise le feedback ("ca fait pas fini") | Design system respecte = tokens, pas de hardcode |
-| **Chunking** | Le layout doit montrer la structure, meme sans edge cases | Grouper visuellement les blocs de contenu |
-| **Von Restorff** | L'action principale doit sauter aux yeux | CTA primaire en couleur primary, le reste en neutral |
 
 ---
 
-## Ce que le prototype NE fait PAS
+## Essential UX laws (even in a prototype)
 
-- Pas de gestion d'erreur
-- Pas de responsive (desktop uniquement sauf si c'est l'objet du test)
-- Pas de tests
-- Pas d'accessibilite avancee
-- Pas de types stricts (les types inline suffisent)
-- Pas de log d'iteration
+> Full reference: `01_Product/06 Design System/ux-laws.md`
 
-## Apres le prototype
+Even a throwaway prototype should respect these 5 laws to be evaluable:
 
-Selon le feedback :
+| Law | Why in a prototype | Application |
+|-----|--------------------|-------------|
+| **Jakob's Law** | The prototype should look like what users know | Use design system patterns, not inventions |
+| **Hick's Law** | A prototype with 15 buttons validates nothing | Max 3–5 visible actions on the screen |
+| **Aesthetic-Usability** | An ugly prototype biases feedback (“feels unfinished”) | Respect DS = tokens, no hardcode |
+| **Chunking** | Layout must show structure even without edge cases | Group content visually |
+| **Von Restorff** | The main action must stand out | Primary CTA in primary color, rest neutral |
 
-| Feedback | Action suivante |
-|----------|----------------|
-| "C'est la bonne direction" | → `/spec` pour ecrire la spec, puis `/build` |
-| "Change le layout" | → Modifier le prototype, iterer |
-| "C'est pas la bonne approche" | → Supprimer le prototype, repenser |
+---
 
-## Checklist de sortie
+## What the prototype does NOT do
 
-- [ ] Un seul fichier dans `04_Lab/{module}/`
-- [ ] Commentaire d'intention en haut du fichier
-- [ ] Happy path fonctionnel avec mock data realiste
-- [ ] Design system respecte (tokens, pas de hardcode)
-- [ ] Message a l'utilisateur : "Prototype [nom] disponible sur /explore/[nom] — pret pour feedback"
+- No error handling
+- No responsive (desktop only unless that’s what you’re testing)
+- No tests
+- No advanced accessibility
+- No strict types (inline types are enough)
+- No iteration log
+
+---
+
+## After the prototype
+
+Depending on feedback:
+
+| Feedback | Next action |
+|----------|-------------|
+| “This is the right direction” | → `/spec` to write the spec, then `/build` |
+| “Change the layout” | → Modify the prototype, iterate |
+| “This isn’t the right approach” | → Delete the prototype, rethink |
+
+---
+
+## Exit checklist
+
+- [ ] Single file in `04_Lab/{module}/`
+- [ ] Intent comment at the top of the file
+- [ ] Happy path working with realistic mock data
+- [ ] Design system respected (tokens, no hardcode)
+- [ ] Message to user: “Prototype [name] available at /explore/[name] — ready for feedback”
