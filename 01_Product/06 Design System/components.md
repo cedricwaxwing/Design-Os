@@ -1,5 +1,7 @@
 # Design System — Components
 
+<!-- VERSION: 1 | 2026-03-05 | /manual-edit | Initial English translation -->
+
 > Reusable atomic components. Implementation code should match your project stack.  
 > Fill this file manually or via `/onboarding`, which can generate components for your stack.
 
@@ -10,27 +12,27 @@
 ### Primary
 <!-- Adapt to your stack (Tailwind, CSS Modules, Styled Components, etc.) -->
 ```
-[Code du bouton primaire — couleur primary, texte blanc, hover, active, disabled]
+[Primary button code — primary color background, white text, hover, active, disabled]
 ```
 
 ### Secondary
 ```
-[Code du bouton secondaire — bordure, fond transparent, hover]
+[Secondary button code — border, transparent background, hover]
 ```
 
 ### Ghost
 ```
-[Code du bouton ghost — pas de fond, pas de bordure, hover subtil]
+[Ghost button code — no background, no border, subtle hover state]
 ```
 
 ### Danger
 ```
-[Code du bouton danger — fond rouge, texte blanc]
+[Danger button code — red background, white text]
 ```
 
 ### Rules
 - Minimum height: 36px (primary), 32px (secondary)
-- Always have hover, active, focus, and disabled states
+- Always define hover, active, focus, and disabled states
 - The primary button must be visually distinct (Von Restorff effect)
 - Destructive actions should be visually and spatially separated from primary actions
 
@@ -40,21 +42,21 @@
 
 ### Text input
 ```
-[Code de l'input texte — fond, bordure, placeholder, focus ring, error state]
+[Text input code — background, border, placeholder, focus ring, error state]
 ```
 
 ### Select
 ```
-[Code du select — meme style que l'input, chevron, dropdown]
+[Select code — same style as input, chevron icon, dropdown list]
 ```
 
 ### Textarea
 ```
-[Code du textarea — meme style, auto-resize optionnel]
+[Textarea code — same style as input, optional auto-resize]
 ```
 
 ### Rules
-- Label above the field (standard convention)
+- Label above the field (standard web convention)
 - Descriptive placeholder (not just the field name)
 - Error state: red border + message under the field
 - Focus: ring in primary color
@@ -63,42 +65,42 @@
 
 ## Cards
 
-### Card standard
+### Standard card
 ```
-[Code de la card — fond surface, bordure subtile, radius, padding]
-```
-
-### Card interactive
-```
-[Code de la card cliquable — hover, cursor pointer, transition]
+[Card code — surface background, subtle border, radius, padding]
 ```
 
-### Regles
-- Padding interne : 24px (space-6)
-- Radius : 12px
-- Gap entre cards : 16px (space-4)
-- Separateur interne optionnel entre header et body
+### Interactive card
+```
+[Clickable card code — hover state, pointer cursor, transition]
+```
+
+### Rules
+- Inner padding: 24px (`space-6`)
+- Radius: 12px
+- Gap between cards: 16px (`space-4`)
+- Optional internal separator between header and body
 
 ---
 
 ## Badges
 
-### Badge de statut
+### Status badge
 ```
-[Code des badges — Success (vert), Warning (ambre), Error (rouge), Info (bleu), Neutral (gris)]
-```
-
-### Badge de role
-```
-[Code du badge de role — couleur selon le role (voir tokens.md)]
+[Badge code — Success (green), Warning (amber), Error (red), Info (blue), Neutral (gray)]
 ```
 
-### Regles
-- Hauteur : 20px
-- Padding horizontal : 8px
-- Radius : 4px
-- Fond : couleur a 15% d'opacite
-- Texte : couleur pleine
+### Role badge
+```
+[Role badge code — color per role (see tokens.md)]
+```
+
+### Rules
+- Height: 20px
+- Horizontal padding: 8px
+- Radius: 4px
+- Background: role color at ~15% opacity
+- Text: solid role color
 
 ---
 
@@ -106,28 +108,28 @@
 
 ### Info / Warning / Error
 ```
-[Code des alertes — icone + message + action optionnelle, bordure et fond colores]
+[Alert code — icon + message + optional action, colored border and background]
 ```
 
-### Regles
-- Toujours une icone contextuelle
-- Message specifique (pas generique)
-- Action optionnelle (dismiss, retry, link)
+### Rules
+- Always include a contextual icon
+- Specific message (never generic "An error occurred")
+- Optional action (dismiss, retry, link)
 
 ---
 
 ## Tables
 
-### Table standard
+### Standard table
 ```
-[Code de la table — header, rows, hover, alternance optionnelle]
+[Table code — header, rows, hover, optional row striping]
 ```
 
-### Regles
-- Header fixe (sticky) si > 10 lignes
-- Hover sur les lignes cliquables
-- Colonnes triables si pertinent
-- Responsive : scroll horizontal sur mobile
+### Rules
+- Sticky header if > 10 rows
+- Hover state on clickable rows
+- Sortable columns when relevant
+- Responsive: horizontal scroll on mobile
 
 ---
 
@@ -135,36 +137,36 @@
 
 ### Sidebar
 ```
-[Code de la sidebar — items, active state, icons, collapse optionnel]
+[Sidebar code — items, active state, icons, optional collapse]
 ```
 
 ### Breadcrumb
 ```
-[Code du breadcrumb — separateurs, lien actif]
+[Breadcrumb code — separators, active link]
 ```
 
 ---
 
 ## Modales
 
-### Modal standard
+### Standard modal
 ```
-[Code de la modale — overlay, container, header, body, footer, close button]
+[Modal code — overlay, container, header, body, footer, close button]
 ```
 
-### Regles
-- Fermeture : bouton X + clic outside + touche Escape
-- Max-width : 480px (petit), 640px (moyen), 960px (large)
-- Radius : 16px
-- Overlay : fond noir a 50% opacite
+### Rules
+- Close: X button + outside click + Escape key
+- Max-width: 480px (small), 640px (medium), 960px (large)
+- Radius: 16px
+- Overlay: black background at 50% opacity
 
 ---
 
-## Icones
+## Icons
 
-Librairie : <!-- definie a l'onboarding (Lucide, Heroicons, Material Icons...) -->
+Library: <!-- defined during onboarding (Lucide, Heroicons, Material Icons...) -->
 
-### Regles
-- Taille standard : 16px (inline), 20px (boutons), 24px (standalone)
-- Couleur : herite du texte parent
-- Toujours un `aria-label` si l'icone est seule (pas de texte adjacent)
+### Rules
+- Standard sizes: 16px (inline), 20px (buttons), 24px (standalone)
+- Color: inherit from parent text color
+- Always provide an `aria-label` if the icon is alone (no adjacent text)

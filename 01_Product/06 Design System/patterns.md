@@ -1,15 +1,17 @@
-# Design System — Patterns de composition
+# Design System — Composition Patterns
 
-> Patterns reutilisables pour les layouts complexes. Chaque pattern combine des composants atomiques.
-> Remplis avec les patterns specifiques a ton projet.
+<!-- VERSION: 1 | 2026-03-05 | /manual-edit | Initial English translation -->
+
+> Reusable patterns for complex layouts. Each pattern combines atomic components.  
+> Fill this file with the patterns specific to your project.
 
 ---
 
-## Formulaires
+## Forms
 
-### Layout standard
+### Standard layout
 ```
-[Form layout — labels au-dessus, colonnes, groupes logiques, spacing]
+[Form layout — labels above fields, columns, logical groups, consistent spacing]
 ```
 
 ### Validation
@@ -17,55 +19,55 @@
 [Validation pattern — inline errors, submit disabled until valid, error summary]
 ```
 
-### Regles
-- Grouper les champs par tache (pas par type technique)
-- Validation inline en temps reel (pas seulement au submit)
-- Boutons d'action en bas a droite (convention)
-- Si > 7 champs : decomposer en etapes (wizard)
+### Rules
+- Group fields by task (not by technical type)
+- Inline, real‑time validation (not only on submit)
+- Action buttons aligned bottom‑right (convention)
+- If > 7 fields: split into steps (wizard)
 
 ---
 
-## Listes avec filtres
+## Lists with filters
 
 ### Layout
 ```
 [List with filters — filter bar + list/table + pagination + empty state]
 ```
 
-### Regles
-- Max 4 filtres visibles (au-dela : "Plus de filtres")
-- Resultats : nombre total visible
-- Tri : au moins par date et par nom
-- Pagination ou infinite scroll selon le volume
+### Rules
+- Max 4 visible filters (beyond that: “More filters”)
+- Always show total results count
+- Sorting: at least by date and by name
+- Use pagination or infinite scroll depending on volume
 
 ---
 
-## Dashboard KPI
+## KPI dashboard
 
 ### Layout
 ```
 [Dashboard — KPI cards row + charts + activity feed]
 ```
 
-### Regles
-- Max 4 KPI cards par rangee (preferer 4 + "voir tout")
-- Chaque KPI : valeur, label, tendance (optionnel)
-- Les KPIs les plus importants sont en premiere position
+### Rules
+- Max 4 KPI cards per row (ideally 4 + “view all”)
+- Each KPI: value, label, optional trend
+- The most important KPIs appear first
 
 ---
 
-## Stepper / Wizard
+## Stepper / wizard
 
 ### Layout
 ```
 [Stepper — progress indicator + step content + navigation buttons]
 ```
 
-### Regles
-- Progression visible (stepper horizontal ou vertical)
-- Navigation avant/arriere
-- Validation par etape avant de continuer
-- Resume des choix precedents accessible
+### Rules
+- Visible progression (horizontal or vertical stepper)
+- Back and next navigation
+- Validate each step before continuing
+- Summary of previous choices remains accessible
 
 ---
 
@@ -76,7 +78,7 @@
 [Timeline — vertical line + event cards + dates]
 ```
 
-### Regles
-- Ordre chronologique (plus recent en haut par defaut)
-- Chaque evenement : date, titre, description courte, badge de type
-- Les evenements importants sont visuellement distincts
+### Rules
+- Chronological order (most recent at the top by default)
+- Each event: date, title, short description, type badge
+- Important events are visually distinct

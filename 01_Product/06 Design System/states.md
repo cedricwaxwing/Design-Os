@@ -1,5 +1,7 @@
 # Design System — Standard States
 
+<!-- VERSION: 1 | 2026-03-05 | /manual-edit | Initial English translation -->
+
 > Every component and page MUST handle these 4 states + key edge cases.  
 > The Build agent checks that all states are implemented.  
 > The Review agent checks that all states are tested.
@@ -77,101 +79,101 @@ When data is currently being loaded.
 
 ---
 
-## Etat erreur (Error State)
+## Error state
 
-Quand le chargement ou une action a echoue.
+When a load or action has failed.
 
-### Erreur de page
+### Page-level error
 ```tsx
 <div className="flex flex-col items-center justify-center py-16 px-4">
   <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
     <AlertTriangle className="w-6 h-6 text-red-400" />
   </div>
   <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-1">
-    Impossible de charger [les donnees]
+    Unable to load [data]
   </h3>
   <p className="text-sm text-neutral-500 text-center max-w-sm mb-4">
-    [Explication : probleme reseau, serveur indisponible, etc.]
+    [Explanation: network issue, server unavailable, etc.]
   </p>
   <button className="bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white font-medium px-4 py-2 rounded-md border border-neutral-200 dark:border-neutral-700 transition-colors">
-    Reessayer
+    Retry
   </button>
 </div>
 ```
 
-### Erreur inline (formulaire)
+### Inline error (form)
 ```tsx
 <div className="space-y-1.5">
-  <label className="text-sm font-medium text-red-400">Champ</label>
+  <label className="text-sm font-medium text-red-400">Field label</label>
   <input className="w-full bg-white dark:bg-neutral-800 border border-red-500 rounded-md px-3 py-2 text-neutral-900 dark:text-white focus:ring-1 focus:ring-red-500 outline-none" />
   <p className="text-xs text-red-400 flex items-center gap-1">
     <XCircle className="w-3 h-3" />
-    Ce champ est obligatoire
+    This field is required
   </p>
 </div>
 ```
 
-### Toast erreur
+### Error toast
 ```tsx
 <div className="fixed bottom-4 right-4 bg-red-500/10 border border-red-500/30 rounded-lg p-3 flex items-center gap-2 shadow-lg max-w-sm">
   <XCircle className="w-4 h-4 text-red-400 shrink-0" />
-  <p className="text-sm text-red-300">L'action a echoue. Reessayez.</p>
+  <p className="text-sm text-red-300">The action failed. Please try again.</p>
   <button className="text-red-400 hover:text-red-300 ml-auto">
     <X className="w-4 h-4" />
   </button>
 </div>
 ```
 
-### Regles
-- Toujours un bouton "Reessayer" quand c'est pertinent
-- Message specifique (pas "Une erreur est survenue")
-- Erreurs de formulaire inline, pas en toast
-- Erreurs d'API en toast ou en page selon la gravite
+### Rules
+- Always show a **Retry** button when relevant
+- Use a specific message (not just "An error occurred")
+- Form errors should be inline, not only in a toast
+- API errors can be shown in a toast or full page depending on severity
 
 ---
 
-## Etat succes (Success State)
+## Success state
 
-Quand une action a reussi.
+When an action has succeeded.
 
-### Toast succes
+### Success toast
 ```tsx
 <div className="fixed bottom-4 right-4 bg-green-500/10 border border-green-500/30 rounded-lg p-3 flex items-center gap-2 shadow-lg max-w-sm">
   <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
-  <p className="text-sm text-green-300">[Element] cree avec succes</p>
+  <p className="text-sm text-green-300">[Item] created successfully</p>
 </div>
 ```
 
-### Confirmation inline
+### Inline confirmation
 ```tsx
 <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4 text-center">
   <CheckCircle className="w-8 h-8 text-green-400 mx-auto mb-2" />
   <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-1">
-    [Action] effectuee
+    [Action] completed
   </h3>
   <p className="text-sm text-neutral-500 mb-4">
-    [Prochaine etape ou consequence]
+    [Next step or consequence]
   </p>
   <button className="...primary">
-    [CTA suivant]
+    [Next CTA]
   </button>
 </div>
 ```
 
-### Regles
-- Toast pour les actions courantes (save, update)
-- Confirmation inline pour les actions importantes (submit, validate)
-- Toujours proposer l'action suivante logique
-- Le toast disparait apres 3-5 secondes
+### Rules
+- Use a toast for common actions (save, update)
+- Use inline confirmation for important actions (submit, validate)
+- Always propose the next logical action
+- The toast should disappear automatically after 3–5 seconds
 
 ---
 
-## Resume : checklist par composant
+## Summary: per‑component checklist
 
-Avant de livrer un composant, verifier :
+Before shipping a component, check:
 
-- [ ] **Vide** : message + icone + CTA si l'utilisateur peut agir
-- [ ] **Chargement** : skeleton qui reproduit la forme du contenu
-- [ ] **Succes** : contenu affiche + interactions fonctionnelles
-- [ ] **Erreur** : message specifique + retry si pertinent
-- [ ] **Edge cases** : identifies et geres (spec section 3)
+- [ ] **Empty**: message + icon + CTA if the user can act
+- [ ] **Loading**: skeleton that mirrors the final content shape
+- [ ] **Success**: content rendered + interactions working
+- [ ] **Error**: specific message + retry when relevant
+- [ ] **Edge cases**: identified and handled (see spec section 3)
