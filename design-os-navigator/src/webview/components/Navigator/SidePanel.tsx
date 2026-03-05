@@ -1,5 +1,6 @@
 import React from 'react';
 import type { DesignOsNode } from '../../../types-legacy';
+import { getMaturityLabel } from './utils';
 import './SidePanel.css';
 
 const NODE_ICONS: Record<string, string> = {
@@ -70,7 +71,7 @@ export function SidePanel({
           <div className="sp-section-title">Status</div>
           <div className="sp-stat">
             <span className="sp-stat-label">Maturity</span>
-            <span className="sp-stat-value">{node.maturity}</span>
+            <span className="sp-stat-value">{getMaturityLabel(node.maturity)}</span>
           </div>
           <div className="sp-stat">
             <span className="sp-stat-label">Files</span>

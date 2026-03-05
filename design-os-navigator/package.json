@@ -20,6 +20,17 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "Design OS",
+      "properties": {
+        "designOs.actionTarget": {
+          "type": "string",
+          "enum": ["cursor", "terminal"],
+          "default": "cursor",
+          "description": "When you click an action in the Navigator: 'cursor' copies the command to clipboard and prompts you to paste in Cursor chat/Composer; 'terminal' runs the command in the Claude CLI terminal."
+        }
+      }
+    },
     "commands": [
       {
         "command": "designOs.openNavigator",

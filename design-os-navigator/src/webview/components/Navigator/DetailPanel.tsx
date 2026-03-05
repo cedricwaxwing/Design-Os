@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CollapsibleSection } from '../shared/CollapsibleSection';
 import type { DesignOsNode, FileInfo, GateCondition } from '../../../types-legacy';
+import { getMaturityLabel } from './utils';
 import './DetailPanel.css';
 
 interface DetailPanelProps {
@@ -70,7 +71,7 @@ export function DetailPanel({
           <div className="detail-header-info">
             <h2 className="detail-title">{node.label}</h2>
             <span className={`maturity-badge maturity-${node.maturity.toLowerCase().replace(' ', '-')}`}>
-              {node.maturity}
+              {getMaturityLabel(node.maturity)}
             </span>
           </div>
           <button className="close-btn" onClick={onClose}>×</button>

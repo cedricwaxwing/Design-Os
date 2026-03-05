@@ -1,5 +1,6 @@
 import React from 'react';
 import type { DesignOsNode, GateCondition } from '../../../types-legacy';
+import { getMaturityLabel } from './utils';
 import './NodeCard.css';
 
 // Node icons (same as legacy)
@@ -78,7 +79,7 @@ function GateDots({ gates }: { gates: GateCondition[] }) {
 function MaturityBadge({ maturity }: { maturity: string }) {
   return (
     <span className={`maturity-badge maturity-${maturity.toLowerCase().replace(' ', '-')}`}>
-      {maturity}
+      {getMaturityLabel(maturity)}
     </span>
   );
 }

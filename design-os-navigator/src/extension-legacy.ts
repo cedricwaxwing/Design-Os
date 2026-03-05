@@ -622,6 +622,25 @@ function loadExistingArtifacts(root: string, mod: string): void {
 }
 
 function runSlashCommand(command: string) {
+  const actionTarget = vscode.workspace.getConfiguration('designOs').get<string>('actionTarget', 'cursor');
+
+  if (actionTarget === 'cursor') {
+    // Copy to clipboard and prompt user to paste in Cursor chat/Composer (no public API to inject prompt)
+    vscode.env.clipboard.writeText(command).then(() => {
+      const isMac = process.platform === 'darwin';
+      const composerShortcut = isMac ? '⌘I' : 'Ctrl+I';
+      const chatShortcut = isMac ? '⌘L' : 'Ctrl+L';
+      vscode.window.showInformationMessage(
+        `Copied "${command}" to clipboard. Paste in Composer (${composerShortcut}) or Chat (${chatShortcut}) to run.`,
+        { modal: false }
+      );
+    });
+    // Optionally try to open Composer so user can paste immediately (command ID is editor-dependent)
+    vscode.commands.executeCommand('workbench.action.aichat.open').then(() => {}, () => {});
+    return;
+  }
+
+  // Terminal mode: send command to Claude CLI
   const { terminal, isNew } = getOrCreateClaudeTerminal();
 
   // Claude Code uses Ink in raw mode — PTY buffering means we must

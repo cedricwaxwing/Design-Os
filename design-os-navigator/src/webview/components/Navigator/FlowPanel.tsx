@@ -1,5 +1,6 @@
 import React from 'react';
 import type { GraphData, DesignOsNode } from '../../../types-legacy';
+import { getMaturityLabel } from './utils';
 import './FlowPanel.css';
 
 // ── Flow layout definition ──
@@ -61,7 +62,7 @@ function FlowNodeCard({ node, selected, onSelect }: FlowNodeCardProps) {
       </div>
       <div className="flow-node-bottom">
         <span className={`flow-node-tag ${maturityClass}`}>
-          {node.maturity}
+          {getMaturityLabel(node.maturity)}
         </span>
         <span className="flow-node-gates">
           {node.gates.map((g, i) => (
