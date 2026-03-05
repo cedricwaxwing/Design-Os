@@ -1,534 +1,535 @@
-# Design System — Lois UX (Laws of UX)
+ # Design System — UX Laws (Laws of UX)
 
-> Source de verite pour les 30 lois UX appliquees dans le projet.
-> Les agents UX Design, Spec, Build, Review, Explore, et UI Designer DOIVENT consulter ces lois.
-> Chaque loi est categorisee par domaine d'application et inclut des regles d'implementation.
-> Reference : https://lawsofux.com/
+ > Single source of truth for how the 30 UX laws are applied in this project.  
+ > UX Design, Spec, Build, Review, Explore, and UI Designer agents MUST refer to these laws.  
+ > Each law is categorized by area and includes concrete implementation rules.  
+ > Reference: https://lawsofux.com/
 
----
+ ---
 
-## Index rapide par domaine
+ ## Quick index by area
 
-| Domaine | Lois | Agents principaux |
-|---------|------|-------------------|
-| **Perception & Layout** | Aesthetic-Usability, Common Region, Proximity, Pragnanz, Similarity, Uniform Connectedness, Von Restorff | ui-designer, ux-design, build |
-| **Charge cognitive** | Cognitive Load, Miller, Chunking, Working Memory, Selective Attention | ux-design, spec, build, ui-designer |
-| **Decision & Navigation** | Hick, Choice Overload, Fitts, Serial Position, Paradox Active User | ux-design, ui-designer, build |
-| **Motivation & Engagement** | Flow, Goal-Gradient, Zeigarnik, Peak-End, Doherty Threshold | ux-design, build |
-| **Simplification** | Occam's Razor, Tesler, Pareto, Parkinson | ux-design, spec |
-| **Coherence & Modeles mentaux** | Jakob, Mental Model, Postel, Cognitive Bias | ux-design, spec, review |
+ | Area | Laws | Primary agents |
+ |------|------|----------------|
+ | **Perception & Layout** | Aesthetic-Usability, Common Region, Proximity, Pragnanz, Similarity, Uniform Connectedness, Von Restorff | ui-designer, ux-design, build |
+ | **Cognitive Load** | Cognitive Load, Miller, Chunking, Working Memory, Selective Attention | ux-design, spec, build, ui-designer |
+ | **Decision & Navigation** | Hick, Choice Overload, Fitts, Serial Position, Paradox of the Active User | ux-design, ui-designer, build |
+ | **Motivation & Engagement** | Flow, Goal-Gradient, Zeigarnik, Peak-End, Doherty Threshold | ux-design, build |
+ | **Simplification** | Occam’s Razor, Tesler, Pareto, Parkinson | ux-design, spec |
+ | **Coherence & Mental Models** | Jakob’s Law, Mental Models, Postel’s Law, Cognitive Bias | ux-design, spec, review |
 
----
+ ---
 
-## 1. Perception & Layout
+ ## 1. Perception & Layout
 
-### 1.1 Aesthetic-Usability Effect
+ ### 1.1 Aesthetic-Usability Effect
 
-> Un design agreable est percu comme plus utilisable.
+ > A beautiful design is perceived as more usable.
 
-**Definition** : Les utilisateurs tolerent mieux les problemes mineurs d'utilisabilite quand l'interface est visuellement plaisante. L'esthetique cree de la confiance et de la patience.
+ **Definition**: Users tolerate minor usability issues much more when the interface is visually pleasing. Good aesthetics create trust and patience.
 
-**Application** :
-- Le polish visuel n'est PAS optionnel — il renforce directement la perception de fiabilite
-- Utiliser systematiquement les tokens du design system (couleurs, spacing, typo)
-- Un composant fonctionnel mais visuellement incoherent echoue au test utilisateur
-- Les ecrans de donnees complexes (dashboards, tableaux) beneficient le plus de cette loi
+ **Application**:
+ - Visual polish is **NOT** optional — it directly strengthens perceived reliability
+ - Always use design system tokens (colors, spacing, type) instead of ad‑hoc styles
+ - A component that “works” but is visually inconsistent **fails** a user test
+ - Complex data UIs (dashboards, tables) benefit the most from this law
 
-**Agents** : build, ui-designer, explore, review
+ **Agents**: build, ui-designer, explore, review
 
----
+ ---
 
-### 1.2 Law of Common Region
+ ### 1.2 Law of Common Region
 
-> Les elements partageant une meme frontiere visuelle sont percus comme groupes.
+ > Elements sharing the same visual boundary are perceived as a group.
 
-**Definition** : Un conteneur (card, section, bordure) cree un groupement perceptuel plus fort que la proximite seule.
+ **Definition**: A container (card, section, border) creates a stronger perceptual group than proximity alone.
 
-**Application** :
-- Utiliser les cards (avec tokens du design system) pour grouper les informations liees
-- Les sections d'un formulaire doivent avoir des conteneurs visuels distincts
-- Ne PAS grouper dans une meme card des informations de nature differente
-- Les groupes de KPIs partageant un meme contexte sont dans un meme conteneur
+ **Application**:
+ - Use cards (with DS tokens) to group related information
+ - Form sections must have clearly distinct visual containers
+ - Do **not** mix unrelated information inside the same card
+ - KPI groups that share the same context live in the same container
 
-**Agents** : ui-designer, build, spec (section layout)
+ **Agents**: ui-designer, build, spec (section layout)
 
----
+ ---
 
-### 1.3 Law of Proximity
+ ### 1.3 Law of Proximity
 
-> Les objets proches les uns des autres sont percus comme un groupe.
+ > Objects that are close to each other are perceived as a group.
 
-**Definition** : L'espacement entre elements est un signal de relation. Les elements rapproches sont interpretes comme lies, les elements eloignes comme distincts.
+ **Definition**: Spacing signals relationships. Elements that are close are interpreted as related; distant elements as separate.
 
-**Application** :
-- Gap 8px (`gap-2`) entre elements lies au sein d'un meme groupe
-- Gap 24px (`gap-6`) entre groupes distincts
-- Gap 32px+ (`gap-8`) entre sections majeures
-- Toujours verifier : "est-ce que le spacing reflete la relation semantique ?"
+ **Application**:
+ - 8px gap (`gap-2`) between tightly related elements inside one group
+ - 24px gap (`gap-6`) between distinct groups
+ - 32px+ gap (`gap-8`) between major sections
+ - Always check: “Does spacing match the semantic relationship?”
 
-**Agents** : ui-designer, build, ux-design
+ **Agents**: ui-designer, build, ux-design
 
----
+ ---
 
-### 1.4 Law of Pragnanz
+ ### 1.4 Law of Pragnanz (Good Form)
 
-> Les images ambigues ou complexes sont interpretees sous leur forme la plus simple.
+ > Ambiguous or complex images are interpreted in the simplest possible way.
 
-**Definition** : Le cerveau prefere les formes simples, regulieres et ordonnees. Les interfaces complexes sont mentalement "simplifiees" par l'utilisateur, parfois en perdant de l'information.
+ **Definition**: The brain prefers simple, regular, ordered structures. Complex interfaces are mentally “simplified” by users, sometimes losing information.
 
-**Application** :
-- Les layouts doivent etre symetriques et alignes sur la grille 4/8px
-- Eviter les asymetries qui forcent l'utilisateur a interpreter la structure
-- Les icones doivent etre simples et reconnaissables
-- Les tableaux de donnees doivent avoir une structure repetitive previsible
+ **Application**:
+ - Layouts should be symmetrical and aligned to the 4/8px grid
+ - Avoid asymmetries that force users to interpret the structure
+ - Icons must be simple and recognizable
+ - Data tables should have a predictable, repeating structure
 
-**Agents** : ui-designer, ux-design
+ **Agents**: ui-designer, ux-design
 
----
+ ---
 
-### 1.5 Law of Similarity
+ ### 1.5 Law of Similarity
 
-> Les elements similaires sont percus comme faisant partie du meme groupe.
+ > Elements that look similar are perceived as part of the same group.
 
-**Definition** : Couleur, forme, taille et style sont des signaux de groupement. Des elements visuellement similaires sont interpretes comme ayant la meme fonction.
+ **Definition**: Color, shape, size, and style are grouping signals. Visually similar elements are interpreted as having the same role.
 
-**Application** :
-- Tous les CTAs primaires ont le meme style (couleur primary, texte blanc, rounded)
-- Tous les badges de statut suivent la meme logique de couleur semantique
-- Les cards de meme type ont le meme layout (pas de variations inutiles)
-- Si deux elements ont la meme apparence, ils DOIVENT avoir la meme fonction
+ **Application**:
+ - All primary CTAs share the same style (primary color, white text, rounded)
+ - All status badges follow the same semantic color logic
+ - Cards of the same type have the same layout (no random variations)
+ - If two elements look the same, they **MUST** have the same function
 
-**Agents** : ui-designer, build, ux-design
+ **Agents**: ui-designer, build, ux-design
 
----
+ ---
 
-### 1.6 Law of Uniform Connectedness
+ ### 1.6 Law of Uniform Connectedness
 
-> Les elements visuellement connectes sont percus comme plus lies que les elements sans connexion.
+ > Visually connected elements are perceived as more related than unconnected ones.
 
-**Definition** : Des lignes, bordures, fleches ou fond colore partagee creent une relation perceptuelle forte.
+ **Definition**: Lines, borders, arrows, or a shared background color create a strong relationship between elements.
 
-**Application** :
-- Les timelines utilisent une ligne de connexion entre les milestones
-- Les steppers/wizards utilisent une barre de progression reliant les etapes
-- Les relations parent-enfant sont rendues par indentation ou lignes de connexion
-- Les breadcrumbs utilisent des separateurs (`/` ou `>`) pour montrer la hierarchie
+ **Application**:
+ - Timelines use a connecting line between milestones
+ - Steppers/wizards use a progress bar connecting steps
+ - Parent/child relationships are shown via indentation or connecting lines
+ - Breadcrumbs use separators (`/` or `>`) to show hierarchy
 
-**Agents** : ui-designer, build
+ **Agents**: ui-designer, build
 
----
+ ---
 
-### 1.7 Von Restorff Effect
+ ### 1.7 Von Restorff Effect
 
-> L'element qui differe du reste est le plus memorise.
+ > The item that differs from the rest is most likely to be remembered.
 
-**Definition** : Dans un ensemble d'elements similaires, celui qui est visuellement distinct attire l'attention et est mieux retenu. C'est la base de la hierarchie visuelle.
+ **Definition**: In a set of similar elements, the one that is visually distinct attracts attention and is better remembered. This underpins visual hierarchy.
 
-**Application** :
-- Le CTA primaire est TOUJOURS visuellement distinct (couleur primary sur fond neutre)
-- Les alertes critiques utilisent une couleur differente du reste de l'interface
-- Les badges "nouveau" ou "urgent" se demarquent par couleur et forme
-- Dans un tableau, les lignes qui necessitent attention sont surlignees
+ **Application**:
+ - The primary CTA is ALWAYS visually distinct (primary color on a neutral background)
+ - Critical alerts use a color distinct from the rest of the UI
+ - “New” or “Urgent” badges stand out via color and shape
+ - In a table, rows requiring attention are highlighted
 
-**Agents** : ui-designer, build, ux-design, review, explore
+ **Agents**: ui-designer, build, ux-design, review, explore
 
----
+ ---
 
-## 2. Charge cognitive
+ ## 2. Cognitive Load
 
-### 2.1 Cognitive Load
+ ### 2.1 Cognitive Load
 
-> La quantite de ressources mentales necessaires pour comprendre et interagir avec une interface.
+ > The amount of mental effort required to understand and interact with an interface.
 
-**Definition** : Chaque element d'interface consomme de l'attention. L'objectif est de minimiser la charge cognitive non-essentielle (extraneous load) pour maximiser les ressources disponibles pour la tache reelle (germane load).
+ **Definition**: Every UI element consumes attention. The goal is to minimize **extraneous** load so users can focus their limited cognitive resources on the actual task.
 
-**Application** :
-- Reveler progressivement l'information (progressive disclosure) — accordions, "Voir plus"
-- Max 3 sections de contenu visibles sans scroll sur un ecran
-- Les formulaires complexes sont decomposes en steps (wizard)
-- Eviter les labels ambigus — preferer les labels descriptifs
+ **Application**:
+ - Reveal information progressively (progressive disclosure) — accordions, “Show more”
+ - Max 3 content sections visible above the fold
+ - Complex forms are broken into steps (wizard)
+ - Avoid ambiguous labels — prefer descriptive labels
 
-**Agents** : ux-design, spec, build, ui-designer
+ **Agents**: ux-design, spec, build, ui-designer
 
----
+ ---
 
-### 2.2 Miller's Law
+ ### 2.2 Miller’s Law
 
-> La memoire de travail ne retient que 7 (plus ou moins 2) elements simultanement.
+ > Working memory can hold only about 7 (plus or minus 2) items at once.
 
-**Definition** : Au-dela de 5-9 elements, l'utilisateur perd la vision d'ensemble. L'information doit etre organisee en chunks digestibles.
+ **Definition**: Beyond 5–9 items, users lose the overview. Information must be chunked into digestible groups.
 
-**Application** :
-- Max 7 items dans une navigation principale
-- Max 5-7 tabs par ecran (au-dela : dropdown "More")
-- Max 7 KPI cards par rangee (preferer 4 + "voir plus")
-- Les listes longues doivent etre paginees ou filtrables
-- Un screen map ne devrait pas depasser 7±2 ecrans par EPIC
+ **Application**:
+ - Max 7 items in a primary navigation
+ - Max 5–7 tabs per screen (beyond that: a “More” dropdown)
+ - Max 7 KPI cards per row (prefer 4 + “View more”)
+ - Long lists must be paginated or filterable
+ - A screen map should not exceed 7±2 key screens per EPIC
 
-**Agents** : ux-design, spec, build, ui-designer
+ **Agents**: ux-design, spec, build, ui-designer
 
----
+ ---
 
-### 2.3 Chunking
+ ### 2.3 Chunking
 
-> Un processus par lequel des elements individuels d'information sont regroupes en ensembles significatifs.
+ > Process of grouping individual pieces of information into meaningful units (“chunks”).
 
-**Definition** : Le chunking organise les elements en groupes logiques, facilitant le traitement et la memorisation. Un numero de telephone est plus facile a retenir en "06 12 34 56 78" qu'en "0612345678".
+ **Definition**: Chunking organizes elements into logical groups, making them easier to process and remember. A phone number is easier to remember as “06 12 34 56 78” than “0612345678”.
 
-**Application** :
-- Les champs de formulaire sont groupes par tache (pas par type technique)
-- Les metadata sont organisees en sections thematiques (identite, timeline, equipe, documents)
-- Les dashboards organisent les KPIs en clusters thematiques
-- Les separateurs visuels delimitent les chunks
+ **Application**:
+ - Group form fields by task, not by technical type
+ - Organize metadata into themed sections (identity, timeline, team, documents)
+ - Dashboards group KPIs into thematic clusters
+ - Use clear visual separators to delimit chunks
 
-**Agents** : ux-design, spec, build, ui-designer, explore
+ **Agents**: ux-design, spec, build, ui-designer, explore
 
----
+ ---
 
-### 2.4 Working Memory
+ ### 2.4 Working Memory
 
-> Systeme cognitif qui maintient temporairement l'information necessaire aux taches en cours.
+ > The cognitive system that temporarily holds information needed for ongoing tasks.
 
-**Definition** : La memoire de travail est limitee en capacite et en duree. Les interfaces qui exigent de retenir des informations d'un ecran a l'autre surchargent cette memoire.
+ **Definition**: Working memory is limited in capacity and duration. Interfaces that require users to remember information across screens overload it.
 
-**Application** :
-- Ne pas forcer l'utilisateur a memoriser des informations entre les ecrans
-- Les wizards multi-step affichent un resume des choix precedents
-- Les drawers permettent de voir le contexte (liste) en arriere-plan
-- Les references (IDs, noms) sont toujours visibles, pas cachees
+ **Application**:
+ - Don’t force users to memorize information between screens
+ - Multi‑step wizards show a summary of previous choices
+ - Drawers keep the list/context visible in the background
+ - References (IDs, names) remain visible, not hidden
 
-**Agents** : ux-design, spec
+ **Agents**: ux-design, spec
 
----
+ ---
 
-### 2.5 Selective Attention
+ ### 2.5 Selective Attention
 
-> Le processus de focalisation de l'attention sur un sous-ensemble de stimuli dans un environnement.
+ > The process of focusing attention on a subset of stimuli in an environment.
 
-**Definition** : Les utilisateurs filtrent naturellement l'information. Ce qui n'est pas dans leur focus attentionnel est ignore, meme s'il est visible.
+ **Definition**: Users naturally filter information. What is outside their focus is effectively ignored, even if visible.
 
-**Application** :
-- L'element d'action principal doit etre dans la zone de focus naturel (haut-droite ou centre)
-- Les informations secondaires sont visuellement attenuees (couleur neutral attenee)
-- Les notifications non-critiques ne doivent pas voler le focus (toast, pas modal)
-- Les tableaux de donnees mettent en evidence les colonnes critiques (poids visuel, couleur)
+ **Application**:
+ - The primary action must live in the natural focus area (top-right or center)
+ - Secondary information is visually toned down (muted neutral colors)
+ - Non‑critical notifications should not steal focus (toast, not modal)
+ - Data tables visually emphasize critical columns (weight, color)
 
-**Agents** : ux-design, ui-designer, build
+ **Agents**: ux-design, ui-designer, build
 
----
+ ---
 
-## 3. Decision & Navigation
+ ## 3. Decision & Navigation
 
-### 3.1 Hick's Law
+ ### 3.1 Hick’s Law
 
-> Le temps de decision augmente avec le nombre et la complexite des choix.
+ > The time to make a decision increases with the number and complexity of choices.
 
-**Definition** : Chaque option supplementaire augmente le temps de decision de maniere logarithmique. Moins de choix = decisions plus rapides.
+ **Definition**: Each additional option increases decision time logarithmically. Fewer choices = faster decisions.
 
-**Application** :
-- Max 3 actions visibles par card (primary + 2 secondary)
-- Max 4 filtres visibles (au-dela : "Plus de filtres")
-- Max 5 options dans un dropdown sans scroll
-- Les wizards decomposent une grande decision en petites decisions sequentielles
-- Si > 5 decisions simultanees sur un ecran, splitter ou sequencer
+ **Application**:
+ - Max 3 visible actions per card (primary + up to 2 secondary)
+ - Max 4 visible filters (beyond that: “More filters”)
+ - Max 5 options in a dropdown without scrolling
+ - Wizards break large decisions into small sequential decisions
+ - If > 5 decisions are required on one screen, split or sequence them
 
-**Agents** : ux-design, ui-designer, build, review
+ **Agents**: ux-design, ui-designer, build, review
 
----
+ ---
 
-### 3.2 Choice Overload
+ ### 3.2 Choice Overload
 
-> La tendance des personnes a etre submergees quand trop d'options sont presentees.
+ > People tend to feel overwhelmed when presented with too many options.
 
-**Definition** : Au-dela d'un seuil, le nombre d'options mene a la paralysie decisionnelle, l'anxiete, et l'insatisfaction post-decision. Distinct de Hick (qui est un delai) — ici c'est un blocage.
+ **Definition**: Beyond a certain threshold, additional options cause decision paralysis, anxiety, and post‑decision regret. Different from Hick’s (delay) — this is about **blocking**.
 
-**Application** :
-- Les formulaires de creation ont des valeurs par defaut intelligentes
-- Les selects avec > 10 options ont un champ de recherche
-- Les permissions sont presentees par templates pre-configures, pas case par case
-- Les dashboards offrent des vues pre-filtrees par role, pas un filtre universel nu
+ **Application**:
+ - Creation flows use smart defaults
+ - Selects with > 10 options include a search field
+ - Permissions are presented as pre‑configured templates, not dozens of raw checkboxes
+ - Dashboards offer role‑based prefiltered views, not one giant unfiltered view
 
-**Agents** : ux-design, build, review
+ **Agents**: ux-design, build, review
 
----
+ ---
 
-### 3.3 Fitts's Law
+ ### 3.3 Fitts’s Law
 
-> Le temps pour atteindre une cible est fonction de la distance et de la taille de cette cible.
+ > The time to acquire a target depends on its distance and size.
 
-**Definition** : Les cibles grandes et proches sont plus faciles a atteindre. Les cibles petites et eloignees sont plus difficiles. Impact direct sur la taille des boutons et leur placement.
+ **Definition**: Large and close targets are easier to hit; small and distant ones are harder. This directly impacts button size and placement.
 
-**Application** :
-- CTA primaire : min 36px height (`h-9`)
-- CTA secondaire : min 32px height (`h-8`)
-- Icon button : 32x32px minimum
-- Touch target (mobile) : 44x44px minimum
-- Les actions destructives sont eloignees des actions principales (`ml-auto`)
-- Les boutons frequents sont aux positions les plus accessibles (coins, bords)
+ **Application**:
+ - Primary CTA: minimum 36px height (`h-9`)
+ - Secondary CTA: minimum 32px height (`h-8`)
+ - Icon button: at least 32×32px
+ - Touch targets (mobile): at least 44×44px
+ - Destructive actions are kept away from primary actions (`ml-auto` or separate area)
+ - Frequently used actions occupy the most accessible positions (corners, edges)
 
-**Agents** : ux-design, ui-designer, build, review
+ **Agents**: ux-design, ui-designer, build, review
 
----
+ ---
 
-### 3.4 Serial Position Effect
+ ### 3.4 Serial Position Effect
 
-> Les utilisateurs retiennent mieux le premier et le dernier element d'une serie.
+ > People remember the first and last items in a series best.
 
-**Definition** : L'effet de primaute (premier element) et l'effet de recence (dernier element) sont les plus forts. Les elements au milieu sont les moins memorises.
+ **Definition**: The primacy effect (first item) and recency effect (last item) are strongest. Middle items are least memorable.
 
-**Application** :
-- Le CTA principal est en derniere position (bas-droite ou fin de toolbar)
-- Le breadcrumb/titre est en premiere position (haut-gauche)
-- Dans les navigations, l'item le plus important est premier ou dernier
-- Dans les formulaires, le champ le plus critique est en premier, le bouton de soumission en dernier
-- Dans les listes, les elements les plus importants sont en haut
+ **Application**:
+ - Place the primary CTA last in order (bottom-right or end of toolbar)
+ - Breadcrumb/title sits first (top-left)
+ - In nav menus, the most important item is first or last
+ - In forms, the most critical field comes first, submission button last
+ - In lists, the most important items are at the top
 
-**Agents** : ux-design, ui-designer, build, review
+ **Agents**: ux-design, ui-designer, build, review
 
----
+ ---
 
-### 3.5 Paradox of the Active User
+ ### 3.5 Paradox of the Active User
 
-> Les utilisateurs ne lisent jamais les manuels — ils commencent a utiliser le logiciel immediatement.
+ > Users don’t read manuals — they start using the software immediately.
 
-**Definition** : Les utilisateurs preferent agir plutot que lire. Les instructions longues sont ignorees. L'interface doit etre auto-explicative.
+ **Definition**: Users prefer acting over reading. Long instructions are ignored. The interface must be self‑explanatory.
 
-**Application** :
-- Les ecrans doivent etre utilisables sans formation
-- Preferer les labels descriptifs aux icones seules
-- Les onboarding longs sont ignores — preferer des tooltips contextuels
-- Les formulaires ont des placeholders et des exemples dans les champs
-- Les actions non-evidentes ont des labels explicites, pas des icones ambigues
+ **Application**:
+ - Screens must be usable without training
+ - Prefer descriptive labels to icon‑only controls
+ - Long onboarding flows are ignored — prefer contextual tooltips
+ - Forms use placeholders and in‑field examples
+ - Non‑obvious actions have explicit labels, not ambiguous icons
 
-**Agents** : ux-design, spec, build
+ **Agents**: ux-design, spec, build
 
----
+ ---
 
-## 4. Motivation & Engagement
+ ## 4. Motivation & Engagement
 
-### 4.1 Flow
+ ### 4.1 Flow
 
-> L'etat mental dans lequel une personne est pleinement immergee dans une activite avec un sentiment d'energie et de concentration.
+ > A mental state of deep immersion, energy, and focus on an activity.
 
-**Definition** : Le flow est atteint quand le defi est equilibre avec les competences, les objectifs sont clairs, et le feedback est immediat. Les interruptions detruisent le flow.
+ **Definition**: Flow is reached when challenge matches skills, goals are clear, and feedback is immediate. Interruptions destroy flow.
 
-**Application** :
-- Les wizards de creation maintiennent un rythme — pas de chargement bloquant entre les etapes
-- Les modals de confirmation sont rapides (2 clics max)
-- Les transitions entre ecrans sont fluides (`transition-all duration-200`)
-- Les erreurs sont signalees inline, pas par une page d'erreur qui casse le flow
-- Les power users ne doivent jamais etre bloques par un ecran inutile
+ **Application**:
+ - Creation wizards maintain rhythm — no blocking loads between steps
+ - Confirmation modals are fast (max 2 clicks)
+ - Screen transitions are smooth (`transition-all duration-200`)
+ - Errors are shown inline, not via a full error page that breaks flow
+ - Power users should never be blocked by unnecessary screens
 
-**Agents** : ux-design, build
+ **Agents**: ux-design, build
 
----
+ ---
 
-### 4.2 Goal-Gradient Effect
+ ### 4.2 Goal-Gradient Effect
 
-> La tendance a augmenter l'effort quand on s'approche du but.
+ > Effort increases as people perceive they are getting closer to the goal.
 
-**Definition** : Les utilisateurs sont plus motives et plus rapides quand ils percoivent qu'ils approchent de la fin. La progression visible est un accelerateur.
+ **Definition**: Users are more motivated and faster when they feel they’re nearing completion. Visible progress accelerates them.
 
-**Application**:
-- Multi‑step wizards always show progress (stepper + “Step 2/4”)
-- Progress bars use the primary color for the completed portion
-- The final step is visually distinct (success color)
-- Partially completed tasks show their progress (“3/5 sections filled”)
+ **Application**:
+ - Multi‑step wizards always show progress (stepper + “Step 2/4”)
+ - Progress bars use the primary color for the completed portion
+ - The final step is visually distinct (success color)
+ - Partially completed tasks show progress (“3/5 sections filled”)
 
-**Agents** : ux-design, build, ui-designer, review
+ **Agents**: ux-design, build, ui-designer, review
 
----
+ ---
 
-### 4.3 Zeigarnik Effect
+ ### 4.3 Zeigarnik Effect
 
-> Les taches incompletes sont mieux retenues que les taches completes.
+ > Unfinished tasks are remembered better than completed ones.
 
-**Definition** : Le cerveau maintient les taches non-terminees en memoire active, creant une tension qui pousse a les completer. Montrer les taches en cours motive leur completion.
+ **Definition**: The brain keeps unfinished tasks in active memory, creating tension that pushes for completion. Surfacing “in progress” work motivates finishing it.
 
-**Application** :
-- Les drafts et taches en cours ont un badge "In Progress" visible
-- Les items incomplets montrent clairement ce qui manque ("2 sections a completer")
-- Les dashboards mettent en avant les taches "en attente d'action" plutot que les taches completees
-- Les notifications rappellent les taches ouvertes (sans spammer)
+ **Application**:
+ - Drafts and in‑progress work clearly show an “In progress” badge
+ - Incomplete items clearly show what’s missing (“2 sections to complete”)
+ - Dashboards highlight “awaiting action” items instead of completed ones
+ - Notifications remind users of open tasks (without spamming)
 
-**Agents** : ux-design, build, spec, ui-designer
+ **Agents**: ux-design, build, spec, ui-designer
 
----
+ ---
 
-### 4.4 Peak-End Rule
+ ### 4.4 Peak-End Rule
 
-> Les experiences sont jugees principalement sur leur pic (emotionnel) et leur fin.
+ > Experiences are judged mostly by their peak (emotional high/low) and their end.
 
-**Definition** : L'utilisateur ne moyenne pas l'experience. Il retient le moment le plus intense (positif ou negatif) et le dernier moment. Un flow penible avec une fin gratifiante est juge positivement.
+ **Definition**: Users don’t average the whole experience. They remember the most intense moment (positive or negative) and the last moment. A painful flow with a great ending can still be judged positively.
 
-**Application** :
-- L'ecran de succes (fin de creation, validation) est design — pas un simple "Succes" texte
-- Les animations de completion (checkmark, confetti subtil) renforcent le pic positif
-- Les erreurs bloquantes (pic negatif) sont accompagnees d'une solution claire
-- Le dernier ecran d'un wizard est un resume gratifiant, pas un redirect brutal
+ **Application**:
+ - The success screen (end of creation, validation) is purposely designed — not just “Success” text
+ - Completion animations (checkmark, subtle confetti) reinforce the positive peak
+ - Blocking errors (negative peaks) are accompanied by a clear solution path
+ - The last step of a wizard is a gratifying summary, not a jarring redirect
 
-**Agents** : ux-design, build, spec, review, ui-designer
+ **Agents**: ux-design, build, spec, review, ui-designer
 
----
+ ---
 
-### 4.5 Doherty Threshold
+ ### 4.5 Doherty Threshold
 
-> La productivite explose quand le systeme et l'utilisateur interagissent a un rythme (<400ms) ou aucun n'attend l'autre.
+ > Productivity soars when system and user interact at a pace (<400 ms) where neither has to wait for the other.
 
-**Definition** : En dessous de 400ms de latence, l'interaction est percue comme instantanee. Au-dessus, l'utilisateur perd son rythme et son engagement diminue.
+ **Definition**: Below ~400 ms latency, interactions feel instant. Above that, users lose rhythm and engagement drops.
 
-**Application** :
-- Tout feedback doit apparaitre en < 400ms (skeleton loader immediat)
-- Les transitions utilisent `transition-all duration-200`
-- Les optimistic updates pour les actions simples (toggle, selection)
-- Les listes utilisent la virtualisation si > 100 items
-- Les chargements longs (> 2s) ont une barre de progression
+ **Application**:
+ - Some feedback must appear within < 400 ms (instant skeleton loader)
+ - Transitions use `transition-all duration-200`
+ - Use optimistic updates for simple actions (toggles, selections)
+ - Virtualize lists when > 100 items
+ - Long loads (> 2 s) show a progress bar
 
-**Agents** : build, ux-design, review
+ **Agents**: build, ux-design, review
 
----
+ ---
 
-## 5. Simplification
+ ## 5. Simplification
 
-### 5.1 Occam's Razor
+ ### 5.1 Occam’s Razor
 
-> Parmi les hypotheses qui predisent egalement bien, celle avec le moins d'assumptions doit etre privilegiee.
+ > Among competing hypotheses that explain the data equally well, choose the one with the fewest assumptions.
 
-**Definition** : La solution la plus simple qui resout le probleme est la meilleure. Chaque complexite ajoutee doit etre justifiee par un benefice mesurable.
+ **Definition**: The simplest solution that solves the problem is usually best. Every extra bit of complexity must be justified by measurable benefit.
 
-**Application** :
-- Si un modal suffit, ne pas faire un wizard
-- Si un filtre dropdown suffit, ne pas faire un panneau de filtres avances
-- Si une page simple suffit, ne pas creer un layout avec sidebar + tabs + sous-tabs
-- Chaque element d'UI doit repondre a : "Quel probleme utilisateur ca resout ?"
+ **Application**:
+ - If a modal is enough, don’t build a multi‑step wizard
+ - If a simple dropdown filter works, don’t build a full “advanced filters” panel
+ - If a simple page is enough, don’t introduce a layout with sidebar + tabs + sub‑tabs
+ - Every UI element must answer: “What user problem does this solve?”
 
-**Agents** : ux-design, spec
+ **Agents**: ux-design, spec
 
----
+ ---
 
-### 5.2 Tesler's Law
+ ### 5.2 Tesler’s Law (Law of Conservation of Complexity)
 
-> Pour tout systeme, il existe un certain niveau de complexite qui ne peut pas etre reduit.
+ > For every system there is an irreducible amount of complexity that cannot be removed.
 
-**Definition** : La complexite irreductible doit etre geree par le systeme (code), pas par l'utilisateur (interface). L'objectif n'est pas d'eliminer la complexite mais de la deplacer vers le bon endroit.
+ **Definition**: Irreducible complexity should be handled by the system (code), not dumped on the user (interface). The goal is not to eliminate complexity, but to move it to the right place.
 
-**Application** :
-- Les processus complexes (workflows de validation multi-niveaux) doivent etre simplifies visuellement sans perdre la rigueur
-- Les permissions (N roles x CRUD) sont complexes — les presenter via templates pre-configures
-- Les formulaires denses sont decomposes en etapes, mais sans supprimer de champs necessaires
-- Les mappings complexes sont guides par l'interface, valides par le code
+ **Application**:
+ - Complex processes (multi‑level approval workflows) need visually simple UIs without losing rigor
+ - Permissions (N roles × CRUD) are inherently complex — present them via pre‑configured templates
+ - Dense forms can be broken into steps, but without removing necessary fields
+ - Complex mappings are guided by the UI, validated by code
 
-**Agents** : ux-design, spec
+ **Agents**: ux-design, spec
 
----
+ ---
 
-### 5.3 Pareto Principle
+ ### 5.3 Pareto Principle (80/20)
 
-> Environ 80% des effets proviennent de 20% des causes.
+ > Roughly 80% of effects come from 20% of causes.
 
-**Definition** : Dans la plupart des systemes, une minorite d'elements produit la majorite des resultats. En UX : 20% des features couvrent 80% des besoins utilisateurs.
+ **Definition**: In most systems, a minority of elements generates the majority of impact. In UX: 20% of features cover 80% of user needs.
 
-**Application** :
-- Identifier le 20% de features qui couvrent 80% des usages quotidiens
-- Les power users utilisent 3-4 actions 80% du temps — les rendre ultra-accessibles
-- Les dashboards montrent les KPIs les plus consultes en premier
-- Le MVP se concentre sur le 20% des stories qui delivrent 80% de la valeur
+ **Application**:
+ - Identify the 20% of features covering 80% of daily usage
+ - Power users rely on 3–4 actions 80% of the time — make them ultra‑accessible
+ - Dashboards show the most consulted KPIs first
+ - The MVP focuses on the 20% of stories delivering 80% of the value
 
-**Agents** : ux-design, spec
+ **Agents**: ux-design, spec
 
----
+ ---
 
-### 5.4 Parkinson's Law
+ ### 5.4 Parkinson’s Law
 
-> Toute tache se dilate pour remplir le temps disponible.
+ > Work expands to fill the time available.
 
-**Definition** : Applique au design : sans contrainte de scope, les features et les ecrans se multiplient indefiniment. Les specs grandissent jusqu'a remplir le temps disponible.
+ **Definition**: In design: without clear scope, features and screens expand indefinitely. Specs grow until they fill the time available.
 
-**Application** :
-- Chaque ecran a un scope fige avant implementation (pas de scope creep)
-- Les specs ont un nombre fini de sections (9, pas plus)
-- Les features "nice to have" sont reportees explicitement, pas ajoutees en douce
-- Le filtre lean de l'agent UX applique cette loi : "Cet element est-il necessaire au happy path ?"
+ **Application**:
+ - Each screen has a frozen scope before implementation (no scope creep)
+ - Specs have a fixed number of sections (9, not more)
+ - “Nice to have” features are explicitly deferred, not quietly added
+ - The UX agent’s lean filter applies this law: “Is this element necessary for the happy path?”
 
-**Agents** : ux-design, spec
+ **Agents**: ux-design, spec
 
----
+ ---
 
-## 6. Coherence & Modeles mentaux
+ ## 6. Coherence & Mental Models
 
-### 6.1 Jakob's Law
+ ### 6.1 Jakob’s Law
 
-> Les utilisateurs passent la majorite de leur temps sur d'AUTRES sites. Ils preferent que votre site fonctionne comme ceux qu'ils connaissent.
+ > Users spend most of their time on OTHER sites. They prefer your site to work like the ones they already know.
 
-**Definition** : Les conventions existantes creent des attentes. Violer ces conventions augmente la charge cognitive et la frustration. L'innovation doit etre mesuree.
+ **Definition**: Existing conventions create expectations. Violating them increases cognitive load and frustration. Innovation should be measured.
 
-**Application** :
-- Utiliser les patterns du design system (pas d'inventions)
-- Les tableaux de donnees se comportent comme des tableaux standards (tri, filtre, pagination)
-- Les formulaires suivent les conventions web (label au-dessus, champs alignes a gauche, boutons en bas)
-- La navigation principale est a gauche (sidebar) — pattern standard B2B SaaS
-- Les toasts de succes apparaissent en haut-droite — convention etablie
+ **Application**:
+ - Use the project’s design system patterns (no gratuitous inventions)
+ - Data tables behave like standard tables (sort, filter, pagination)
+ - Forms follow web conventions (label above, left‑aligned fields, buttons at the bottom)
+ - Primary navigation is in a left sidebar for B2B SaaS (standard pattern)
+ - Success toasts appear top‑right (common convention)
 
-**Agents** : ux-design, spec, build, review, explore
+ **Agents**: ux-design, spec, build, review, explore
 
----
+ ---
 
-### 6.2 Mental Model
+ ### 6.2 Mental Models
 
-> Un modele compresse de ce que l'utilisateur croit savoir d'un systeme et de son fonctionnement.
+ > A compressed internal model of how a person believes a system works.
 
-**Definition** : Les utilisateurs ont un modele interne de comment le systeme devrait fonctionner, base sur leur experience. L'interface doit s'aligner sur ce modele, pas forcer un nouveau.
+ **Definition**: Users carry an internal model of how your system *should* work, based on prior experience. The interface should align with that model instead of forcing a new one.
 
-**Application** :
-- Les personas ont des modeles mentaux differents : un utilisateur technique vs un decideur strategique vs un lecteur haut-niveau
-- L'interface doit refleter la hierarchie mentale de chaque persona
-- Ne pas imposer un vocabulaire technique a des utilisateurs non-techniques
-- Les dashboards sont structures selon le modele mental du role cible
+ **Application**:
+ - Personas have different mental models: a technical user vs. a strategic decision‑maker vs. a high‑level reader
+ - The interface must reflect each persona’s mental hierarchy
+ - Don’t impose technical vocabulary on non‑technical users
+ - Dashboards are structured according to the target role’s mental model
 
-**Agents** : ux-design, spec
+ **Agents**: ux-design, spec
 
----
+ ---
 
-### 6.3 Postel's Law
+ ### 6.3 Postel’s Law (Robustness Principle)
 
-> Soyez liberal dans ce que vous acceptez, conservateur dans ce que vous envoyez.
+ > Be liberal in what you accept, and conservative in what you send.
 
-**Definition** : Les inputs acceptent des formats varies et tolerent les erreurs mineures. Les outputs sont structures, precis et conformes aux standards.
+ **Definition**: Inputs accept a variety of formats and tolerate minor errors. Outputs are structured, precise, and standards‑compliant.
 
-**Application** :
-- Les champs de date acceptent plusieurs formats (DD/MM/YYYY, DD-MM-YYYY, etc.)
-- Les champs de recherche sont tolerants (insensible a la casse, accents)
-- Les formulaires sauvegardent les drafts automatiquement (tolerant aux erreurs de navigation)
-- Les exports (PDF, CSV) suivent un format strict et predictible
-- Les messages d'erreur sont specifiques et actionnables (pas de "Erreur 500")
+ **Application**:
+ - Date fields accept multiple formats (DD/MM/YYYY, DD-MM-YYYY, etc.)
+ - Search fields are tolerant (case‑insensitive, accent‑insensitive)
+ - Forms auto‑save drafts (tolerant of navigation mistakes)
+ - Exports (PDF, CSV) follow a strict, predictable format
+ - Error messages are specific and actionable (not just “Error 500”)
 
-**Agents** : spec, build, review
+ **Agents**: spec, build, review
 
----
+ ---
 
-### 6.4 Cognitive Bias
+ ### 6.4 Cognitive Bias
 
-> Une erreur systematique de pensee ou de rationalite dans le jugement qui influence notre perception et nos decisions.
+ > Systematic errors in thinking and judgment that influence perception and decisions.
 
-**Definition** : Les biais cognitifs affectent tant les utilisateurs (biais de confirmation, ancrage) que les designers (biais de familiarite, illusion du savoir). Les identifier est la premiere etape pour les mitiger.
+ **Definition**: Cognitive biases affect both users (confirmation bias, anchoring) and designers (familiarity bias, illusion of knowledge). Identifying them is the first step to mitigating them.
 
-**Application** :
-- **Biais d'ancrage** : Le premier chiffre vu dans un dashboard ancre les attentes — choisir avec soin les KPIs en haut
-- **Biais de confirmation** : Les utilisateurs cherchent ce qui confirme leur hypothese — les dashboards doivent montrer les contre-signaux aussi
-- **Biais de familiarite** (pour les designers) : "On fait toujours comme ca" n'est pas une justification — challenger avec les lois UX
-- **Biais de statu quo** : Les utilisateurs resistant au changement — les nouvelles features doivent apporter un benefice visible et immediat
+ **Application**:
+ - **Anchoring bias**: The first number on a dashboard anchors expectations — carefully choose which KPIs appear first
+ - **Confirmation bias**: Users look for what confirms their hypothesis — dashboards should also highlight counter‑signals
+ - **Familiarity bias (for designers)**: “We’ve always done it this way” is not a justification — challenge it using UX laws
+ - **Status quo bias**: Users resist change — new features must deliver visible, immediate benefit
 
-**Agents** : ux-design, review
+ **Agents**: ux-design, review
 
----
+ ---
 
-## Utilisation par les agents — resume
+ ## How agents use these laws — summary
 
-| Agent | Lois prioritaires | Usage |
-|-------|------------------|-------|
-| **ux-design** | Toutes (22 pertinentes) | Justifier les recommandations, challenger les hypotheses, alimenter le Solution Tree |
-| **ui-designer** | Perception (7) + Cognitive (5) + Serial Position + Goal-Gradient + Peak-End + Zeigarnik + Doherty + Von Restorff | Regles de generation SVG pixel-perfect |
-| **build** | Fitts, Doherty, Hick, Miller, Chunking, Gestalt, Von Restorff, Goal-Gradient, Cognitive Load, Jakob, Aesthetic-Usability, Flow, Serial Position, Postel, Peak-End, Selective Attention | Regles d'implementation |
-| **review** | Fitts, Doherty, Hick, Miller, Von Restorff, Goal-Gradient, Peak-End, Jakob, Choice Overload, Chunking, Serial Position, Cognitive Bias, Aesthetic-Usability | Criteres de verification conformite UX |
-| **spec** | Chunking, Miller, Cognitive Load, Postel, Peak-End, Zeigarnik, Gestalt, Serial Position, Paradox Active User, Jakob | Garde-fous qualite des specs |
-| **explore** | Jakob, Hick, Aesthetic-Usability, Chunking, Von Restorff | Minimum vital pour un prototype evaluable |
+ | Agent | Priority laws | Usage |
+ |-------|---------------|-------|
+ | **ux-design** | All (22 core ones above) | Justify recommendations, challenge hypotheses, feed the solution tree |
+ | **ui-designer** | Perception (7) + Cognitive (5) + Serial Position + Goal-Gradient + Peak-End + Zeigarnik + Doherty + Von Restorff | Rules for pixel‑perfect SVG / UI generation |
+ | **build** | Fitts, Doherty, Hick, Miller, Chunking, Gestalt, Von Restorff, Goal-Gradient, Cognitive Load, Jakob, Aesthetic-Usability, Flow, Serial Position, Postel, Peak-End, Selective Attention | Implementation rules |
+ | **review** | Fitts, Doherty, Hick, Miller, Von Restorff, Goal-Gradient, Peak-End, Jakob, Choice Overload, Chunking, Serial Position, Cognitive Bias, Aesthetic-Usability | Conformity checklist |
+ | **spec** | Chunking, Miller, Cognitive Load, Postel, Peak-End, Zeigarnik, Gestalt, Serial Position, Paradox of the Active User, Jakob | Spec quality guardrails |
+ | **explore** | Jakob, Hick, Aesthetic-Usability, Chunking, Von Restorff | Minimum viable quality for evaluable prototypes |
+

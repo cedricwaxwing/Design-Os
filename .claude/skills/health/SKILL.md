@@ -1,7 +1,7 @@
 ---
 name: health
 user-invocable: true
-panel-description: Diagnostic rapide — score de sante du projet et actions a lancer.
+panel-description: Quick diagnostic — project health score and recommended actions.
 description: >
   Agent de diagnostic du Design Operating System.
   Verifie la sante globale du projet en une commande : onboarding, tokens, specs, code, reviews, memoire.

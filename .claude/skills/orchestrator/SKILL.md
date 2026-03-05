@@ -1,7 +1,7 @@
 ---
 name: o
 user-invocable: true
-panel-description: Coordonne plusieurs etapes automatiquement selon ton objectif.
+panel-description: Coordinate multiple steps automatically based on your goal.
 description: >
   Meta-agent de coordination du Design Operating System.
   Comprend l'intent utilisateur, propose un plan d'execution, et chaine les agents specialises

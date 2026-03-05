@@ -1,7 +1,7 @@
 ---
 name: commands
 user-invocable: true
-panel-description: Affiche toutes les commandes disponibles.
+panel-description: Show all available commands.
 description: >
   Affiche la liste de toutes les commandes disponibles (agents et overrides).
   Aucun outil, aucune logique — juste un affichage rapide.

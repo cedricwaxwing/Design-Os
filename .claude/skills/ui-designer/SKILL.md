@@ -1,7 +1,7 @@
 ---
 name: ui
 user-invocable: true
-panel-description: Genere des mockups visuels — SVG, HTML ou composants React.
+panel-description: Generate visual mockups — SVG, HTML, or React components.
 description: >
   Agent UI Designer — Expert visuel et executant du design produit. Traduit les decisions strategiques
   de /ux en realisations concretes : mockups SVG, pages HTML, composants React/TSX, critiques de layout,

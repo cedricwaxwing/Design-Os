@@ -1,7 +1,7 @@
 ---
 name: onboarding
 user-invocable: true
-panel-description: Configure ton projet — personas, modules, tech stack et design system.
+panel-description: Configure your project — personas, modules, tech stack, and design system.
 description: >
   Agent d'onboarding du Design Operating System.
   Guide l'utilisateur a travers la configuration de son projet : nom, personas, modules, tech stack, design system.

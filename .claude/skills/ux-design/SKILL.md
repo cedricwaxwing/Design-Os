@@ -1,7 +1,7 @@
 ---
 name: ux-design
 user-invocable: true
-panel-description: Challenge tes choix UX et explore des alternatives avant la spec.
+panel-description: Challenge your UX choices and explore alternatives before writing the spec.
 description: >
   Agent UX Design — Sparring partner de design produit. Challenge les choix UX, explore des solution trees,
   et valide les hypotheses de design avant la spec. Mode co-creation : propose des alternatives, questionne la complexite,

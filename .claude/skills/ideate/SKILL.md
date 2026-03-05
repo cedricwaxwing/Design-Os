@@ -1,7 +1,7 @@
 ---
 name: ideate
 user-invocable: true
-panel-description: Brainstorm libre avec persistance de TOUTES les idees. Coffre-fort creatif.
+panel-description: Free-form brainstorm with persistence of ALL ideas. Creative vault.
 description: >
   Agent Ideation du Design Operating System.
   Brainstorming creatif avec persistance obligatoire de TOUT : idees retenues, ecartees, parquees,

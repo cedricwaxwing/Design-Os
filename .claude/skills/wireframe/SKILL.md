@@ -1,7 +1,7 @@
 ---
 name: wireframe
 user-invocable: true
-panel-description: Genere des wireframes pour visualiser tes ecrans et navigations.
+panel-description: Generate wireframes to visualize your screens and navigation.
 description: >
   Agent Wireframe — Generateur de wireframes low-fidelity. Produit des boards SVG ou HTML
   montrant tous les ecrans d'un flow juxtaposes avec navigation et fleches de connexion.

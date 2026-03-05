@@ -1,7 +1,7 @@
 ---
 name: export
 user-invocable: true
-panel-description: Exporte la config projet en JSON pour la partager avec un collaborateur.
+panel-description: Export project configuration to JSON so you can share it with a collaborator.
 description: >
   Agent Export du Design Operating System.
   Genere un fichier project.export.json a la racine du projet contenant la config complete

@@ -1,7 +1,7 @@
 ---
 name: import
 user-invocable: true
-panel-description: Importe un project.export.json pour bootstrapper le projet depuis la config d'un collaborateur.
+panel-description: Import a project.export.json to bootstrap the project from a collaborator's configuration.
 description: >
   Agent Import du Design Operating System.
   Lit un fichier project.export.json depose dans 00 Material/, valide sa structure,

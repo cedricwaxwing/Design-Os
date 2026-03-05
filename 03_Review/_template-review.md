@@ -1,78 +1,79 @@
-# Review — [X.Y] [Nom du composant/page]
+ # Review — [X.Y] [Component/Page name]
 
-**Spec source** : `01_Product/05 Specs/{module}/specs/X.Y-nom.spec.md`
-**Code** : `02_Build/{module}/src/...`
-**Tests** : `02_Build/{module}/tests/...`
-**Date** : [YYYY-MM-DD]
-**Reviewer** : `/review`
+ **Spec source**: `01_Product/05 Specs/{module}/specs/X.Y-name.spec.md`  
+ **Code**: `02_Build/{module}/src/...`  
+ **Tests**: `02_Build/{module}/tests/...`  
+ **Date**: [YYYY-MM-DD]  
+ **Reviewer**: `/review`
 
----
+ ---
 
-## Score de conformite : X/Y
+ ## Conformity score: X/Y
 
-| # | Critere (Gherkin) | Statut | Detail |
-|---|-------------------|--------|--------|
-| 1 | Given [contexte] When [action] Then [resultat attendu] | PASSE / ECHOUE | [explication si echoue] |
-| 2 | Given [...] When [...] Then [...] | PASSE / ECHOUE | [detail] |
-| 3 | Given [...] When [...] Then [...] | PASSE / ECHOUE | [detail] |
+ | # | Criterion (Gherkin) | Status | Detail |
+ |---|---------------------|--------|--------|
+ | 1 | Given [context] When [action] Then [expected result] | PASS / FAIL | [explanation if failed] |
+ | 2 | Given [...] When [...] Then [...] | PASS / FAIL | [detail] |
+ | 3 | Given [...] When [...] Then [...] | PASS / FAIL | [detail] |
 
----
+ ---
 
-## Verifications complementaires
+ ## Additional checks
 
-| Verification | Statut | Detail |
-|--------------|--------|--------|
-| Etat vide | PASSE / ECHOUE | [rendu conditionnel quand data est vide] |
-| Etat chargement | PASSE / ECHOUE | [skeleton loader ou spinner] |
-| Etat erreur | PASSE / ECHOUE | [message d'erreur + retry] |
-| Etat succes | PASSE / ECHOUE | [rendu avec donnees] |
-| Responsive | PASSE / ECHOUE | [breakpoints dans les classes] |
-| Accessibilite | PASSE / ECHOUE | [aria-*, role=, tabIndex] |
-| Types stricts | PASSE / ECHOUE | [pas de any / @ts-ignore] |
-| Design system (tokens) | PASSE / ECHOUE | [pas de hardcode couleurs/spacing] |
-| Tests complets | PASSE / ECHOUE | [un test par AC + un test par etat] |
+ | Check | Status | Detail |
+ |--------|--------|--------|
+ | Empty state | PASS / FAIL | [conditional render when data is empty] |
+ | Loading state | PASS / FAIL | [skeleton loader or spinner] |
+ | Error state | PASS / FAIL | [error message + retry] |
+ | Success state | PASS / FAIL | [render with data] |
+ | Responsive | PASS / FAIL | [breakpoints present in classes] |
+ | Accessibility | PASS / FAIL | [`aria-*`, `role=`, `tabIndex`] |
+ | Strict types | PASS / FAIL | [no `any` / `@ts-ignore`] |
+ | Design system (tokens) | PASS / FAIL | [no hard‑coded colors/spacing] |
+ | Tests complete | PASS / FAIL | [one test per AC + one test per state] |
 
-## Verifications UX
+ ## UX checks
 
-| Verification | Loi UX | Statut | Detail |
-|--------------|--------|--------|--------|
-| Charge cognitive | Miller, Chunking | PASSE / ECHOUE | [info groupee en blocs vs liste plate > 7] |
-| Choix utilisateur | Hick | PASSE / ECHOUE | [<= 5 actions visibles vs > 5 CTAs] |
-| Cibles cliquables | Fitts | PASSE / ECHOUE | [CTAs >= 36px vs boutons < 32px] |
-| Feedback latence | Doherty | PASSE / ECHOUE | [skeleton loader vs pas de feedback] |
-| Coherence patterns | Jakob | PASSE / ECHOUE | [patterns du DS vs patterns inventes] |
-| Element distinctif | Von Restorff | PASSE / ECHOUE | [CTA primaire distinct vs boutons identiques] |
-| Progression | Goal-Gradient | PASSE / ECHOUE | [barre de progression si multi-step] |
-| Experience de fin | Peak-End | PASSE / ECHOUE | [succes gratifiant vs redirect sans feedback] |
+ | Check | UX Law | Status | Detail |
+ |--------|--------|--------|--------|
+ | Cognitive load | Miller, Chunking | PASS / FAIL | [info grouped into blocks vs flat list > 7] |
+ | User choices | Hick | PASS / FAIL | [<= 5 visible actions vs > 5 CTAs] |
+ | Clickable targets | Fitts | PASS / FAIL | [CTAs ≥ 36px vs buttons < 32px] |
+ | Latency feedback | Doherty | PASS / FAIL | [skeleton loader vs no feedback] |
+ | Pattern coherence | Jakob | PASS / FAIL | [DS patterns vs invented patterns] |
+ | Distinct element | Von Restorff | PASS / FAIL | [primary CTA distinct vs identical buttons] |
+ | Progression | Goal-Gradient | PASS / FAIL | [progress bar if multi‑step] |
+ | End experience | Peak-End | PASS / FAIL | [gratifying success vs redirect without feedback] |
 
-## Verifications Design System
+ ## Design System checks
 
-| # | Check | Statut | Detail |
-|---|-------|--------|--------|
-| DS-1 | Couleurs hex hardcodees | PASSE / ECHOUE | [0 occurrence dans .tsx] |
-| DS-2 | Couleurs rgb/rgba inline | PASSE / ECHOUE | [0 occurrence] |
-| DS-3 | Valeurs arbitraires | PASSE / ECHOUE | [0 occurrence de `[#` `[Npx]`] |
-| DS-4 | Composants DS reutilises | PASSE / ECHOUE | [composants existants utilises] |
-| DS-5 | Spacing hardcode | PASSE / ECHOUE | [0 inline margin/padding] |
-| DS-6 | Font hardcodee | PASSE / ECHOUE | [0 fontSize inline] |
+ | # | Check | Status | Detail |
+ |---|-------|--------|--------|
+ | DS-1 | Hard‑coded hex colors | PASS / FAIL | [0 occurrences in .tsx] |
+ | DS-2 | Inline rgb/rgba colors | PASS / FAIL | [0 occurrences] |
+ | DS-3 | Arbitrary values | PASS / FAIL | [0 occurrences of `[#` or raw `[Npx]`] |
+ | DS-4 | DS components reused | PASS / FAIL | [existing components used] |
+ | DS-5 | Hard‑coded spacing | PASS / FAIL | [0 inline margin/padding] |
+ | DS-6 | Hard‑coded font | PASS / FAIL | [0 inline fontSize] |
 
----
+ ---
 
-## Verdict : GO / NO-GO
+ ## Verdict: GO / NO-GO
 
-### Si NO-GO — Ecarts identifies
+ ### If NO-GO — identified gaps
 
-| # | Ecart | Type | Action requise |
-|---|-------|------|---------------|
-| 1 | [description de l'ecart] | IMPL / SPEC / DESIGN / DISCOVERY | [action concrete] |
-| 2 | [description] | [type] | [action] |
+ | # | Gap | Type | Required action |
+ |---|-----|------|-----------------|
+ | 1 | [gap description] | IMPL / SPEC / DESIGN / DISCOVERY | [concrete action] |
+ | 2 | [description] | [type] | [action] |
 
-**Legende des types :**
-- **IMPL** — Fix dans le code → `/build`
-- **SPEC** — Fix dans la spec → `/spec`
-- **DESIGN** — Pattern UX a revoir → `/ux`
-- **DISCOVERY** — Hypothese utilisateur fausse → `/discovery`
+ **Type legend:**
+ - **IMPL** — Fix in code → `/build`
+ - **SPEC** — Fix in spec → `/spec`
+ - **DESIGN** — UX pattern to revisit → `/ux`
+ - **DISCOVERY** — Wrong user hypothesis → `/discovery`
 
-**Priorite des retours** : DISCOVERY > DESIGN > SPEC > IMPL
+ **Return priority**: DISCOVERY > DESIGN > SPEC > IMPL
 
-**Type dominant** : [type] → Recommandation : relancer [agent]
+ **Dominant type**: [type] → Recommendation: relaunch [agent]
+

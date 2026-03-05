@@ -1,11 +1,11 @@
-import { GraphData } from './types';
+import { GraphData } from "./types";
 
 /**
  * Generates the full HTML for the webview panel.
  * V3 — Dynamic detail panel: toggle/close, collapsible sections, recent activity, visual hierarchy.
  */
 export function getWebviewContent(data: GraphData): string {
-  const dataJson = JSON.stringify(data).replace(/</g, '\\u003c');
+  const dataJson = JSON.stringify(data).replace(/</g, "\\u003c");
 
   return /*html*/ `<!DOCTYPE html>
 <html lang="fr">
@@ -1775,16 +1775,16 @@ export function getWebviewContent(data: GraphData): string {
 
     // ── Node positions ──
     const positions = {
-      'material':       { x: 230, y: 20 },
-      'strategy':       { x: 230, y: 120 },
-      'discovery':      { x: 230, y: 220 },
-      'ux':             { x: 230, y: 340 },
-      'design-system':  { x: 20,  y: 340 },
-      'spec':           { x: 160, y: 470 },
-      'ui':             { x: 350, y: 470 },
-      'build':          { x: 230, y: 590 },
-      'review':         { x: 230, y: 700 },
-      'lab':            { x: 440, y: 340 },
+      'material':       { x: 230, y: 50 },
+      'strategy':       { x: 230, y: 200 },
+      'discovery':      { x: 230, y: 350 },
+      'ux':             { x: 230, y: 500 },
+      'design-system':  { x: 20,  y: 650 },
+      'spec':           { x: 160, y: 800 },
+      'ui':             { x: 350, y: 800 },
+      'build':          { x: 230, y: 950 },
+      'review':         { x: 230, y: 1100 },
+      'lab':            { x: 440, y: 650 },
     };
 
     const nodeIcons = {

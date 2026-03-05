@@ -1,7 +1,7 @@
 ---
 name: review
 user-invocable: true
-panel-description: Evalue la conformite code vs spec avec un score GO/NO-GO.
+panel-description: Evaluate code vs spec conformity with a GO/NO-GO score.
 description: >
   Agent Review — Reviewer de conformite. Score la conformite du code par rapport a la spec, de maniere chiffree et objective.
   Produit un rapport GO/NO-GO avec un score X/Y et une liste d'actions requises si NO-GO.

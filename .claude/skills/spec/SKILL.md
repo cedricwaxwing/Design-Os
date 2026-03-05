@@ -1,7 +1,7 @@
 ---
 name: spec
 user-invocable: true
-panel-description: Cree une spec complete (9 sections) depuis tes user stories.
+panel-description: Create a complete spec (9 sections) from your user stories.
 description: >
   Agent Spec — Gardien de la spec. Genere des specs completes a partir de user stories en utilisant le template 9 sections.
   Valide que chaque spec est complete avant d'autoriser le code. Refuse de passer en phase Build si une section contient "a definir", "TBD", "TODO" ou "?".
