@@ -3,10 +3,20 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { parseProject, parseMermaidFlow, layoutFlowNodes, parseMemoryEntries } from './parser';
 import { loadReadiness, saveReadinessSnapshot } from './readiness';
+import { getMaturityLabel } from './maturityLabels';
 import { FlowNode, FlowEdge, ConsoleCard } from './types';
-import { GraphData } from './types-legacy';
+import { GraphData, DesignOsNode } from './types-legacy';
 import { ConsoleViewProvider } from './console-webview';
 import { Artifact } from './prototyper-webview';
+
+/** Normalize all nodes' maturity to English labels before sending to webview. */
+function normalizeMaturityToEnglish(data: GraphData): void {
+  function apply(node: DesignOsNode): void {
+    (node as { maturity: string }).maturity = getMaturityLabel(node.maturity);
+    for (const child of node.children ?? []) apply(child);
+  }
+  for (const n of data.nodes) apply(n);
+}
 
 let currentPanel: vscode.WebviewPanel | undefined;
 let extensionContext: vscode.ExtensionContext;
@@ -272,6 +282,7 @@ function initializePanel() {
   try {
     const data = parseProject(root);
     data.sectionOrder = extensionContext.globalState.get<string[]>('designOs.sectionOrder');
+    normalizeMaturityToEnglish(data);
     currentGraphData = data;
 
     // Load Vite-built React webview
@@ -287,12 +298,13 @@ function initializePanel() {
 
     let html = fs.readFileSync(htmlPath, 'utf-8');
 
-    // Convert asset paths to webview URIs
+    // Convert asset paths to webview URIs (cache-bust so reload picks up new bundle)
     const distUri = currentPanel.webview.asWebviewUri(
       vscode.Uri.file(distPath)
     );
-    html = html.replace(/src="\/assets\//g, `src="${distUri}/assets/`);
-    html = html.replace(/href="\/assets\//g, `href="${distUri}/assets/`);
+    const cacheBust = `?v=${Date.now()}`;
+    html = html.replace(/src="(\/assets\/[^"]+)"/g, `src="${distUri}$1${cacheBust}"`);
+    html = html.replace(/href="(\/assets\/[^"]+)"/g, `href="${distUri}$1${cacheBust}"`);
 
     // Remove crossorigin attributes (incompatible with webview URIs)
     html = html.replace(/ crossorigin/g, '');
@@ -333,6 +345,7 @@ function updateGraphData() {
   try {
     const data = parseProject(root);
     data.sectionOrder = extensionContext.globalState.get<string[]>('designOs.sectionOrder');
+    normalizeMaturityToEnglish(data);
     currentGraphData = data;
 
     if (webviewReady) {

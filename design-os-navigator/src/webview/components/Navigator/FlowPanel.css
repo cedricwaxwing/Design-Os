@@ -166,6 +166,29 @@
   color: var(--accent);
 }
 
+/* English labels (when extension normalizes maturity) */
+.flow-node-tag.empty {
+  background: color-mix(in srgb, var(--text-muted) 15%, transparent);
+  color: var(--text-muted);
+}
+.flow-node-tag.started,
+.flow-node-tag.not-ready,
+.flow-node-tag.premature {
+  background: color-mix(in srgb, var(--peach) 15%, transparent);
+  color: var(--peach);
+}
+.flow-node-tag.in-progress,
+.flow-node-tag.possible {
+  background: color-mix(in srgb, var(--success) 15%, transparent);
+  color: var(--success);
+}
+.flow-node-tag.complete,
+.flow-node-tag.validated,
+.flow-node-tag.ready {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+}
+
 /* Gate Dots */
 .flow-node-gates {
   display: flex;

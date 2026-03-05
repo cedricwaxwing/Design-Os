@@ -131,6 +131,41 @@
   color: var(--success);
 }
 
+/* English labels (when extension normalizes maturity for display) */
+.maturity-empty {
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+  color: var(--text-dim);
+}
+.maturity-started {
+  background: color-mix(in srgb, var(--error) 15%, transparent);
+  color: var(--error);
+}
+.maturity-in-progress {
+  background: color-mix(in srgb, var(--warning) 15%, transparent);
+  color: var(--warning);
+}
+.maturity-complete {
+  background: color-mix(in srgb, var(--success) 15%, transparent);
+  color: var(--success);
+}
+.maturity-validated {
+  background: color-mix(in srgb, var(--success) 25%, transparent);
+  color: var(--success);
+}
+.maturity-not-ready,
+.maturity-premature {
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+  color: var(--text-dim);
+}
+.maturity-possible {
+  background: color-mix(in srgb, var(--warning) 15%, transparent);
+  color: var(--warning);
+}
+.maturity-ready {
+  background: color-mix(in srgb, var(--success) 15%, transparent);
+  color: var(--success);
+}
+
 /* ════════════════════════════════════════
    CHILD NODES (subfolder clusters)
    ════════════════════════════════════════ */

@@ -4,6 +4,7 @@ import { FlowPanel } from './components/Navigator/FlowPanel';
 import { SidePanel } from './components/Navigator/SidePanel';
 import { ArtifactFeed } from './components/Prototyper/ArtifactFeed';
 import { Toast } from './components/shared/Toast';
+import { normalizeGraphMaturity } from './components/Navigator/utils';
 import type { GraphData, DesignOsNode } from '../types-legacy';
 import type { ExtensionMessage } from '../types/messages';
 import type { Artifact } from '../types/artifact';
@@ -20,12 +21,16 @@ interface ToastState {
   visible: boolean;
 }
 
+function initGraphData(initialData: unknown): GraphData | null {
+  const d = initialData as GraphData | null;
+  if (d?.nodes) normalizeGraphMaturity(d);
+  return d;
+}
+
 export default function App({ initialData }: AppProps) {
   // VS Code API is managed by useVSCode.ts (single acquireVsCodeApi call)
-  // Graph data
-  const [graphData, setGraphData] = useState<GraphData | null>(
-    initialData as GraphData | null
-  );
+  // Graph data — normalize maturity to English on load and on every update
+  const [graphData, setGraphData] = useState<GraphData | null>(() => initGraphData(initialData));
 
   // UI state
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
@@ -42,9 +47,12 @@ export default function App({ initialData }: AppProps) {
   // Handle messages from extension
   const handleMessage = useCallback((message: ExtensionMessage) => {
     switch (message.type) {
-      case 'graphData':
-        setGraphData(message.data);
+      case 'graphData': {
+        const d = message.data as GraphData;
+        if (d?.nodes) normalizeGraphMaturity(d);
+        setGraphData(d);
         break;
+      }
 
       case 'setArtifacts':
         setArtifacts(message.artifacts);

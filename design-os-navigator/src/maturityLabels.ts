@@ -1,4 +1,8 @@
-/** Map internal maturity tag or readiness verdict to user-visible English label. */
+/**
+ * Map internal maturity tag (French) or readiness verdict to English label.
+ * Used by the extension when sending data to the webview so the UI always shows English.
+ */
+
 export function getMaturityLabel(tag: string | undefined): string {
   const t = (tag ?? '').trim();
   const upper = t.toUpperCase();
@@ -21,13 +25,4 @@ export function getMaturityLabel(tag: string | undefined): string {
   if (/VIDE|EMPTY/i.test(t)) return 'Empty';
   if (/EN\s*COURS|IN\s*PROGRESS/i.test(t)) return 'In progress';
   return t || 'Empty';
-}
-
-/** Normalize all nodes' maturity to English (mutates in place). Call when receiving graph data. */
-export function normalizeGraphMaturity(data: { nodes: Array<{ maturity?: string; children?: Array<{ maturity?: string }> }> }): void {
-  function apply(node: { maturity?: string; children?: Array<{ maturity?: string }> }): void {
-    if (node.maturity !== undefined) node.maturity = getMaturityLabel(node.maturity);
-    for (const child of node.children ?? []) apply(child);
-  }
-  for (const n of data.nodes) apply(n);
 }

@@ -1,0 +1,59 @@
+{
+  "module": "core",
+  "updatedAt": "2026-03-05T14:00:00.000Z",
+  "updatedBy": "/o",
+  "globalScore": 14,
+  "nodes": {
+    "strategy": {
+      "score": 25,
+      "verdict": "possible",
+      "action": "Complete the brief and vision via /onboarding"
+    },
+    "discovery": {
+      "score": 5,
+      "verdict": "not-ready",
+      "action": "Run /discovery to add domain context, personas, and hypotheses",
+      "children": {
+        "discovery-domain": { "score": 0, "label": "Domain Context" },
+        "discovery-personas": { "score": 0, "label": "Personas" },
+        "discovery-interviews": { "score": 0, "label": "Interviews" },
+        "discovery-insights": { "score": 0, "label": "Research Insights" }
+      }
+    },
+    "ux": {
+      "score": 10,
+      "verdict": "not-ready",
+      "action": "Discovery first; then run /ux to define Screen Map and flows"
+    },
+    "design-system": {
+      "score": 65,
+      "verdict": "push",
+      "action": "Enrich components and patterns as needed"
+    },
+    "spec": {
+      "score": 0,
+      "verdict": "not-ready",
+      "action": "Define UX and Screen Map first, then /spec"
+    },
+    "ui": {
+      "score": 0,
+      "verdict": "not-ready",
+      "action": "Specs required first"
+    },
+    "build": {
+      "score": 25,
+      "verdict": "possible",
+      "action": "Validated specs required before /build"
+    },
+    "review": {
+      "score": 0,
+      "verdict": "not-ready",
+      "action": "Code required first"
+    },
+    "lab": {
+      "score": 0,
+      "verdict": "not-ready",
+      "action": null
+    }
+  }
+}
